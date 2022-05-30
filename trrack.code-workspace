@@ -1,0 +1,17 @@
+{
+  "folders": [
+	{
+		"name": "✨ trrack",
+		"path": "."
+	},
+	{
+		"name": "📦 @trrack/core",
+		"path": "packages/core"
+	},
+	{
+		"name": "📦 @trrack/redux",
+		"path": "packages/redux"
+	}
+],
+  "settings": {}
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@trrack/core",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "dependencies": {
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/uuid": "^8.3.4"
+  }
+}
