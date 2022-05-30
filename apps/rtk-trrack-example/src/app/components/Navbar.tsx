@@ -11,13 +11,13 @@ export const Navbar = () => {
 
   return (
     <>
-      <AppBar sx={{ bgcolor: "white" }}>
+      <AppBar sx={{ bgcolor: 'white' }}>
         <Toolbar>
           <Typography color="black" variant="h6" sx={{ flexGrow: 1 }}>
             Action based tracking with Redux-Toolkit
           </Typography>
           <Button
-            sx={{ margin: "0.2em" }}
+            sx={{ margin: '0.2em' }}
             variant="contained"
             onClick={() => {
               dispatch(addTodo(`Task ${Math.floor(Math.random() * 100)}`));
@@ -26,7 +26,7 @@ export const Navbar = () => {
             Add Random Task
           </Button>
           <Button
-            sx={{ margin: "0.2em" }}
+            sx={{ margin: '0.2em' }}
             variant="contained"
             startIcon={<UndoIcon />}
             disabled={trrack.root.id === trrack.current.id}
@@ -35,9 +35,10 @@ export const Navbar = () => {
             Undo
           </Button>
           <Button
-            sx={{ margin: "0.2em" }}
+            sx={{ margin: '0.2em' }}
             variant="contained"
             startIcon={<RedoIcon />}
+            disabled={trrack.current.children.length === 0}
             onClick={() => trrack.redo()}
           >
             Redo
