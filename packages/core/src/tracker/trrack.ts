@@ -1,5 +1,5 @@
 import { Action, ActionRegistry } from '../action';
-import { ActionNode, CurrentChangeListener, ProvenanceGraph } from '../graph';
+import { ActionNode, ProvenanceGraph } from '../graph';
 import { RootNode } from '../graph/nodes/rootnode';
 import { INode } from '../graph/nodes/types';
 import { getPathToNode, isNextNodeUp } from '../graph/traversal';
@@ -36,7 +36,7 @@ export class Trrack<T extends ActionRegistry<any>> {
     K extends keyof R,
     D extends Parameters<R[K]['apply']>,
     U extends Parameters<R[K]['inverse']>
-  >(action: Action<K, D, U>, skip: boolean = false) {
+  >(action: Action<K, D, U>, skip = false) {
     // Execute the action first.
     const results = skip
       ? null
@@ -100,11 +100,7 @@ export class Trrack<T extends ActionRegistry<any>> {
         : actionFunction.apply(action.doArgs);
     });
 
-    this.graph.changeCurrent(node, 'to');
-  }
-
-  getSerializedGraph() {
-    return this.graph.toJSON();
+    this.graph.current = target;
   }
 
   undo() {
@@ -119,15 +115,6 @@ export class Trrack<T extends ActionRegistry<any>> {
   redo() {
     if (this.current.children.length > 0) this.to(this.current.children[0]);
     else console.warn('Already at latest');
-  }
-
-  listenCurrentChanged(func: CurrentChangeListener) {
-    this.graph.addCurrentChangeListener(func);
-    func('to');
-  }
-
-  clearListener() {
-    this.graph.currentChangeListeners = [];
   }
 }
 

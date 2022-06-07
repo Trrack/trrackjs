@@ -1,24 +1,24 @@
-import { ASerializable } from '../utils/serializable';
+import initEventManager from '../event';
 import { INode, IRootNode, RootNode } from './nodes';
-
-export type SerializedProvenanceGraph = {
-  current: string;
-  root: string;
-  nodes: { [k: string]: any };
-};
+import { IProvenanceGraph, IReadonlyProvenanceGraph } from './types';
 
 type CurrentChangeSource = 'new' | 'to' | 'undo' | 'redo';
 
 export type CurrentChangeListener = (source: CurrentChangeSource) => void;
 
-export class ProvenanceGraph extends ASerializable {
-  private nodes: Map<string, INode>;
+export class ProvenanceGraph implements IProvenanceGraph {
+  private eventManager = initEventManager<[IReadonlyProvenanceGraph]>();
+
+  static setup() {
+    return new ProvenanceGraph();
+  }
+
   private _current: INode;
+
+  nodes: Map<string, INode>;
   root: IRootNode;
-  currentChangeListeners: CurrentChangeListener[] = [];
 
   constructor() {
-    super();
     const root = RootNode.create();
     this.root = root;
     this._current = root;
@@ -26,15 +26,12 @@ export class ProvenanceGraph extends ASerializable {
     this.nodes.set(root.id, root);
   }
 
-  static setup() {
-    return new ProvenanceGraph();
-  }
-
-  addNode(node: INode, setCurrent: boolean = true) {
+  addNode(node: INode, setCurrent = true) {
     this.nodes.set(node.id, node);
+    this.eventManager.emit('add', this);
 
     if (setCurrent) {
-      this.changeCurrent(node, 'new');
+      this.current = node;
     }
   }
 
@@ -42,35 +39,21 @@ export class ProvenanceGraph extends ASerializable {
     return this._current;
   }
 
-  changeCurrent(node: INode | string, source: CurrentChangeSource) {
-    const target = typeof node === 'string' ? this.getNodeById(node) : node;
-
-    this._current = target;
-
-    this.currentChangeListeners.forEach((listener) => listener(source));
+  set current(node: INode) {
+    this._current = node;
+    this.eventManager.emit('current-change', this);
   }
 
-  addCurrentChangeListener(listener: CurrentChangeListener) {
-    this.currentChangeListeners.push(listener);
+  subscribe(
+    event: 'current-change' | 'add-node',
+    listener: (g: IReadonlyProvenanceGraph) => void
+  ) {
+    this.eventManager.subscribe(event, listener);
   }
 
   getNodeById(id: string) {
     const node = this.nodes.get(id);
     if (!node) throw new Error('Node does not exist');
     return node;
-  }
-
-  toJSON() {
-    const nodes: { [k: string]: any } = {};
-
-    this.nodes.forEach((node) => {
-      nodes[node.id] = node.toJSON();
-    });
-
-    return {
-      current: this.current.id,
-      root: this.root.id,
-      nodes,
-    };
   }
 }

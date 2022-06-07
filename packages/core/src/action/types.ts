@@ -1,4 +1,8 @@
-export type Action<K, DoArgs extends unknown[], UndoArgs extends unknown[]> = {
+export type Action<
+  K extends string = string,
+  DoArgs extends unknown[] = unknown[],
+  UndoArgs extends unknown[] = unknown[]
+> = {
   name: K;
   label: string;
   doArgs: DoArgs;

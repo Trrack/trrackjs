@@ -1,23 +1,32 @@
 import { Action } from '../../action';
-import { ANonRootNode, IActionNode, INode } from './types';
+import { getUUID } from '../../utils';
+import { IActionNode, INode, NodeID } from './types';
 
-export class ActionNode<K, D extends unknown[], U extends unknown[], R>
-  extends ANonRootNode
-  implements IActionNode<K, D, U, R>
-{
-  action: Action<K, D, U>;
-  type: 'ActionNode' = 'ActionNode';
-  results?: R;
+type ActionNodeCreationParams = {
+    label: string;
+    parent: INode;
+    action: Action;
+};
 
-  constructor(parent: INode, action: Action<K, D, U>, results?: R) {
-    super(parent, action.label);
-    this.action = action;
-    this.results = results;
-  }
+export class ActionNode implements IActionNode {
+    id: NodeID = getUUID();
+    type: 'ActionNode' = 'ActionNode';
+    children: INode[] = [];
+    createdOn = new Date();
 
-  static isActionNode<K, D extends unknown[], U extends unknown[], R>(
-    node: INode
-  ): node is ActionNode<K, D, U, R> {
-    return node.type === 'ActionNode';
-  }
+    constructor(
+        public readonly label: string,
+        public readonly parent: INode,
+        public readonly action: Action
+    ) {
+        parent.children.push(this);
+    }
+
+    get level(): number {
+        return this.parent.level + 1;
+    }
+
+    static create({ label, parent, action }: ActionNodeCreationParams) {
+        return new ActionNode(label, parent, action);
+    }
 }

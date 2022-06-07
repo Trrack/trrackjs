@@ -47,6 +47,7 @@
     "eslint-plugin-react": "7.29.4",
     "eslint-plugin-react-hooks": "4.5.0",
     "jest": "27.5.1",
+    "lineupjs": "^4.6.1",
     "nx": "14.1.9",
     "prettier": "^2.5.1",
     "react-hyper-tree": "^0.3.12",
