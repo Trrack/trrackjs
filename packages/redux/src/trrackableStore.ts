@@ -89,29 +89,18 @@ export function trrackableStore<
     })
   );
 
-  (window as any).provenance = () => {
-    console.group('Trrack');
-    console.log('Root', trrack.root.id);
-    console.log('Current', trrack.current.id);
-    console.table(trrack.getSerializedGraph().nodes);
-    console.groupEnd();
-  };
-
   function attachTrrack() {
     removeTrrackListener = startListening({
       predicate: (action) => {
         return isTrrackAction(action) ? false : true;
       },
       effect: (action, api) => {
-        trrack.apply(
-          {
-            name: 'apply',
-            label: action.type,
-            doArgs: [api.getState()],
-            undoArgs: [api.getOriginalState()],
-          },
-          true
-        );
+        trrack.apply({
+          name: 'apply',
+          label: action.type,
+          doArgs: [api.getState()],
+          undoArgs: [api.getOriginalState()],
+        });
       },
     });
   }

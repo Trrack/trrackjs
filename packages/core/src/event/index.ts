@@ -1,54 +1,62 @@
-type GenericArgs = readonly unknown[];
+type Args = readonly unknown[];
 
-type Listener<T extends GenericArgs> = (...args: T) => void;
+type EventArgumentMap<ArgArray extends Args> = { [key: string]: ArgArray };
 
-type UnsubscribeListener = () => void;
+type Listener<ArgArray extends Args> = (...args: ArgArray) => void;
 
-type EventManager<T extends GenericArgs> = {
-  subscribe: (event: string, eventListener: Listener<T>) => UnsubscribeListener;
-  emit: (event: string, ...args: T) => boolean;
-  getListeners: (event: string) => Listener<T>[];
-  clearEvent: (event: string) => void;
-};
+type Unsubscriber = () => void;
 
-export function initEventManager<T extends GenericArgs>(): EventManager<T> {
-  const events: Map<string, Listener<T>[]> = new Map();
-  return {
-    subscribe(event: string, listener: Listener<T>) {
-      let registeredListeners = events.get(event);
+// TODO: Fix argument inference
+export function initEventManager<
+    TEventMap extends EventArgumentMap<Args> = { [key: string]: any[] },
+    TEventKey extends keyof TEventMap = keyof TEventMap,
+    TEventArgs extends TEventMap[TEventKey] = TEventMap[TEventKey]
+>() {
+    const events: Map<TEventKey, Array<Listener<TEventArgs>>> = new Map();
 
-      if (!registeredListeners) {
-        registeredListeners = [];
-        events.set(event, registeredListeners);
-      }
+    return {
+        subscribe(
+            event: TEventKey,
+            listener: Listener<TEventArgs>
+        ): Unsubscriber {
+            let registeredListeners = events.get(event);
 
-      registeredListeners.push(listener);
+            if (!registeredListeners) {
+                registeredListeners = [];
+                events.set(event, registeredListeners);
+            }
 
-      return () => {
-        if (registeredListeners) {
-          registeredListeners.splice(registeredListeners.indexOf(listener), 1);
-        }
-      };
-    },
-    emit(event, ...args: T) {
-      const registeredListeners = events.get(event);
+            registeredListeners.push(listener);
 
-      if (registeredListeners)
-        registeredListeners.forEach((listener) => listener(...args));
+            return () => {
+                if (registeredListeners) {
+                    registeredListeners.splice(
+                        registeredListeners.indexOf(listener),
+                        1
+                    );
+                }
+            };
+        },
+        emit(event: TEventKey, ...args: TEventArgs) {
+            const registeredListeners = events.get(event);
 
-      return (
-        registeredListeners !== undefined && registeredListeners.length > 0
-      );
-    },
-    getListeners(event: string) {
-      const listeners = events.get(event);
+            if (registeredListeners) {
+                registeredListeners.forEach((listener) => listener(...args));
+                return true;
+            }
 
-      if (!listeners) throw new Error(`No listeners registered for ${event}`);
+            return false;
+        },
+        getListeners(event: TEventKey) {
+            const registeredListeners = events.get(event);
 
-      return listeners;
-    },
-    clearEvent(event: string) {
-      events.set(event, []);
-    },
-  };
+            if (!registeredListeners)
+                throw new Error('No registered listeners');
+
+            return registeredListeners;
+        },
+        clearEvent(event: TEventKey) {
+            events.set(event, []);
+        },
+    };
 }

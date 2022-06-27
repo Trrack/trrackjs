@@ -1,58 +1,42 @@
-type RegistryFunction = <T extends unknown[], R>(...args: T) => R;
-type ActionRecord<
-  T = any,
-  D extends RegistryFunction = any,
-  U extends RegistryFunction = any
-> = {
-  thisArg?: T;
-  action: D;
-  inverse: U;
-};
-export class RegistryEntry<
-  A extends ActionRecord = any,
-  T extends A['thisArg'] = A['thisArg'],
-  D extends A['action'] = A['action'],
-  U extends A['inverse'] = A['inverse']
-> {
-  private _thisArg: T;
-  private _action: D;
-  private _inverse: U;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ActionFunctionMap, ExplicitUndoRecord, IActionFunction, IActionRegistry, UndoFunction } from './types';
 
-  constructor({ action, inverse, thisArg }: A) {
-    this._thisArg = thisArg || null;
-    this._action = action;
-    this._inverse = inverse;
-  }
+export class ActionRegistry<T extends ActionFunctionMap>
+    implements IActionRegistry<T>
+{
+    private constructor(private _registry: T) {}
 
-  static create<T extends ActionRecord>(action: T) {
-    return new RegistryEntry(action);
-  }
+    register<
+        K extends string,
+        S extends IActionFunction<any>,
+        I extends UndoFunction<S> = UndoFunction<S>
+    >(
+        name: K,
+        action: S,
+        inverse?: I
+    ): IActionRegistry<(Record<K, S> & T) | (ExplicitUndoRecord<K, S, I> & T)> {
+        (this._registry as any)[name] = action;
+        if (!inverse) {
+            return this as unknown as IActionRegistry<Record<K, S> & T>;
+        } else {
+            (this._registry as any)[name] = action;
+            (this._registry as any)[`${name}_undo`] = inverse;
 
-  apply(...args: Parameters<D>): ReturnType<D> {
-    return this._action.apply(this._thisArg, ...args);
-  }
+            return this as unknown as IActionRegistry<
+                Record<K, S> & Record<`${K}_undo`, I> & T
+            >;
+        }
+    }
 
-  inverse(...args: Parameters<U>): ReturnType<RegistryFunction> {
-    return this._inverse.apply(this._thisArg, ...args);
-  }
-}
+    get registry() {
+        return this._registry;
+    }
 
-export class ActionRegistry<
-  Registry extends { [k: string]: RegistryEntry } = any
-> {
-  private registry: Registry;
+    get<K extends keyof T>(key: K): T[K] {
+        return this._registry[key];
+    }
 
-  constructor(registry: Registry) {
-    this.registry = registry;
-  }
-
-  get<K extends keyof Registry>(name: K) {
-    return this.registry[name];
-  }
-
-  static create<T extends { [k: string]: RegistryEntry }>(
-    registry: T
-  ): ActionRegistry<T> {
-    return new ActionRegistry(registry);
-  }
+    static init() {
+        return new ActionRegistry({});
+    }
 }

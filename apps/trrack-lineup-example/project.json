@@ -1,0 +1,70 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/trrack-lineup-example/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/trrack-lineup-example",
+        "compiler": "swc",
+        "index": "apps/trrack-lineup-example/src/index.html",
+        "baseHref": "/",
+        "main": "apps/trrack-lineup-example/src/main.ts",
+        "polyfills": "apps/trrack-lineup-example/src/polyfills.ts",
+        "tsConfig": "apps/trrack-lineup-example/tsconfig.app.json",
+        "assets": [
+          "apps/trrack-lineup-example/src/favicon.ico",
+          "apps/trrack-lineup-example/src/assets"
+        ],
+        "styles": ["apps/trrack-lineup-example/src/styles.css"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/trrack-lineup-example/src/environments/environment.ts",
+              "with": "apps/trrack-lineup-example/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/web:dev-server",
+      "options": {
+        "buildTarget": "trrack-lineup-example:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "trrack-lineup-example:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/trrack-lineup-example/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/trrack-lineup-example"],
+      "options": {
+        "jestConfig": "apps/trrack-lineup-example/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

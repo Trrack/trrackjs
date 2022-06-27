@@ -1,4 +1,4 @@
-import { Action } from '../../action/types';
+import { GenericArgs, TrrackAction } from '../../action/types';
 
 type NonRootNodeType = 'ActionNode' | 'StateNode';
 
@@ -24,14 +24,15 @@ export interface IRootNode extends INode {
     parent: null;
 }
 
-interface INonRootNode extends INode {
+export interface INonRootNode extends INode {
     type: NonRootNodeType;
     parent: INode;
 }
 
-export interface IActionNode extends INonRootNode {
+export interface IActionNode<D extends GenericArgs, U extends GenericArgs>
+    extends INonRootNode {
     type: 'ActionNode';
-    action: Action;
+    action: TrrackAction<D, U>;
 }
 
 export interface StateNode extends INonRootNode {

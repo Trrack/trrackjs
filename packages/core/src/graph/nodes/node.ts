@@ -1,6 +1,5 @@
 import { getUUID } from '../../utils';
-import { Listener } from '../../utils/IObservable';
-import { AObservable } from '../../utils/Observable';
+import { AObservable, Listener } from '../../utils/Observable';
 import { INode, NodeID, NodeType } from './types';
 
 type NodeEvents = 'add-child';

@@ -10,29 +10,29 @@ import { INonRootNode } from './nodes/types';
  * @returns least common ancestor of both current and destination nodes
  */
 function LCA(current: INode, destination: INode) {
-  let [source, target] = [current, destination];
+    let [source, target] = [current, destination];
 
-  if (source.level > target.level) {
-    [source, target] = [target, source];
-  }
+    if (source.level > target.level) {
+        [source, target] = [target, source];
+    }
 
-  let diff = target.level - source.level;
+    let diff = target.level - source.level;
 
-  while (RootNode.isNonRootNode(target) && diff !== 0) {
-    target = target.parent;
-    diff -= 1;
-  }
+    while (RootNode.isNonRootNode(target) && diff !== 0) {
+        target = target.parent;
+        diff -= 1;
+    }
 
-  if (source.id === target.id) {
+    if (source.id === target.id) {
+        return source;
+    }
+
+    while (source.id !== target.id) {
+        if (RootNode.isNonRootNode(source)) source = source.parent;
+        if (RootNode.isNonRootNode(target)) target = target.parent;
+    }
+
     return source;
-  }
-
-  while (source.id !== target.id) {
-    if (RootNode.isNonRootNode(source)) source = source.parent;
-    if (RootNode.isNonRootNode(target)) target = target.parent;
-  }
-
-  return source;
 }
 
 /**
@@ -42,30 +42,29 @@ function LCA(current: INode, destination: INode) {
  * @returns A string of node ids which indicate the path.
  */
 export function getPathToNode(current: INode, destination: INode) {
-  const lca = LCA(current, destination);
+    const lca = LCA(current, destination);
 
-  const pathFromSourceToLca: INode[] = [];
-  const pathFromTargetToLca: INode[] = [];
+    const pathFromSourceToLca: INode[] = [];
+    const pathFromTargetToLca: INode[] = [];
 
-  let [source, target] = [current, destination];
+    let [source, target] = [current, destination];
 
-  while (source !== lca) {
+    while (source !== lca) {
+        pathFromSourceToLca.push(source);
+        if (RootNode.isNonRootNode(source)) {
+            source = source.parent;
+        }
+    }
     pathFromSourceToLca.push(source);
-    if (RootNode.isNonRootNode(source)) {
-      source = source.parent;
-    }
-  }
-  pathFromSourceToLca.push(source);
 
-  while (target !== lca) {
-    pathFromTargetToLca.push(target);
-    if (RootNode.isNonRootNode(target)) {
-      target = <INonRootNode>target.parent;
+    while (target !== lca) {
+        pathFromTargetToLca.push(target);
+        if (RootNode.isNonRootNode(target)) {
+            target = <INonRootNode>target.parent;
+        }
     }
-  }
 
-  const path = [...pathFromSourceToLca, ...pathFromTargetToLca.reverse()];
-  return path;
+    return [...pathFromSourceToLca, ...pathFromTargetToLca.reverse()];
 }
 
 /**
@@ -77,13 +76,16 @@ export function getPathToNode(current: INode, destination: INode) {
  * Throw an error if both the nodes are disconnected
  */
 export function isNextNodeUp(source: INode, target: INode): boolean {
-  if (RootNode.isNonRootNode(source) && source.parent.id === target.id) {
-    return true;
-  } else if (RootNode.isNonRootNode(target) && target.parent.id === source.id) {
-    return false;
-  }
+    if (RootNode.isNonRootNode(source) && source.parent.id === target.id) {
+        return true;
+    } else if (
+        RootNode.isNonRootNode(target) &&
+        target.parent.id === source.id
+    ) {
+        return false;
+    }
 
-  throw new Error(
-    `Illegal use of function. Nodes ${source} and ${target} are not connected.`
-  );
+    throw new Error(
+        `Illegal use of function. Nodes ${source} and ${target} are not connected.`
+    );
 }

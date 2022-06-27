@@ -1,5 +1,5 @@
 import { getUUID } from '../../utils';
-import { INode, IRootNode, NodeID } from './types';
+import { INode, INonRootNode, IRootNode, NodeID } from './types';
 
 export class RootNode implements IRootNode {
     id: NodeID = getUUID();
@@ -12,5 +12,13 @@ export class RootNode implements IRootNode {
 
     static create() {
         return new RootNode();
+    }
+
+    static isRootNode(node: INode): node is IRootNode {
+        return node.type === 'RootNode';
+    }
+
+    static isNonRootNode(node: INode): node is INonRootNode {
+        return node.type !== 'RootNode';
     }
 }
