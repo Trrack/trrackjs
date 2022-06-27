@@ -41,7 +41,17 @@ export function initEventManager<
             const registeredListeners = events.get(event);
 
             if (registeredListeners) {
-                registeredListeners.forEach((listener) => listener(...args));
+                registeredListeners.forEach(
+                    (listener) =>
+                        new Promise<void>((res, rej) => {
+                            try {
+                                listener(...args);
+                                res();
+                            } catch (err) {
+                                rej();
+                            }
+                        })
+                );
                 return true;
             }
 

@@ -2,7 +2,7 @@ import { INode, IRootNode } from './nodes';
 
 export interface IProvenanceGraph {
     nodes: Map<string, INode>;
-    current: INode;
+    readonly current: INode;
     root: IRootNode;
     addNode(node: INode): void;
     getNodeById(id: string): INode;

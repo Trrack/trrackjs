@@ -2,18 +2,27 @@ import { initEventManager } from '../event';
 import { INode, IRootNode, RootNode } from './nodes';
 import { IProvenanceGraph } from './types';
 
-type CurrentChangeSource = 'new' | 'to' | 'undo' | 'redo';
+type CurrentChangeSource = 'add' | 'to' | 'undo' | 'redo';
 
-export type CurrentChangeListener = (source: CurrentChangeSource) => void;
+export type CurrentChangeListener = (
+    current: INode,
+    opts?: {
+        source?: CurrentChangeSource;
+        previousCurrentNode?: INode;
+        path?: INode[];
+    }
+) => void;
+
+type ProvenanceGraphEvents = {
+    currentChanged: Parameters<CurrentChangeListener>;
+};
 
 export class ProvenanceGraph implements IProvenanceGraph {
     static setup() {
         return new ProvenanceGraph();
     }
 
-    private eventManager = initEventManager<{
-        currentChanged: [current: INode];
-    }>();
+    private eventManager = initEventManager<ProvenanceGraphEvents>();
 
     private _current: INode;
 
@@ -29,27 +38,43 @@ export class ProvenanceGraph implements IProvenanceGraph {
     }
 
     addNode(node: INode, setCurrent = true) {
+        if (node instanceof RootNode) {
+            throw new Error('Cannot add a root node to the graph manually!');
+        }
+
         this.nodes.set(node.id, node);
 
         if (setCurrent) {
-            this.current = node;
+            this.changeCurrent(node, 'add');
         }
+    }
+
+    changeCurrent(to: INode, source: CurrentChangeSource, path?: INode[]) {
+        if (this.current === to) return;
+
+        const oldCurrent = this.current;
+
+        this._current = to;
+
+        this.eventManager.emit('currentChanged', to, {
+            source,
+            previousCurrentNode: oldCurrent,
+            path,
+        });
     }
 
     get current() {
         return this._current;
     }
 
-    set current(node: INode) {
-        console.log('Hello');
-        this._current = node;
-    }
-
-    subscribe(ev: any, listener: (node: INode) => void) {
+    subscribe(
+        ev: keyof ProvenanceGraphEvents,
+        listener: CurrentChangeListener
+    ) {
         this.eventManager.subscribe(ev, listener);
     }
 
-    clear(ev: any) {
+    clear(ev: keyof ProvenanceGraphEvents) {
         this.eventManager.clearEvent(ev);
     }
 
