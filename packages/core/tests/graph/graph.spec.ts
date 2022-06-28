@@ -1,4 +1,4 @@
-import { ActionNode, ProvenanceGraph, RootNode } from '../../src';
+import { ActionNode, ActionRegistry, ProvenanceGraph, RootNode, Trrack } from '../../src';
 
 describe('Provenance Graph', () => {
     describe('Graph creation', () => {
@@ -103,6 +103,60 @@ describe('Provenance Graph', () => {
             const newNode = RootNode.create();
 
             expect(() => graph.addNode(newNode)).toThrow();
+        });
+
+        it('Test', () => {
+            let count = 0;
+            const registry = ActionRegistry.init()
+                .register('add', (toAdd: number) => {
+                    count += toAdd;
+
+                    return {
+                        inverse: {
+                            f_id: 'sub',
+                            parameters: [toAdd],
+                        },
+                    };
+                })
+                .register('sub', (toRemove: number) => {
+                    count -= toRemove;
+
+                    return {
+                        inverse: {
+                            f_id: 'add',
+                            parameters: [toRemove],
+                        },
+                    };
+                });
+
+            const trrack = Trrack.setup(registry);
+
+            console.log({ count });
+
+            trrack.apply({
+                action: 'add',
+                label: 'Add 2',
+                args: [2],
+            });
+
+            console.log({ count });
+
+            trrack.apply({
+                action: 'add',
+                label: 'Add 3',
+                args: [3],
+            });
+
+            console.log({ count });
+
+            trrack.undo();
+            console.log({ count });
+            trrack.undo();
+
+            console.log({ count });
+            console.log('Hello');
+
+            expect(true).toBeTruthy();
         });
     });
 });

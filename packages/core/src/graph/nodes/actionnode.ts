@@ -17,7 +17,7 @@ export class ActionNode<
     UDA extends string,
     D extends GenericArgs,
     U extends GenericArgs
-> implements IActionNode<D, U>
+> implements IActionNode<DA, UDA, D, U>
 {
     id: NodeID = getUUID();
     type: 'ActionNode' = 'ActionNode';

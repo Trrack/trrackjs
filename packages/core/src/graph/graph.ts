@@ -1,21 +1,6 @@
 import { initEventManager } from '../event';
 import { INode, IRootNode, RootNode } from './nodes';
-import { IProvenanceGraph } from './types';
-
-type CurrentChangeSource = 'add' | 'to' | 'undo' | 'redo';
-
-export type CurrentChangeListener = (
-    current: INode,
-    opts?: {
-        source?: CurrentChangeSource;
-        previousCurrentNode?: INode;
-        path?: INode[];
-    }
-) => void;
-
-type ProvenanceGraphEvents = {
-    currentChanged: Parameters<CurrentChangeListener>;
-};
+import { CurrentChangeListener, CurrentChangeSource, IProvenanceGraph, ProvenanceGraphEvents } from './types';
 
 export class ProvenanceGraph implements IProvenanceGraph {
     static setup() {
@@ -23,18 +8,24 @@ export class ProvenanceGraph implements IProvenanceGraph {
     }
 
     private eventManager = initEventManager<ProvenanceGraphEvents>();
-
     private _current: INode;
-
-    nodes: Map<string, INode>;
-    root: IRootNode;
+    private nodes: Map<string, INode>;
+    private _root: IRootNode;
 
     constructor() {
         const root = RootNode.create();
-        this.root = root;
+        this._root = root;
         this._current = root;
         this.nodes = new Map();
         this.nodes.set(root.id, root);
+    }
+
+    get current() {
+        return this._current;
+    }
+
+    get root() {
+        return this._root;
     }
 
     addNode(node: INode, setCurrent = true) {
@@ -49,22 +40,24 @@ export class ProvenanceGraph implements IProvenanceGraph {
         }
     }
 
-    changeCurrent(to: INode, source: CurrentChangeSource, path?: INode[]) {
-        if (this.current === to) return;
-
-        const oldCurrent = this.current;
-
-        this._current = to;
-
-        this.eventManager.emit('currentChanged', to, {
-            source,
-            previousCurrentNode: oldCurrent,
-            path,
-        });
+    moveCurrent(to: INode, source: CurrentChangeSource): void {
+        this.changeCurrent(to, source);
     }
 
-    get current() {
-        return this._current;
+    getNodeById(id: string) {
+        const node = this.nodes.get(id);
+        if (!node) throw new Error('Node does not exist');
+        return node;
+    }
+
+    get(serialized = false) {
+        console.log(serialized);
+
+        return {
+            current: this._current,
+            root: this._root,
+            nodes: this.nodes,
+        };
     }
 
     subscribe(
@@ -78,9 +71,21 @@ export class ProvenanceGraph implements IProvenanceGraph {
         this.eventManager.clearEvent(ev);
     }
 
-    getNodeById(id: string) {
-        const node = this.nodes.get(id);
-        if (!node) throw new Error('Node does not exist');
-        return node;
+    private changeCurrent(
+        to: INode,
+        source: CurrentChangeSource,
+        path?: INode[]
+    ) {
+        if (this._current === to) return;
+
+        const oldCurrent = this._current;
+
+        this._current = to;
+
+        this.eventManager.emit('currentChanged', to, {
+            source,
+            previousCurrentNode: oldCurrent,
+            path,
+        });
     }
 }

@@ -1,9 +1,10 @@
-import { ActionRegistry, RegistryEntry, Trrack } from '@trrack/core';
+import { ActionRegistry, IActionRegistry, Trrack } from '@trrack/core';
 import LineUp, { DataBuilder, Ranking } from 'lineupjs';
 
 export class LineupManager {
   lineup: LineUp;
-  _trrack: Trrack<any>;
+  _trrack: Trrack<any, any> = Trrack.setup({} as any);
+  private registry: IActionRegistry<any>;
   private addedEvents: string[] = [];
 
   private shouldBufferActions = false;
@@ -16,10 +17,9 @@ export class LineupManager {
         const trrackActionExecutor = () => {
           this.trrack.apply(
             {
-              name: Ranking.EVENT_SORT_CRITERIA_CHANGED,
+              action: Ranking.EVENT_SORT_CRITERIA_CHANGED,
               label: 'Sort',
-              doArgs: [curr],
-              undoArgs: [prev],
+              args: [curr],
             },
             true
           );
@@ -46,7 +46,7 @@ export class LineupManager {
 
   constructor(public readonly builder: DataBuilder, node: HTMLElement) {
     this.lineup = builder.build(node);
-    this.trrack = Trrack.initialize({} as any);
+    this.registry = ActionRegistry.init();
 
     this.lineup.on('dialogOpened', () => {
       this.shouldBufferActions = true;
@@ -97,20 +97,33 @@ export class LineupManager {
       const eventHandler = this.handlers.get(event);
       const execute = this.executors.get(event);
 
-      afr[event] = RegistryEntry.create({
-        action: (arg: any) => {
+      this.registry = this.registry
+        .register(event, (arg: any) => {
           this.firstRanking.on(event, null);
           execute(arg);
           this.firstRanking.on(event, eventHandler);
-        },
-        inverse: (arg: any) => {
+
+          return {
+            inverse: {
+              f_id: `${event}_undo`,
+              parameters: [],
+            },
+          };
+        })
+        .register(`${event}_undo`, (arg: any) => {
           this.firstRanking.on(event, null);
           execute(arg);
           this.firstRanking.on(event, eventHandler);
-        },
-      });
+
+          return {
+            inverse: {
+              f_id: event,
+              parameters: [],
+            },
+          };
+        });
     });
 
-    this.trrack = Trrack.initialize(ActionRegistry.create(afr));
+    this.trrack.updateRegistry(this.registry);
   }
 }

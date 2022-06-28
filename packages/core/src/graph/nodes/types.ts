@@ -29,10 +29,14 @@ export interface INonRootNode extends INode {
     parent: INode;
 }
 
-export interface IActionNode<D extends GenericArgs, U extends GenericArgs>
-    extends INonRootNode {
+export interface IActionNode<
+    DA extends string,
+    UDA extends string,
+    D extends GenericArgs,
+    U extends GenericArgs
+> extends INonRootNode {
     type: 'ActionNode';
-    action: TrrackAction<D, U>;
+    action: TrrackAction<DA, UDA, D, U>;
 }
 
 export interface StateNode extends INonRootNode {
