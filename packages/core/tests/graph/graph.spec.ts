@@ -3,29 +3,27 @@ import { ActionNode, ActionRegistry, ProvenanceGraph, RootNode, Trrack } from '.
 describe('Provenance Graph', () => {
     describe('Graph creation', () => {
         it('should create a provenance graph instance', () => {
-            const graph = new ProvenanceGraph();
+            const graph = ProvenanceGraph.setup();
 
             expect(graph).toBeInstanceOf(ProvenanceGraph);
         });
 
         it('should have only one node', () => {
-            const graph = new ProvenanceGraph();
-            const nodes = Array.from(graph.nodes.values());
-            expect(nodes).toHaveLength(1);
+            const graph = ProvenanceGraph.setup();
+            expect(graph.n_size).toBe(1);
         });
 
         it('the only node should be root', () => {
-            const graph = new ProvenanceGraph();
-            const nodes = Array.from(graph.nodes.values());
-            expect(nodes).toHaveLength(1);
-            const node = nodes[0];
+            const graph = ProvenanceGraph.setup();
+            expect(graph.n_size).toBe(1);
+            const node = graph.node(graph.current.id);
 
             expect(node.id).toEqual(graph.root.id);
             expect(node).toBeInstanceOf(RootNode);
         });
 
         it('root node should also be the current node', () => {
-            const graph = new ProvenanceGraph();
+            const graph = ProvenanceGraph.setup();
 
             expect(graph.current).toBe(graph.root);
         });
@@ -33,7 +31,7 @@ describe('Provenance Graph', () => {
 
     describe('Graph Traversal', () => {
         it('should be able to add node to graph', () => {
-            const graph = new ProvenanceGraph();
+            const graph = ProvenanceGraph.setup();
             const newNode = ActionNode.create({
                 parent: graph.current,
                 action: {
@@ -55,7 +53,7 @@ describe('Provenance Graph', () => {
         });
 
         it('newly added node should be current node', () => {
-            const graph = new ProvenanceGraph();
+            const graph = ProvenanceGraph.setup();
             const newNode = ActionNode.create({
                 parent: graph.current,
                 action: {
@@ -77,7 +75,7 @@ describe('Provenance Graph', () => {
         });
 
         it('should be able to add ActionNode', () => {
-            const graph = new ProvenanceGraph();
+            const graph = ProvenanceGraph.setup();
             const newNode = ActionNode.create({
                 parent: graph.current,
                 action: {
@@ -99,13 +97,15 @@ describe('Provenance Graph', () => {
         });
 
         it('should not be able to add RootNode', () => {
-            const graph = new ProvenanceGraph();
+            const graph = ProvenanceGraph.setup();
             const newNode = RootNode.create();
 
             expect(() => graph.addNode(newNode)).toThrow();
         });
 
         it('Test', () => {
+            if (jest) return;
+
             let count = 0;
             const registry = ActionRegistry.init()
                 .register('add', (toAdd: number) => {

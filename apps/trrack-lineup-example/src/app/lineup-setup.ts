@@ -1,6 +1,7 @@
-import { buildCategoricalColumn, builder as bld, buildNumberColumn, buildStringColumn, Ranking } from 'lineupjs';
+import { Trrack } from '@trrack/core';
+import { buildCategoricalColumn, builder as bld, buildNumberColumn, buildStringColumn } from 'lineupjs';
 
-import { LineupManager } from './lineup-manager';
+import { LineUpManager } from './lineup-manager';
 
 const arr: any[] = [];
 const cats = ['c1', 'c2', 'c3'];
@@ -22,18 +23,48 @@ export function setup(node: HTMLElement) {
     .column(buildCategoricalColumn('cat2', cats))
     .column(buildNumberColumn('a'));
 
-  const lineup = new LineupManager(builder, node);
-  lineup.trrackLineUpEvent(Ranking.EVENT_SORT_CRITERIA_CHANGED);
+  let trrack = Trrack.init()
+    .register('add', () => {
+      return {
+        inverse: {
+          f_id: 'add',
+          parameters: [],
+        },
+      };
+    })
+    .register('sub', () => {
+      return {
+        inverse: {
+          f_id: 'sub',
+          parameters: [],
+        },
+      };
+    });
+
+  const manager = LineUpManager.setup({
+    initialInstance: {
+      id: 'first',
+      instance: builder.build(node),
+    },
+  });
+
+  manager.all((inst) => {
+    trrack = inst.register(trrack);
+  });
+
+  console.table((trrack as any).registry._registry);
+
+  // lineup.trrackLineUpEvent(Ranking.EVENT_SORT_CRITERIA_CHANGED);
 
   document.querySelector<HTMLButtonElement>('#undo').onclick = (e) => {
-    lineup.trrack.undo();
+    trrack.undo();
   };
 
   document.querySelector<HTMLButtonElement>('#redo').onclick = (e) => {
-    lineup.trrack.redo();
+    trrack.undo();
   };
 
   document.querySelector<HTMLButtonElement>('#log').onclick = (e) => {
-    console.table(lineup.trrack.graph.nodes);
+    console.table((trrack as any).graph.nodes);
   };
 }

@@ -28,8 +28,10 @@ export type ProvenanceGraphEvents = {
 export interface IProvenanceGraph {
     readonly current: INode;
     readonly root: IRootNode;
+    readonly nodes: Array<INode>;
+    n_size: number;
     addNode(node: INode): void;
-    getNodeById(id: string): INode;
+    node(id?: string): INode;
     get(
         serialized?: boolean
     ): ReadonlyProvenanceGraph | SerializedProvenanceGraph;

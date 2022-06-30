@@ -33,15 +33,15 @@ export interface IActionRegistry<T extends ActionFunctionMap> {
         action: S
     ): IActionRegistry<Record<K, S> & T>;
 
-    register<
-        K extends string,
-        S extends IActionFunction<any>,
-        I extends UndoFunction<S> = UndoFunction<S>
-    >(
-        name: K,
-        action: S,
-        inverse: I
-    ): IActionRegistry<ExplicitUndoRecord<K, S, I> & T>;
+    // register<
+    //     K extends string,
+    //     S extends IActionFunction<any>,
+    //     I extends UndoFunction<S> = UndoFunction<S>
+    // >(
+    //     name: K,
+    //     action: S,
+    //     inverse: I
+    // ): IActionRegistry<ExplicitUndoRecord<K, S, I> & T>;
     get<K extends keyof T>(key: K): T[K];
 }
 

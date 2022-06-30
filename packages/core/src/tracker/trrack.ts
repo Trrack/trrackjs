@@ -1,11 +1,11 @@
-import { ActionFunctionMap, IActionRegistry, TrrackAction } from '../action';
+import { ActionRegistry, IActionFunction, IActionRegistry, TrrackAction } from '../action';
 import { ActionNode, getPathToNode, isNextNodeUp, ProvenanceGraph } from '../graph';
 import { INode } from '../graph/nodes/types';
 import { IProvenanceGraph } from '../graph/types';
 import { ApplyActionParams } from './types';
 
 export class Trrack<
-    T extends IActionRegistry<ActionFunctionMap>,
+    T extends IActionRegistry<any>,
     R extends Exclude<keyof T['registry'], `${string}_undo`> = Exclude<
         keyof T['registry'],
         `${string}_undo`
@@ -13,19 +13,45 @@ export class Trrack<
 > {
     private registry: T;
     private graph: IProvenanceGraph;
-    private constructor(reg: T) {
-        this.registry = reg;
-        this.graph = ProvenanceGraph.setup();
+    private constructor(opts: { registry?: T; graph?: IProvenanceGraph } = {}) {
+        const { registry = null, graph = null } = opts;
+
+        this.registry = registry
+            ? registry
+            : (ActionRegistry.init() as any as T);
+
+        this.graph = graph ? graph : ProvenanceGraph.setup();
     }
 
-    static setup<T extends IActionRegistry<ActionFunctionMap>>(reg: T) {
-        return new Trrack(reg);
+    static _setup<T extends IActionRegistry<any>>(
+        opts: { registry?: T; graph?: IProvenanceGraph } = {}
+    ) {
+        return new Trrack(opts);
+    }
+
+    static init() {
+        return Trrack._setup();
+    }
+
+    register<K extends string, S extends IActionFunction<any>>(
+        name: K,
+        action: S
+    ) {
+        const registry = this.registry.register(name, action);
+
+        return Trrack._setup({
+            registry,
+            graph: this.graph,
+        });
     }
 
     apply<K extends R, Args extends Parameters<T['registry'][K]>>(
         opts: ApplyActionParams<K, Args>
     ) {
-        const action = this.registry.get(opts.action as string);
+        const action = this.registry?.get(opts.action as string);
+
+        if (!action) throw new Error('Registry or Action undefined');
+
         const results = action(...(opts.args as any));
 
         const newActionNode = ActionNode.create({
@@ -46,10 +72,6 @@ export class Trrack<
         this.graph.addNode(newActionNode);
 
         return results;
-    }
-
-    updateRegistry<K extends T>(registry: K) {
-        this.registry = registry;
     }
 
     to(target: INode, source: 'undo' | 'redo' | 'to') {
@@ -91,7 +113,9 @@ export class Trrack<
                 direction === 'up' ? action.undo.name : action.do.name;
             const actionArgs =
                 direction === 'up' ? action.undo.args : action.do.args;
-            const actionFn = this.registry.get(actionName);
+            const actionFn = this.registry?.get(actionName);
+
+            if (!actionFn) throw new Error('ActionFn not found');
 
             actionFn(...actionArgs);
         });
