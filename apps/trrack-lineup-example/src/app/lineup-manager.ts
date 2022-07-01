@@ -11,12 +11,12 @@ export class LineUpManager {
     return new LineUpManager(opts?.initialInstance);
   }
 
-  instances: Map<string, LineUpInstanceManager> = new Map();
+  instances: Map<string, LineUpInstance> = new Map();
 
   private constructor(initial?: { id: string; instance: LineUp }) {
     if (initial) {
       const { id, instance } = initial;
-      this.instances.set(id, LineUpInstanceManager.create(id, instance));
+      this.instances.set(id, LineUpInstance.create(id, instance));
     }
   }
 
@@ -24,10 +24,10 @@ export class LineUpManager {
     if (this.instances.has(id))
       throw new Error('LineUp instance with this id already exists');
 
-    this.instances.set(id, LineUpInstanceManager.create(id, instance));
+    this.instances.set(id, LineUpInstance.create(id, instance));
   }
 
-  all(fn: (instance: LineUpInstanceManager) => void) {
+  all(fn: (instance: LineUpInstance) => void) {
     Array.from(this.instances.values()).forEach((i) => {
       console.group(i.id);
       fn(i);
@@ -40,27 +40,65 @@ export class LineUpManager {
 const events = [Ranking.EVENT_SORT_CRITERIA_CHANGED];
 
 class LineUpRanking {
-  static create(ranking: Ranking) {
-    return new LineUpRanking(ranking);
+  static create(ranking: Ranking, lineup: LineUpInstance) {
+    return new LineUpRanking(ranking, lineup);
   }
 
-  private constructor(public readonly ranking: Ranking) {}
+  static handleSort(trrack: Trrack<any>, eventId: string) {
+    return (previous: any, current: any) => {
+      trrack.apply({
+        action: eventId,
+        label: `Set Sort`,
+        args: [current],
+        undoArgs: [previous],
+      });
+    };
+  }
+
+  private constructor(
+    public readonly ranking: Ranking,
+    public readonly lineup: LineUpInstance
+  ) {}
+
+  register<T extends IActionRegistry<any>>(trrack: Trrack<T>) {
+    const eventId = `${this.lineup.id}-${this.ranking.id}-${Ranking.EVENT_SORT_CRITERIA_CHANGED}`;
+    this.ranking.on(
+      `${this.lineup.id}-${this.ranking.id}-${Ranking.EVENT_SORT_CRITERIA_CHANGED}`,
+      LineUpRanking.handleSort(trrack, eventId)
+    );
+
+    return trrack.register(eventId, (sortCriteria: any) => {
+      this.ranking.on(Ranking.EVENT_SORT_CRITERIA_CHANGED, null);
+      this.ranking.setSortCriteria(sortCriteria);
+      this.ranking.on(
+        Ranking.EVENT_SORT_CRITERIA_CHANGED,
+        LineUpRanking.handleSort(trrack, eventId)
+      );
+
+      return {
+        inverse: {
+          f_id: eventId,
+          parameters: [],
+        },
+      };
+    });
+  }
 
   get id() {
     return this.ranking.id;
   }
 }
 
-class LineUpInstanceManager {
+class LineUpInstance {
   static create(id: string, instance: LineUp) {
-    return new LineUpInstanceManager(id, instance);
+    return new LineUpInstance(id, instance);
   }
 
   private rankings: Map<string, LineUpRanking> = new Map();
 
   constructor(public readonly id: string, public readonly instance: LineUp) {
     this.dataProvider.getRankings().forEach((r) => {
-      this.rankings.set(r.id, LineUpRanking.create(r));
+      this.rankings.set(r.id, LineUpRanking.create(r, this));
     });
   }
 
@@ -69,9 +107,11 @@ class LineUpInstanceManager {
   }
 
   register<T extends IActionRegistry<any>>(trrack: Trrack<T>) {
-    const t = trrack;
+    this.rankings.forEach((ranking) => {
+      trrack = ranking.register(trrack) as any;
+    });
 
-    return t;
+    return trrack;
   }
 
   print() {

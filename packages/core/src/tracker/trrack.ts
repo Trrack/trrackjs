@@ -1,4 +1,4 @@
-import { ActionRegistry, IActionFunction, IActionRegistry, TrrackAction } from '../action';
+import { ActionRegistry, GenericArgs, IActionFunction, IActionRegistry, TrrackAction } from '../action';
 import { ActionNode, getPathToNode, isNextNodeUp, ProvenanceGraph } from '../graph';
 import { INode } from '../graph/nodes/types';
 import { IProvenanceGraph } from '../graph/types';
@@ -45,9 +45,11 @@ export class Trrack<
         });
     }
 
-    apply<K extends R, Args extends Parameters<T['registry'][K]>>(
-        opts: ApplyActionParams<K, Args>
-    ) {
+    apply<
+        K extends R,
+        Args extends Parameters<T['registry'][K]>,
+        UndoArgs extends GenericArgs
+    >(opts: ApplyActionParams<K, Args, UndoArgs>) {
         const action = this.registry?.get(opts.action as string);
 
         if (!action) throw new Error('Registry or Action undefined');
@@ -64,7 +66,9 @@ export class Trrack<
                 },
                 undo: {
                     name: results.inverse.f_id,
-                    args: results.inverse.parameters,
+                    args: opts.undoArgs
+                        ? opts.undoArgs
+                        : results.inverse.parameters,
                 },
             },
         });

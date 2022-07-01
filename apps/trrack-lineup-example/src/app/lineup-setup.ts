@@ -5,7 +5,7 @@ import { LineUpManager } from './lineup-manager';
 
 const arr: any[] = [];
 const cats = ['c1', 'c2', 'c3'];
-for (let i = 0; i < 100; ++i) {
+for (let i = 0; i < 10000; ++i) {
   arr.push({
     a: Math.random() * 10,
     d: 'Row ' + i,
@@ -23,23 +23,7 @@ export function setup(node: HTMLElement) {
     .column(buildCategoricalColumn('cat2', cats))
     .column(buildNumberColumn('a'));
 
-  let trrack = Trrack.init()
-    .register('add', () => {
-      return {
-        inverse: {
-          f_id: 'add',
-          parameters: [],
-        },
-      };
-    })
-    .register('sub', () => {
-      return {
-        inverse: {
-          f_id: 'sub',
-          parameters: [],
-        },
-      };
-    });
+  let trrack = Trrack.init();
 
   const manager = LineUpManager.setup({
     initialInstance: {
