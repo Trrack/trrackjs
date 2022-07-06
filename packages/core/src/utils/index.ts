@@ -1,2 +1,2 @@
-export * from './uuid-generator';
-export * from './version';
+export * from './id';
+export * from './generic-args';

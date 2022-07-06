@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "type": "commonjs",
   "dependencies": {
+    "omnibus-rxjs": "^1.2.2",
+    "rxjs": "^7.5.5",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
