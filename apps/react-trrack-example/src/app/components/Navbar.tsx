@@ -10,13 +10,13 @@ export function Navbar() {
 
   return (
     <>
-      <AppBar sx={{ bgcolor: "white" }}>
+      <AppBar sx={{ bgcolor: 'white' }}>
         <Toolbar>
           <Typography color="black" variant="h6" sx={{ flexGrow: 1 }}>
             Action based tracking with React
           </Typography>
           <Button
-            sx={{ margin: "0.2em" }}
+            sx={{ margin: '0.2em' }}
             variant="contained"
             onClick={() => {
               const taskNumber = Math.floor(Math.random() * 100);
@@ -28,17 +28,16 @@ export function Navbar() {
                 completed: false,
               };
               trrack.apply({
-                name: "add",
+                name: 'add',
                 label: `Add task: ${taskNumber}`,
-                doArgs: [task],
-                undoArgs: [task],
+                args: [task],
               });
             }}
           >
             Add Random Task
           </Button>
           <Button
-            sx={{ margin: "0.2em" }}
+            sx={{ margin: '0.2em' }}
             variant="contained"
             startIcon={<UndoIcon />}
             disabled={isAtRoot}
@@ -47,7 +46,7 @@ export function Navbar() {
             Undo
           </Button>
           <Button
-            sx={{ margin: "0.2em" }}
+            sx={{ margin: '0.2em' }}
             variant="contained"
             startIcon={<RedoIcon />}
             disabled={isAtLatest}

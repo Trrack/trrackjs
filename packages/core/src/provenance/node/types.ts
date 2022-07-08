@@ -34,6 +34,10 @@ export class ProvenanceNodeUtils {
         return node.type === 'Root';
     }
 
+    static isNonRoot(node: IProvenanceNode): node is INonRootNode {
+        return node.type !== 'Root';
+    }
+
     static isAction(node: IProvenanceNode): node is IActionNode {
         return node.type === 'Action';
     }

@@ -13,68 +13,58 @@ function App() {
   const { addAction } = trrack;
 
   useEffect(() => {
-    addAction('add', {
-      action(task: Task) {
-        setTask((tasks) => [...tasks, task]);
-      },
-      inverse(task: Task) {
-        setTask((tasks) => tasks.filter((t) => t.id !== task.id));
-      },
+    addAction('add', (task: Task) => {
+      setTask((t) => [...t, task]);
+      return {
+        name: 'remove',
+        args: [task],
+      };
     });
 
-    addAction('complete', {
-      action(task: Task) {
-        setTask((tasks) => {
-          const idx = tasks.findIndex((t) => t.id === task.id);
+    addAction('remove', (task: Task) => {
+      setTask((t) => t.filter((i) => i.id !== task.id));
 
-          if (idx === -1) return tasks;
-
-          tasks[idx].completed = true;
-
-          return [...tasks];
-        });
-      },
-      inverse(task: Task) {
-        setTask((tasks) => {
-          const idx = tasks.findIndex((t) => t.id === task.id);
-
-          if (idx === -1) return tasks;
-
-          tasks[idx].completed = false;
-
-          return [...tasks];
-        });
-      },
+      return {
+        name: 'add',
+        args: [task],
+      };
     });
 
-    addAction('uncomplete', {
-      action(task: Task) {
-        setTask((tasks) => {
-          const idx = tasks.findIndex((t) => t.id === task.id);
+    addAction('complete', (task: Task) => {
+      setTask((tasks) => {
+        const idx = tasks.findIndex((t) => t.id === task.id);
+        if (idx === -1) return tasks;
 
-          if (idx === -1) return tasks;
+        tasks[idx].completed = true;
 
-          tasks[idx].completed = false;
+        return tasks;
+      });
 
-          return [...tasks];
-        });
-      },
-      inverse(task: Task) {
-        setTask((tasks) => {
-          const idx = tasks.findIndex((t) => t.id === task.id);
+      return {
+        name: 'uncomplete',
+        args: [task],
+      };
+    });
 
-          if (idx === -1) return tasks;
+    addAction('uncomplete', (task: Task) => {
+      setTask((tasks) => {
+        const idx = tasks.findIndex((t) => t.id === task.id);
+        if (idx === -1) return tasks;
 
-          tasks[idx].completed = true;
+        tasks[idx].completed = false;
 
-          return [...tasks];
-        });
-      },
+        return tasks;
+      });
+
+      return {
+        name: 'complete',
+        args: [task],
+      };
     });
   }, [addAction]);
 
   const { required, handlers } = useTreeState({
-    data: trrack.trrack.tree,
+    data: trrack.trrack.tree(),
     id: 'test',
     defaultOpened: true,
   });
@@ -104,15 +94,13 @@ function App() {
                         trrack.trrack.apply({
                           name: 'uncomplete',
                           label: `Mark ${task.desc} as not done`,
-                          doArgs: [task],
-                          undoArgs: [task],
+                          args: [task],
                         });
                       else
                         trrack.trrack.apply({
                           name: 'complete',
                           label: `Mark ${task.desc} as done`,
-                          doArgs: [task],
-                          undoArgs: [task],
+                          args: [task],
                         });
                     }}
                   />

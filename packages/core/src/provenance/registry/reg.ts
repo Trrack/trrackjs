@@ -37,7 +37,7 @@ export class ActionRegistry<T extends ActionFunctionMap>
         any
     > {
         const action = this.get(name);
-        const results = action(...(args as any[]));
+        const actionResult = action(...(args as any[]));
 
         return {
             do: {
@@ -45,7 +45,7 @@ export class ActionRegistry<T extends ActionFunctionMap>
                 args,
             },
             undo: {
-                ...results,
+                ...actionResult,
             },
         };
     }

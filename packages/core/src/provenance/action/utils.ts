@@ -1,5 +1,5 @@
 import { IActionRegistry } from '..';
-import { ApplyActionObject, TrrackAction } from './types';
+import { TrrackAction } from './types';
 
 type RegistryType<T> = T extends IActionRegistry<infer R> ? R : never;
 
@@ -10,16 +10,26 @@ export class ActionUtils {
         );
     }
 
-    static apply<
-        T extends IActionRegistry<any>,
-        R extends RegistryType<T>,
-        K extends keyof R
-    >(
-        registry: T,
-        actionObject: ApplyActionObject<R[K], Parameters<R[K]>>
-    ): TrrackAction<any, any, any, any> {
-        const action = registry.get(actionObject.name);
-        const result = action(...(actionObject.args as any));
-        return {} as any;
+    static createTrrackAction({
+        doName,
+        doArgs = [],
+        undoName = doName,
+        undoArgs = doArgs,
+    }: {
+        doName: string;
+        doArgs?: any[];
+        undoName?: string;
+        undoArgs?: any[];
+    }): TrrackAction {
+        return {
+            do: {
+                name: doName,
+                args: doArgs,
+            },
+            undo: {
+                name: undoName,
+                args: undoArgs,
+            },
+        };
     }
 }

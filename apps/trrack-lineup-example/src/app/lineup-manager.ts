@@ -1,240 +1,105 @@
-import { IActionRegistry, Trrack } from '@trrack/core';
+import { ActionUtils, Trrack } from '@trrack/core';
 import LineUp, { Ranking } from 'lineupjs';
 
-export class LineUpManager {
-  static setup(opts?: {
-    initialInstance: {
-      id: string;
-      instance: LineUp;
-    };
-  }) {
-    return new LineUpManager(opts?.initialInstance);
-  }
-
-  instances: Map<string, LineUpInstance> = new Map();
-
-  private constructor(initial?: { id: string; instance: LineUp }) {
-    if (initial) {
-      const { id, instance } = initial;
-      this.instances.set(id, LineUpInstance.create(id, instance));
-    }
-  }
-
-  add(id: string, instance: LineUp) {
-    if (this.instances.has(id))
-      throw new Error('LineUp instance with this id already exists');
-
-    this.instances.set(id, LineUpInstance.create(id, instance));
-  }
-
-  all(fn: (instance: LineUpInstance) => void) {
-    Array.from(this.instances.values()).forEach((i) => {
-      console.group(i.id);
-      fn(i);
-      console.groupEnd();
-    });
-  }
-}
-
-// ! Events for everything!
-const events = [Ranking.EVENT_SORT_CRITERIA_CHANGED];
-
-class LineUpRanking {
-  static create(ranking: Ranking, lineup: LineUpInstance) {
-    return new LineUpRanking(ranking, lineup);
-  }
-
-  static handleSort(trrack: Trrack<any>, eventId: string) {
-    return (previous: any, current: any) => {
-      trrack.apply({
-        action: eventId,
-        label: `Set Sort`,
-        args: [current],
-        undoArgs: [previous],
+class LU {
+  constructor(
+    public readonly id: string,
+    public readonly instance: LineUp,
+    private _trrack: Trrack
+  ) {
+    this.rankings.forEach((rank) => {
+      // this._trrack = this.addRankingSortToTrrack(r);
+      rank.on('groupCriteriaChanged', (a, b) => {
+        console.log({ a, b });
       });
-    };
-  }
 
-  private constructor(
-    public readonly ranking: Ranking,
-    public readonly lineup: LineUpInstance
-  ) {}
-
-  register<T extends IActionRegistry<any>>(trrack: Trrack<T>) {
-    const eventId = `${this.lineup.id}-${this.ranking.id}-${Ranking.EVENT_SORT_CRITERIA_CHANGED}`;
-    this.ranking.on(
-      `${this.lineup.id}-${this.ranking.id}-${Ranking.EVENT_SORT_CRITERIA_CHANGED}`,
-      LineUpRanking.handleSort(trrack, eventId)
-    );
-
-    return trrack.register(eventId, (sortCriteria: any) => {
-      this.ranking.on(Ranking.EVENT_SORT_CRITERIA_CHANGED, null);
-      this.ranking.setSortCriteria(sortCriteria);
-      this.ranking.on(
-        Ranking.EVENT_SORT_CRITERIA_CHANGED,
-        LineUpRanking.handleSort(trrack, eventId)
+      this._trrack = this.addAnyEventToTrrack(
+        rank,
+        Ranking.EVENT_GROUP_CRITERIA_CHANGED,
+        (r, s) => r.setGroupCriteria(s),
+        () => 'Group'
       );
 
-      return {
-        inverse: {
-          f_id: eventId,
-          parameters: [],
-        },
-      };
+      this._trrack = this.addAnyEventToTrrack(
+        rank,
+        Ranking.EVENT_SORT_CRITERIA_CHANGED,
+        (r, s) => r.setSortCriteria(s),
+        () => 'sort'
+      );
     });
   }
 
-  get id() {
-    return this.ranking.id;
-  }
-}
-
-class LineUpInstance {
-  static create(id: string, instance: LineUp) {
-    return new LineUpInstance(id, instance);
+  get trrack() {
+    return this._trrack;
   }
 
-  private rankings: Map<string, LineUpRanking> = new Map();
-
-  constructor(public readonly id: string, public readonly instance: LineUp) {
-    this.dataProvider.getRankings().forEach((r) => {
-      this.rankings.set(r.id, LineUpRanking.create(r, this));
-    });
-  }
-
-  get dataProvider() {
+  get data() {
     return this.instance.data;
   }
 
-  register<T extends IActionRegistry<any>>(trrack: Trrack<T>) {
-    this.rankings.forEach((ranking) => {
-      trrack = ranking.register(trrack) as any;
-    });
-
-    return trrack;
+  get rankings() {
+    return this.instance.data.getRankings();
   }
 
-  print() {
-    console.table(this.rankings);
+  addAnyEventToTrrack(
+    rank: Ranking,
+    event: string,
+    executor: (rank: Ranking, arg: any) => void,
+    labelMaker: () => string
+  ) {
+    const rankingSpecificEventName = `${this.id}-${rank.id}-${event}`;
+
+    const eventHandler = (previous: any, current: any) => {
+      this.trrack.registerAction(
+        labelMaker(),
+        ActionUtils.createTrrackAction({
+          doName: rankingSpecificEventName,
+          doArgs: [current],
+          undoArgs: [previous],
+        })
+      );
+    };
+
+    rank.on(event, eventHandler);
+
+    return this._trrack.register(rankingSpecificEventName, (arg: any) => {
+      rank.on(event, null);
+      executor(rank, arg);
+      rank.on(event, eventHandler);
+
+      return {
+        name: '',
+        args: [],
+      };
+    });
   }
 }
 
-// export class _LineupManager<T extends IActionRegistry<any>> {
-//   lineup: LineUp;
+export class LUManager {
+  static setup(trrack: Trrack) {
+    return new LUManager(trrack);
+  }
 
-//   _trrack: Trrack<T>;
-//   private registry: IActionRegistry<any>;
-//   private addedEvents: string[] = [];
+  instances: Map<string, LU> = new Map();
 
-//   private shouldBufferActions = false;
-//   private actionBuffer: any[] = [];
+  private constructor(public _trrack: Trrack) {}
 
-//   private handlers: Map<string, any> = new Map([
-//     [
-//       Ranking.EVENT_SORT_CRITERIA_CHANGED,
-//       (prev, curr) => {
-//         const trrackActionExecutor = () => {
-//           this.trrack.apply(
-//             {
-//               action: Ranking.EVENT_SORT_CRITERIA_CHANGED,
-//               label: 'Sort',
-//               args: [curr],
-//             },
-//             true
-//           );
-//         };
+  get trrack() {
+    return this._trrack;
+  }
 
-//         if (this.shouldBufferActions) {
-//           this.actionBuffer = [];
-//           this.actionBuffer.push(trrackActionExecutor);
-//         } else {
-//           trrackActionExecutor();
-//         }
-//       },
-//     ],
-//   ]);
+  addInstance(instance: LineUp, id = `Instance_${this.instances.size + 1}`) {
+    if (this.instances.has(id)) throw new Error(`${id} already exists!`);
+    const inst = new LU(id, instance, this._trrack);
+    this.instances.set(id, inst);
+    this._trrack = inst.trrack;
 
-//   private executors: Map<string, any> = new Map([
-//     [
-//       Ranking.EVENT_SORT_CRITERIA_CHANGED,
-//       (sortCriteria: any) => {
-//         this.firstRanking.setSortCriteria(sortCriteria);
-//       },
-//     ],
-//   ]);
+    return this.trrack;
+  }
 
-//   constructor(public readonly builder: DataBuilder, node: HTMLElement) {
-//     this.lineup = builder.build(node);
-//     this.registry = ActionRegistry.init();
-
-//     this.lineup.on('dialogOpened', () => {
-//       this.shouldBufferActions = true;
-//     });
-
-//     this.lineup.on('dialogClosed', (_, action) => {
-//       if (action === 'confirm' && this.actionBuffer.length > 0)
-//         this.actionBuffer[this.actionBuffer.length - 1]();
-//       this.shouldBufferActions = false;
-//       this.actionBuffer = [];
-//     });
-//   }
-
-//   get dataProvider() {
-//     return this.lineup.data;
-//   }
-
-//   get rankings() {
-//     return this.dataProvider.getRankings();
-//   }
-
-//   get firstRanking() {
-//     return this.dataProvider.getFirstRanking();
-//   }
-
-//   trrackLineUpEvent(event: string) {
-//     this.addedEvents.push(event);
-//     this.updateTrrack();
-
-//     this.addedEvents.forEach((event: string) => {
-//       const evHandler = this.handlers.get(event);
-//       this.firstRanking.on(event, evHandler);
-//     });
-//   }
-
-//   updateTrrack() {
-//     const afr: any = {};
-
-//     this.addedEvents.forEach((event) => {
-//       const eventHandler = this.handlers.get(event);
-//       const execute = this.executors.get(event);
-
-//       this.registry = this.registry
-//         .register(event, (arg: any) => {
-//           this.firstRanking.on(event, null);
-//           execute(arg);
-//           this.firstRanking.on(event, eventHandler);
-
-//           return {
-//             inverse: {
-//               f_id: `${event}_undo`,
-//               parameters: [],
-//             },
-//           };
-//         })
-//         .register(`${event}_undo`, (arg: any) => {
-//           this.firstRanking.on(event, null);
-//           execute(arg);
-//           this.firstRanking.on(event, eventHandler);
-
-//           return {
-//             inverse: {
-//               f_id: event,
-//               parameters: [],
-//             },
-//           };
-//         });
-//     });
-
-//     this.trrack.updateRegistry(this.registry);
-//   }
-// }
+  all(cb: (instance: LU) => void) {
+    this.instances.forEach((lineup) => {
+      cb(lineup);
+    });
+  }
+}

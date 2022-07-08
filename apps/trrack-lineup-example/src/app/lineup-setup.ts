@@ -1,11 +1,11 @@
 import { Trrack } from '@trrack/core';
 import { buildCategoricalColumn, builder as bld, buildNumberColumn, buildStringColumn } from 'lineupjs';
 
-import { LineUpManager } from './lineup-manager';
+import { LUManager } from './lineup-manager';
 
 const arr: any[] = [];
 const cats = ['c1', 'c2', 'c3'];
-for (let i = 0; i < 10000; ++i) {
+for (let i = 0; i < 100; ++i) {
   arr.push({
     a: Math.random() * 10,
     d: 'Row ' + i,
@@ -25,18 +25,11 @@ export function setup(node: HTMLElement) {
 
   let trrack = Trrack.init();
 
-  const manager = LineUpManager.setup({
-    initialInstance: {
-      id: 'first',
-      instance: builder.build(node),
-    },
-  });
+  const manager = LUManager.setup(trrack);
 
-  manager.all((inst) => {
-    trrack = inst.register(trrack);
-  });
+  trrack = manager.addInstance(builder.build(node));
 
-  console.table((trrack as any).registry._registry);
+  console.log((trrack as any).registry);
 
   // lineup.trrackLineUpEvent(Ranking.EVENT_SORT_CRITERIA_CHANGED);
 
@@ -45,7 +38,7 @@ export function setup(node: HTMLElement) {
   };
 
   document.querySelector<HTMLButtonElement>('#redo').onclick = (e) => {
-    trrack.undo();
+    trrack.redo();
   };
 
   document.querySelector<HTMLButtonElement>('#log').onclick = (e) => {

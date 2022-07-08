@@ -1,20 +1,8 @@
+import { ResultCreator } from 'omnibus-rxjs';
+
 import { EventBus } from '../event/bus';
-import { IGraphNode, NodeID } from './node';
-
-type CurrentChangeSource = 'add' | 'to' | 'undo' | 'redo';
-
-export interface IGraph<T extends IGraphNode> {
-    readonly nodes: Map<NodeID, T>;
-    readonly edgeList: Map<NodeID, Array<T>>;
-    readonly current: T;
-    readonly nnodes: number;
-    readonly nedges: number;
-    addNode(node: T): void;
-    getNodes(sortFn?: (a: T, b: T) => number): T[];
-    undo(): void;
-    redo(): void;
-    jumpTo(nodeOrId: T | string): void;
-}
+import { IGraphNode, NodeID } from './graph-elements';
+import { CurrentChangeObject, CurrentChangeSource, IGraph } from './types';
 
 export abstract class AGraph<T extends IGraphNode> implements IGraph<T> {
     // Attributes
@@ -28,20 +16,14 @@ export abstract class AGraph<T extends IGraphNode> implements IGraph<T> {
         source: T;
         target: T;
     }>();
-    private changeCurrentEvent = EventBus.create<{
-        current: T;
-        previousCurrent: T;
-        source: CurrentChangeSource;
-    }>();
+    private changeCurrentEvent = EventBus.create<CurrentChangeObject<T>>();
 
     constructor(root: T) {
         this.current = root;
         this.addNode(root);
     }
 
-    abstract undo(): void;
-    abstract redo(): void;
-    abstract jumpTo(nodeOrId: T | string): void;
+    abstract jumpTo(nodeOrId: T | NodeID, source: CurrentChangeSource): void;
 
     get nnodes() {
         return this.nodes.size;
@@ -57,11 +39,19 @@ export abstract class AGraph<T extends IGraphNode> implements IGraph<T> {
         return edgeCount;
     }
 
+    nodeBy(id: NodeID): T {
+        const node = this.nodes.get(id);
+        if (!node) throw new Error(`Node ${id} not found!`);
+        return node;
+    }
+
     addNode(node: T, setCurrent = true) {
         if (this.nodes.has(node.id)) return;
 
         this.nodes.set(node.id, node);
         if (!this.edgeList.has(node.id)) this.edgeList.set(node.id, []);
+
+        if (this.current !== node) this.addEdge(this.current, node);
 
         this.addNodeEvent.trigger(node);
 
@@ -86,11 +76,26 @@ export abstract class AGraph<T extends IGraphNode> implements IGraph<T> {
         return Array.from(this.nodes.values()).sort(sortFn);
     }
 
-    private updateCurrentNode(node: T, source: CurrentChangeSource) {
+    addCurrentChangeListener<TCon>(
+        listener: ResultCreator<CurrentChangeObject<T>, TCon>
+    ) {
+        return this.changeCurrentEvent.listen(
+            (obj) => obj.current.id !== obj.previousCurrent.id,
+            listener
+        );
+    }
+
+    protected updateCurrentNode(
+        nodeOrId: T | NodeID,
+        source: CurrentChangeSource
+    ) {
         const previousCurrent = this.current;
-        this.current = node;
+
+        this.current =
+            typeof nodeOrId === 'string' ? this.nodeBy(nodeOrId) : nodeOrId;
+
         this.changeCurrentEvent.trigger({
-            current: node,
+            current: this.current,
             previousCurrent,
             source,
         });
