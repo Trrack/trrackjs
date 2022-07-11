@@ -23,8 +23,9 @@ export function Navbar() {
 
               const task: Task = {
                 id: Date.now().toString(),
+                taskNumber,
                 createdOn: Date.now(),
-                desc: `Task ${Math.floor(Math.random() * 100)}`,
+                desc: `Task ${taskNumber}`,
                 completed: false,
               };
               trrack.apply({

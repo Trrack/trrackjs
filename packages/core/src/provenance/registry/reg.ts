@@ -1,30 +1,70 @@
-import { ActionFunctionMap, IActionRegistry } from '..';
+import { ActionFunctionMap } from '..';
+import { GenericArgs } from '../../utils';
 import { ApplyActionObject, TrrackAction, TrrackActionFunction } from '../action';
 
-export class ActionRegistry<T extends ActionFunctionMap>
-    implements IActionRegistry<T>
-{
-    static init<T extends ActionFunctionMap = Record<string, any>>(
-        reg?: T
-    ): IActionRegistry<T> {
-        return new ActionRegistry<T>(reg);
+export type LabelGenerator<TArgs extends GenericArgs = any[]> = (
+    ...args: TArgs
+) => string;
+
+export class ActionRegistry<
+    T extends ActionFunctionMap,
+    TLabelGenerator extends Record<
+        keyof T,
+        LabelGenerator<Parameters<T[keyof T]>>
+    > = Record<keyof T, LabelGenerator<Parameters<T[keyof T]>>>
+> {
+    static init<
+        T extends ActionFunctionMap = Record<string, any>,
+        TLabelGenerator extends Record<
+            keyof T,
+            LabelGenerator<Parameters<T[keyof T]>>
+        > = Record<keyof T, LabelGenerator<Parameters<T[keyof T]>>>
+    >(reg?: T, labelGen?: TLabelGenerator): ActionRegistry<T> {
+        return new ActionRegistry<T>(reg, labelGen);
     }
 
-    private constructor(readonly registry: T = {} as T) {}
+    private constructor(
+        private _registry: T = {} as T,
+        private _labelGenerators = {} as TLabelGenerator
+    ) {}
 
-    register<K extends string, S extends TrrackActionFunction<any, any, any>>(
+    register<
+        K extends string,
+        S extends TrrackActionFunction<any, any, any>,
+        TLabelGen extends LabelGenerator<Parameters<S>>
+    >(
         name: K,
-        action: S
-    ): IActionRegistry<Record<K, S> & T> {
-        console.log('Add checks');
-        return ActionRegistry.init<Record<K, S> & T>({
-            ...this.registry,
-            [name]: action,
-        });
+        action: S,
+        labelGen: TLabelGen
+    ): ActionRegistry<Record<K, S> & T> {
+        if (this._registry[name])
+            throw new Error(`Action ${name} already registered.`);
+
+        return ActionRegistry.init<Record<K, S> & T>(
+            {
+                ...this._registry,
+                [name]: action,
+            },
+            {
+                ...this._labelGenerators,
+                [name]: labelGen,
+            }
+        );
     }
 
     get<K extends keyof T>(name: K) {
-        return this.registry[name];
+        return this._registry[name];
+    }
+
+    get registeredActions(): string[] {
+        return Object.keys(this._registry);
+    }
+
+    getLabel<K extends keyof T>({
+        name,
+        args,
+    }: ApplyActionObject<Extract<K, string>, Parameters<T[K]>>) {
+        return this._labelGenerators[name](...args);
     }
 
     apply<K extends keyof T>({

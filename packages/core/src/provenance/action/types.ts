@@ -9,7 +9,7 @@ export type ApplyActionObject<
 };
 
 export type TrrackActionFunction<
-    TDoArgs extends GenericArgs,
+    TDoArgs extends GenericArgs = any[],
     TUndoArgs extends GenericArgs = TDoArgs,
     TUndoActionName extends string = string
 > = (...args: TDoArgs) => ApplyActionObject<TUndoActionName, TUndoArgs>;

@@ -1,13 +1,20 @@
-import { IProvenanceNode, Trrack, TrrackActionFunction } from '@trrack/core';
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { IProvenanceNode, LabelGenerator, Trrack, TrrackActionFunction } from '@trrack/core';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 export function useTrrackSetup() {
   const [trrack, setTrrack] = useState<Trrack>(Trrack.init());
+
   const [current, setCurrent] = useState<IProvenanceNode>(trrack.current);
 
   const addAction = useCallback(
-    (name: string, action: TrrackActionFunction<any, any, any>) => {
-      setTrrack((t) => t.register(name, action));
+    (
+      name: string,
+      action: TrrackActionFunction,
+      labelGenerator: LabelGenerator
+    ) => {
+      setTrrack((t) => {
+        return t.has(name) ? t : t.register(name, action, labelGenerator);
+      });
     },
     []
   );
@@ -34,6 +41,8 @@ export function useTrrackSetup() {
 
 export type TrrackContextType = ReturnType<typeof useTrrackSetup>;
 
+// Disabling because this is a valid use case
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 export const TrrackContext = createContext<TrrackContextType>(undefined!);
 
 export function useTrrack() {

@@ -6,9 +6,9 @@ import {
     ActionNode,
     ActionRegistry,
     ApplyActionObject,
-    IActionRegistry,
     IProvenanceGraph,
     IProvenanceNode,
+    LabelGenerator,
     ProvenanceGraph,
     ProvenanceNodeUtils,
     TrrackAction,
@@ -18,12 +18,12 @@ import { ProvenanceGraphUtils } from '../provenance/utils';
 
 export class Trrack<
     M extends ActionFunctionMap = ActionFunctionMap,
-    T extends IActionRegistry<M> = IActionRegistry<M>,
+    T extends ActionRegistry<M> = ActionRegistry<M>,
     R extends keyof M = keyof M
 > {
     static init<
         M extends ActionFunctionMap = ActionFunctionMap,
-        T extends IActionRegistry<M> = IActionRegistry<M>
+        T extends ActionRegistry<M> = ActionRegistry<M>
     >(registry?: T, graph?: IProvenanceGraph) {
         return new Trrack({ registry, graph });
     }
@@ -47,11 +47,20 @@ export class Trrack<
         return this.graph.root;
     }
 
-    register<K extends string, S extends TrrackActionFunction<any, any, any>>(
-        name: K,
-        action: S
-    ) {
-        const registry = this.registry.register(name, action);
+    get registeredActions(): string[] {
+        return this.registry.registeredActions;
+    }
+
+    has<K extends Extract<keyof M, string>>(name: K): boolean {
+        return this.registeredActions.includes(name);
+    }
+
+    register<
+        K extends string,
+        S extends TrrackActionFunction<any, any, any>,
+        TLabel extends LabelGenerator<Parameters<S>>
+    >(name: K, action: S, labelGenerator: TLabel) {
+        const registry = this.registry.register(name, action, labelGenerator);
 
         return Trrack.init(registry, this.graph);
     }
@@ -64,13 +73,16 @@ export class Trrack<
     apply({
         name,
         args,
-        label,
+        label = undefined,
     }: ApplyActionObject<Extract<R, string>, Parameters<M[R]>> & {
-        label: string;
+        label?: string;
     }) {
         const act = this.registry.apply({ name, args });
 
-        this.registerAction(label, act);
+        this.registerAction(
+            label ? label : this.registry.getLabel({ name, args }),
+            act
+        );
     }
 
     to(
