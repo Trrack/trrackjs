@@ -1,82 +1,84 @@
-import { IProvenanceNode, ProvenanceNodeUtils } from './node/types';
+export type Test = 'Test';
 
-export class ProvenanceGraphUtils {
-    private constructor() {
-        throw new Error('Please use static methods directly');
-    }
+// import { IProvenanceNode, ProvenanceNodeUtils } from './node/types';
 
-    private static LCA(
-        current: IProvenanceNode,
-        destination: IProvenanceNode
-    ): IProvenanceNode {
-        let [source, target] = [current, destination];
+// export class ProvenanceGraphUtils {
+//     private constructor() {
+//         throw new Error('Please use static methods directly');
+//     }
 
-        if (source.level > target.level) {
-            [source, target] = [target, source];
-        }
+//     private static LCA(
+//         current: IProvenanceNode,
+//         destination: IProvenanceNode
+//     ): IProvenanceNode {
+//         let [source, target] = [current, destination];
 
-        let diff = target.level - source.level;
+//         if (source.level > target.level) {
+//             [source, target] = [target, source];
+//         }
 
-        while (ProvenanceNodeUtils.isNonRoot(target) && diff !== 0) {
-            target = target.parent;
-            diff -= 1;
-        }
+//         let diff = target.level - source.level;
 
-        if (source.id === target.id) return source;
+//         while (ProvenanceNodeUtils.isNonRoot(target) && diff !== 0) {
+//             target = target.parent;
+//             diff -= 1;
+//         }
 
-        while (source.id !== target.id) {
-            if (ProvenanceNodeUtils.isNonRoot(source)) source = source.parent;
-            if (ProvenanceNodeUtils.isNonRoot(target)) target = target.parent;
-        }
+//         if (source.id === target.id) return source;
 
-        return source;
-    }
+//         while (source.id !== target.id) {
+//             if (ProvenanceNodeUtils.isNonRoot(source)) source = source.parent;
+//             if (ProvenanceNodeUtils.isNonRoot(target)) target = target.parent;
+//         }
 
-    static getPath(current: IProvenanceNode, destination: IProvenanceNode) {
-        const lca = ProvenanceGraphUtils.LCA(current, destination);
+//         return source;
+//     }
 
-        const pathFromSourceToLca: IProvenanceNode[] = [];
-        const pathFromDestinationToLca: IProvenanceNode[] = [];
+//     static getPath(current: IProvenanceNode, destination: IProvenanceNode) {
+//         const lca = ProvenanceGraphUtils.LCA(current, destination);
 
-        let [source, target] = [current, destination];
+//         const pathFromSourceToLca: IProvenanceNode[] = [];
+//         const pathFromDestinationToLca: IProvenanceNode[] = [];
 
-        while (source !== lca) {
-            pathFromSourceToLca.push(source);
-            if (ProvenanceNodeUtils.isNonRoot(source)) {
-                source = source.parent;
-            }
-        }
+//         let [source, target] = [current, destination];
 
-        pathFromSourceToLca.push(source);
+//         while (source !== lca) {
+//             pathFromSourceToLca.push(source);
+//             if (ProvenanceNodeUtils.isNonRoot(source)) {
+//                 source = source.parent;
+//             }
+//         }
 
-        while (target !== lca) {
-            pathFromDestinationToLca.push(target);
-            if (ProvenanceNodeUtils.isNonRoot(target)) {
-                target = target.parent;
-            }
-        }
+//         pathFromSourceToLca.push(source);
 
-        return [...pathFromSourceToLca, ...pathFromDestinationToLca.reverse()];
-    }
+//         while (target !== lca) {
+//             pathFromDestinationToLca.push(target);
+//             if (ProvenanceNodeUtils.isNonRoot(target)) {
+//                 target = target.parent;
+//             }
+//         }
 
-    static isNextNodeUp(
-        source: IProvenanceNode,
-        target: IProvenanceNode
-    ): boolean {
-        if (
-            ProvenanceNodeUtils.isNonRoot(source) &&
-            source.parent.id === target.id
-        )
-            return true;
+//         return [...pathFromSourceToLca, ...pathFromDestinationToLca.reverse()];
+//     }
 
-        if (
-            ProvenanceNodeUtils.isNonRoot(target) &&
-            target.parent.id === source.id
-        )
-            return false;
+//     static isNextNodeUp(
+//         source: IProvenanceNode,
+//         target: IProvenanceNode
+//     ): boolean {
+//         if (
+//             ProvenanceNodeUtils.isNonRoot(source) &&
+//             source.parent.id === target.id
+//         )
+//             return true;
 
-        throw new Error(
-            `Illegal use of function. Nodes ${source.id} and ${target.id} are not connected.`
-        );
-    }
-}
+//         if (
+//             ProvenanceNodeUtils.isNonRoot(target) &&
+//             target.parent.id === source.id
+//         )
+//             return false;
+
+//         throw new Error(
+//             `Illegal use of function. Nodes ${source.id} and ${target.id} are not connected.`
+//         );
+//     }
+// }

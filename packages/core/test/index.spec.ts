@@ -1,45 +1,32 @@
-import { Trrack } from '../src';
-
-function print(trrack: Trrack) {
-    const graph = trrack.graph;
-    console.log({
-        root: graph.root.id,
-        current: graph.current.id,
-        nodes: graph.getNodes(),
-    });
-}
+import { ProvenanceGraph } from '../src';
 
 describe('Hello', () => {
     it('World', () => {
-        let trrack = Trrack.init();
-        print(trrack);
+        const graph = ProvenanceGraph.init();
 
-        trrack = trrack
-            .register('add', (a: number, b: number) => {
-                console.log(a, '+', b, '=', a + b);
-                return {
-                    name: 'sub',
-                    args: [a, b],
-                };
-            })
-            .register('sub', (a: number, b: number) => {
-                console.log(a, '-', b, '=', a - b);
-                return {
-                    name: 'add',
-                    args: [a, b],
-                };
-            });
+        (graph.current as any).troll = false;
 
-        trrack.apply({
-            name: 'add',
-            args: [1, 2],
-            label: 'ADding 1 & 2',
+        graph.addNode({
+            type: 'Action',
         });
-        print(trrack);
 
-        trrack.undo();
+        console.log(
+            JSON.stringify(
+                graph,
+                (key, value) => {
+                    if (key === 'backend') {
+                        const edges: any[] = [];
 
-        print(trrack);
+                        value.forEachLink((l) => edges.push(l));
+
+                        return { edges };
+                    }
+                    if (key.startsWith('_')) return null;
+                    return value;
+                },
+                4
+            )
+        );
 
         expect(true).toBeTruthy();
     });
