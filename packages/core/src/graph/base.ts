@@ -1,5 +1,5 @@
 import { GraphEdge } from './graph_edge';
-import { IGraphEdge, IGraphNode } from './types';
+import { IGraphEdge, IGraphNode } from './nodes/types';
 
 export class Graph<EdgeType extends string = string> {
     private nodes = new Map<string, IGraphNode<EdgeType>>();

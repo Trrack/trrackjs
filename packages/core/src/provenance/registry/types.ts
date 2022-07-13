@@ -18,14 +18,4 @@ export interface IActionRegistry<T extends ActionFunctionMap> {
     apply<K extends keyof T>(
         applyObject: ApplyActionObject<Extract<K, string>, Parameters<T[K]>>
     ): TrrackAction<any, any, any, any>;
-
-    // ! Mayb later
-    // apply<K extends keyof T>(
-    //     applyObject: ApplyActionObject<Extract<K, string>, Parameters<T[K]>>
-    // ): TrrackAction<
-    //     Extract<K, string>,
-    //     Parameters<T[K]>,
-    //     Extract<keyof T, string>,
-    //     ReturnType<T[K]>['args']
-    // >;
 }

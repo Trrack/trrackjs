@@ -1,4 +1,4 @@
-import { IGraphEdge, IGraphNode, ISerializableGraphEdge } from './types';
+import { IGraphEdge, IGraphNode, SerializableGraphEdge } from './nodes/types';
 
 export class GraphEdge<T extends string = string> implements IGraphEdge<T> {
     static create<T extends string = string>(
@@ -20,7 +20,7 @@ export class GraphEdge<T extends string = string> implements IGraphEdge<T> {
         this.id = `${from.id} --- ${type} --- ${to.id}`;
     }
 
-    toJson(): ISerializableGraphEdge {
+    toJson(): SerializableGraphEdge {
         return {
             id: this.id,
             createdOn: this.createdOn.toJSON(),

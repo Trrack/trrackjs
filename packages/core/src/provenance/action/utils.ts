@@ -1,7 +1,4 @@
-import { IActionRegistry } from '..';
 import { TrrackAction } from './types';
-
-type RegistryType<T> = T extends IActionRegistry<infer R> ? R : never;
 
 export class ActionUtils {
     private constructor() {
