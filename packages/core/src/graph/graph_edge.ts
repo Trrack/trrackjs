@@ -1,23 +1,25 @@
-import { IGraphEdge, IGraphNode, SerializableGraphEdge } from './nodes/types';
+import { EdgeType, IGraphEdge, IGraphNode, SerializableGraphEdge } from './nodes/types';
 
-export class GraphEdge<T extends string = string> implements IGraphEdge<T> {
-    static create<T extends string = string>(
-        from: IGraphNode<T>,
-        to: IGraphNode<T>,
-        type: T
-    ): IGraphEdge<T> {
-        return new GraphEdge<T>(from, to, type);
+export class GraphEdge implements IGraphEdge {
+    static create(
+        from: IGraphNode,
+        to: IGraphNode,
+        type: EdgeType
+    ): IGraphEdge {
+        return new GraphEdge(from, to, type);
     }
 
     id: string;
     createdOn = new Date();
 
     private constructor(
-        public readonly from: IGraphNode<T>,
-        public readonly to: IGraphNode<T>,
-        public readonly type: T
+        public readonly from: IGraphNode,
+        public readonly to: IGraphNode,
+        public readonly type: EdgeType
     ) {
         this.id = `${from.id} --- ${type} --- ${to.id}`;
+        from.outgoing.push(this);
+        to.incoming.push(this);
     }
 
     toJson(): SerializableGraphEdge {
@@ -28,5 +30,9 @@ export class GraphEdge<T extends string = string> implements IGraphEdge<T> {
             to: this.to.id,
             type: this.type,
         };
+    }
+
+    static edgeType(type: EdgeType) {
+        return (edge: IGraphEdge) => edge.type === type;
     }
 }

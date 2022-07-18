@@ -1,19 +1,17 @@
 import { ID } from '../../utils';
 import { IGraphEdge, IGraphNode, IProvenanceNode, NodeType, SerializableGraphNode } from './types';
 
-export abstract class AGraphNode<T extends string = string>
-    implements IGraphNode<T>
-{
+export abstract class AGraphNode implements IGraphNode {
     id: string;
-    outgoing: IGraphEdge<T>[] = [];
-    incoming: IGraphEdge<T>[] = [];
+    outgoing: IGraphEdge[] = [];
+    incoming: IGraphEdge[] = [];
     createdOn = new Date();
 
     constructor() {
         this.id = ID.get();
     }
 
-    get edges(): IGraphEdge<T>[] {
+    get edges(): IGraphEdge[] {
         return [...this.outgoing, ...this.incoming];
     }
 
@@ -27,9 +25,9 @@ export abstract class AGraphNode<T extends string = string>
     }
 }
 
-export abstract class AProvenanceNode<T extends string = string>
-    extends AGraphNode<T>
-    implements IProvenanceNode<T>
+export abstract class AProvenanceNode
+    extends AGraphNode
+    implements IProvenanceNode
 {
     abstract type: NodeType;
 
@@ -37,20 +35,17 @@ export abstract class AProvenanceNode<T extends string = string>
         super();
     }
 
-    get children() {
-        return this.outgoing.map((edge) => edge.to as IProvenanceNode<T>);
-    }
-
     get parent() {
         if (this.incoming.length === 0) throw new Error('No parent node.');
 
-        if (this.incoming.length > 0)
+        if (this.incoming.length > 1)
             throw new Error('More than one parent node.');
 
-        return <IProvenanceNode<T>>this.incoming[0].from;
+        return <IProvenanceNode>this.incoming[0].from;
     }
 
     get level() {
+        if (this.incoming.length === 0) return 0;
         return this.parent.level + 1;
     }
 }

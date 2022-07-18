@@ -1,0 +1,75 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/dummy-testing-library/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "swc",
+        "outputPath": "dist/apps/dummy-testing-library",
+        "index": "apps/dummy-testing-library/src/index.html",
+        "baseHref": "/",
+        "main": "apps/dummy-testing-library/src/main.tsx",
+        "polyfills": "apps/dummy-testing-library/src/polyfills.ts",
+        "tsConfig": "apps/dummy-testing-library/tsconfig.app.json",
+        "assets": [
+          "apps/dummy-testing-library/src/favicon.ico",
+          "apps/dummy-testing-library/src/assets"
+        ],
+        "styles": ["apps/dummy-testing-library/src/styles.css"],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/dummy-testing-library/src/environments/environment.ts",
+              "with": "apps/dummy-testing-library/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/web:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "dummy-testing-library:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "dummy-testing-library:build:development"
+        },
+        "production": {
+          "buildTarget": "dummy-testing-library:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/dummy-testing-library/**/*.{ts,tsx,js,jsx}"]
+      }
+    }
+  },
+  "tags": []
+}

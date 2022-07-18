@@ -1,102 +1,85 @@
-import * as ngraph from 'ngraph.graph';
-import createGraph, { Graph as NGraph, Node } from 'ngraph.graph';
-import { EventedType } from 'ngraph.events';
-import { ID } from '../utils';
-
-function createBackingGraph<N, L>(opts?: Parameters<typeof createGraph>[0]) {
-    return (ngraph as any)(opts) as Graph;
-}
-
-type ActionData = {
-    type: 'Action';
-};
-type StateData = {
-    type: 'State';
-};
-type RootData = StateData & {
-    isRoot: true;
-};
-
-type ValidNodeData = ActionData | RootData | StateData;
-
-type ActionNode = Node<ActionData>;
-type StateNode = Node<StateData>;
-type RootNode = Node<RootData>;
-type ProvenanceNode = Node<ValidNodeData>;
-
-type Graph = NGraph<ValidNodeData, any> & EventedType;
+import { ActionNode, EdgeType, Graph, IGraphNode, IStateNode, StateNode } from '../graph';
+import { TrrackAction } from './action';
 
 export class ProvenanceGraph {
-    static init(graph?: Graph) {
-        return new ProvenanceGraph(graph ? graph : createBackingGraph());
-    }
+    currentNode: IStateNode;
 
-    private _nodes: ProvenanceNode[] = [];
-    private _actions: ActionNode[] = [];
-    private _states: StateNode[] = [];
-
-    private _rootNode: RootNode | null = null;
-    current: StateNode;
-    private lastAction: ActionNode | null = null;
-
-    private constructor(private readonly backend: Graph) {
-        if (backend.getNodesCount() === 0) {
-            const rootNode = <RootNode>backend.addNode(ID.get(), {
-                type: 'State',
-                isRoot: true,
-            });
-
-            this._states.push(rootNode);
-            this._rootNode = rootNode;
-            this.current = rootNode;
+    constructor(public readonly backend: Graph = new Graph()) {
+        if (backend.nnodes > 0) {
+            if (!this.hasRoot)
+                throw new Error(
+                    'Incorrect provenance graph. No root node found.'
+                );
         } else {
-            this.backend.forEachNode((node) => {
-                this.classifyNode(node);
-            });
-
-            this.current = this.rootNode;
-        }
-    }
-
-    get rootNode() {
-        if (this._rootNode) return this._rootNode;
-
-        throw new Error('Root node not defined');
-    }
-
-    addNode(data: ValidNodeData) {
-        const newNode = this.backend.addNode(ID.get(), data);
-
-        this.backend.addLink(this.current.id, newNode.id);
-
-        this.classifyNode(newNode);
-    }
-
-    private classifyNode(node: ProvenanceNode) {
-        this._nodes.push(node);
-
-        if (isStateNode(node)) {
-            if (isRootNode(node)) {
-                this._rootNode = node;
-            }
-
-            this._states.push(node);
+            backend.addNode(StateNode.create('Start'));
         }
 
-        if (isActionNode(node)) {
-            this._actions.push(node);
-        }
+        this.currentNode = this.root;
     }
-}
 
-function isRootNode(node: Node<ValidNodeData>): node is RootNode {
-    return (node.data as any).isRoot;
-}
+    private verifyAndGetRoot() {
+        const stateNodes = this.backend.nodesBy<IStateNode>(
+            (n) =>
+                n.type === 'State' &&
+                n.incoming.length === 0 &&
+                n.label === 'Start'
+        );
 
-function isStateNode(node: Node<ValidNodeData>): node is StateNode {
-    return node.data.type === 'State';
-}
+        return stateNodes.length === 1 ? stateNodes[0] : stateNodes.length;
+    }
 
-function isActionNode(node: Node<ValidNodeData>): node is ActionNode {
-    return node.data.type === 'Action';
+    private get hasRoot(): boolean {
+        return typeof this.verifyAndGetRoot() !== 'number';
+    }
+
+    get root(): IStateNode {
+        const stateNode = this.verifyAndGetRoot();
+
+        if (typeof stateNode === 'number') {
+            throw new Error(
+                stateNode === 0
+                    ? 'No root node found. Incorrect provenance initialization.'
+                    : 'Too many root nodes found. Invalid provenance graph.'
+            );
+        }
+
+        return stateNode;
+    }
+
+    addAction(label: string, action: TrrackAction) {
+        const actionNode = this.addNode(
+            ActionNode.create(label, action.do, false) // Create action node
+        );
+        this.addEdge(this.currentNode, actionNode, 'next'); // connect current state node to action node
+
+        const newStateNode = this.addNode(StateNode.create(label)); // Create new statenode
+        this.addEdge(actionNode, newStateNode, 'results_in'); // Connect action to newState node
+
+        const inverseActionNode = this.addNode(
+            ActionNode.create(label, action.undo, true) // Create inverse action node
+        );
+        this.addEdge(actionNode, inverseActionNode, 'inverted_by'); // connect action to inverse
+        this.addEdge(inverseActionNode, actionNode, 'inverts'); // connect inverse to action
+
+        this.addEdge(newStateNode, inverseActionNode, 'previous'); // connect newstate to inverse
+        this.addEdge(inverseActionNode, this.currentNode, 'results_in'); // connect inverse to current state
+
+        this.changeCurrent(newStateNode); // update current state to new state
+    }
+
+    addState(label: string) {
+        const stateNode = this.addNode(StateNode.create(label));
+    }
+
+    private changeCurrent(node: IStateNode) {
+        this.currentNode = node;
+    }
+
+    private addNode<T extends IGraphNode>(node: T): T {
+        return this.backend.addNode(node);
+    }
+
+    private addEdge(source: IGraphNode, target: IGraphNode, type: EdgeType) {
+        return this.backend.addEdge(source, target, type);
+    }
 }

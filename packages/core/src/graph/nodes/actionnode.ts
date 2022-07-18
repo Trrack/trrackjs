@@ -1,43 +1,77 @@
-import { ApplyActionObject, TrrackAction } from '../../provenance';
+import { ApplyActionObject } from '../../provenance';
+import { GraphEdge } from '../graph_edge';
 import { AProvenanceNode } from './abstract_graph_node';
-import { IActionNode } from './types';
+import { IActionNode, IStateNode } from './types';
 
-export class ActionNode<T extends string = string>
-    extends AProvenanceNode<T>
-    implements IActionNode<T>
-{
-    static create<T extends string>(
+export class ActionNode extends AProvenanceNode implements IActionNode {
+    static create(
         label: string,
-        action: TrrackAction,
-        isInverter = false,
-        counter: IActionNode<T> | null = null
-    ): IActionNode<T> {
-        return new ActionNode<T>(label, action, isInverter, counter);
+        record: ApplyActionObject<any, any>,
+        hasSideEffects: boolean,
+        isInverse: boolean
+    ): IActionNode {
+        return new ActionNode(label, record, hasSideEffects, isInverse);
     }
 
     type: 'Action' = 'Action';
-    readonly record: ApplyActionObject<any, any>;
-    declare counterActionNode: IActionNode<T>;
 
-    private constructor(
+    constructor(
         label: string,
-        action: TrrackAction,
-        public readonly isInverter: boolean,
-        counter: IActionNode<T> | null
+        public readonly record: ApplyActionObject<any, any>,
+        public readonly hasSideEffects: boolean,
+        public readonly isInverse: boolean
     ) {
         super(label);
-        this.record = isInverter ? action.undo : action.do;
-
-        if (counter) {
-            this.counterActionNode = counter;
-        }
-        if (!isInverter) {
-            this.setupInverseNode(action);
-        }
     }
 
-    private setupInverseNode(action: TrrackAction) {
-        const inverseAction = ActionNode.create<T>(this.label, action, true);
-        this.counterActionNode = inverseAction;
+    get isInvertible() {
+        return !this.isInverse && this.inverse === null;
+    }
+
+    get inverse() {
+        if (this.isInverse) return null;
+
+        const invertingEdges = this.outgoing.filter(
+            GraphEdge.edgeType('inverted_by')
+        );
+
+        if (invertingEdges.length === 0)
+            throw new Error('No inverse node found');
+
+        if (invertingEdges.length > 1)
+            throw new Error('Too many inverting edges.');
+
+        const invertingNode = invertingEdges[0].to as IActionNode;
+
+        if (!invertingNode.isInverse)
+            throw new Error('Incorrect inverting node.');
+
+        return invertingNode;
+    }
+
+    get inverts() {
+        if (!this.isInverse) return null;
+
+        const invertsEdges = this.outgoing.filter(
+            GraphEdge.edgeType('inverts')
+        );
+
+        if (invertsEdges.length === 0)
+            throw new Error('No reference for toInvert node');
+        if (invertsEdges.length > 1)
+            throw new Error('Too many nodes to invert');
+
+        return invertsEdges[0].to as IActionNode;
+    }
+
+    get result(): IStateNode {
+        const resultsIn = this.outgoing.filter(
+            GraphEdge.edgeType('results_in')
+        );
+
+        if (resultsIn.length !== 1)
+            throw new Error('Incorrect pointer to result from action node.');
+
+        return resultsIn[0].to as IStateNode;
     }
 }

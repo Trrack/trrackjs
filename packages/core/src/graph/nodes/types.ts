@@ -16,22 +16,27 @@ interface UniqueEntityDescription extends ISerializable {
 }
 
 /**
- * Graph Edge
+ * Graph EdgeType and Edge
  */
-export interface IGraphEdge<T extends string> extends UniqueEntityDescription {
-    readonly from: IGraphNode<T>;
-    readonly to: IGraphNode<T>;
-    readonly type: T;
+export type EdgeType =
+    | 'previous'
+    | 'next'
+    | 'inverts'
+    | 'inverted_by'
+    | 'results_in';
+export interface IGraphEdge extends UniqueEntityDescription {
+    readonly from: IGraphNode;
+    readonly to: IGraphNode;
+    readonly type: EdgeType;
 }
 
 /**
  * Graph Node
  */
-export interface IGraphNode<T extends string = string>
-    extends UniqueEntityDescription {
-    readonly outgoing: Array<IGraphEdge<T>>;
-    readonly incoming: Array<IGraphEdge<T>>;
-    readonly edges: Array<IGraphEdge<T>>;
+export interface IGraphNode extends UniqueEntityDescription {
+    readonly outgoing: Array<IGraphEdge>;
+    readonly incoming: Array<IGraphEdge>;
+    readonly edges: Array<IGraphEdge>;
 }
 
 export type NodeType = 'Root' | 'Action' | 'State';
@@ -39,34 +44,27 @@ export type NodeType = 'Root' | 'Action' | 'State';
 /**
  * Generic provenance node
  */
-export interface IProvenanceNode<T extends string = string>
-    extends IGraphNode<T> {
+export interface IProvenanceNode extends IGraphNode {
     readonly type: NodeType;
     readonly label: string;
-    readonly children: IProvenanceNode[];
     readonly level: number;
 }
 
-export interface IRootNode<T extends string = string>
-    extends IProvenanceNode<T> {
-    readonly type: 'Root';
+export interface IStateNode extends IProvenanceNode {
+    readonly type: 'State';
+    isLeaf: boolean;
+    children: IStateNode[];
 }
 
-export interface INonRootNode<T extends string = string>
-    extends IProvenanceNode<T> {
-    readonly parent: IProvenanceNode<T>;
-}
-
-export interface IActionNode<T extends string = string>
-    extends INonRootNode<T> {
+export interface IActionNode extends IProvenanceNode {
     readonly type: 'Action';
     readonly record: ApplyActionObject<any, any>;
-    readonly isInverter: boolean;
-    readonly counterActionNode: IActionNode<T>;
-}
-
-export interface IStateNode<T extends string = string> extends INonRootNode<T> {
-    readonly type: 'State';
+    readonly isInverse: boolean;
+    readonly isInvertible: boolean;
+    readonly hasSideEffects: boolean;
+    inverse: IActionNode | null;
+    inverts: IActionNode | null;
+    result: IStateNode;
 }
 
 /**
@@ -91,7 +89,6 @@ export type SerializableGraphNode = SerializableUniqueEntityDescription & {
 export type SerializableProvenanceNode = SerializableGraphNode & {
     type: string;
     label: string;
-    children: string[];
 };
 
 export type SerializableRootNode = SerializableProvenanceNode;

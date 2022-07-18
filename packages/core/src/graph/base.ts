@@ -1,9 +1,9 @@
 import { GraphEdge } from './graph_edge';
-import { IGraphEdge, IGraphNode } from './nodes/types';
+import { EdgeType, IGraphEdge, IGraphNode } from './nodes/types';
 
-export class Graph<EdgeType extends string = string> {
-    private nodes = new Map<string, IGraphNode<EdgeType>>();
-    private edges = new Map<string, IGraphEdge<EdgeType>>();
+export class Graph {
+    private nodes = new Map<string, IGraphNode>();
+    private edges = new Map<string, IGraphEdge>();
 
     get nnodes() {
         return this.nodes.size;
@@ -13,7 +13,15 @@ export class Graph<EdgeType extends string = string> {
         return this.edges.size;
     }
 
-    addNode(node: IGraphNode<EdgeType>) {
+    hasNode(id: string) {
+        return this.nodes.has(id);
+    }
+
+    hasEdge(id: string) {
+        return this.edges.has(id);
+    }
+
+    addNode<T extends IGraphNode>(node: T): T {
         // Enter Mod
 
         if (this.nodes.has(node.id))
@@ -26,10 +34,10 @@ export class Graph<EdgeType extends string = string> {
     }
 
     addEdge(
-        source: IGraphNode<EdgeType>,
-        target: IGraphNode<EdgeType>,
+        source: IGraphNode,
+        target: IGraphNode,
         type: EdgeType
-    ): IGraphEdge<EdgeType> {
+    ): IGraphEdge {
         // Enter Mod
         const edge = GraphEdge.create(source, target, type);
 
@@ -47,9 +55,15 @@ export class Graph<EdgeType extends string = string> {
         return node;
     }
 
-    forEachNode(cb: (node: IGraphNode<EdgeType>) => any, breakOnTruthy = true) {
-        for (const node of this.nodes.values()) {
-            if (breakOnTruthy && cb(node)) break;
+    nodesBy<T extends IGraphNode = IGraphNode>(
+        callback: (node: T) => boolean
+    ): T[] {
+        const nodes: T[] = [];
+
+        for (const n of this.nodes.values()) {
+            if (callback(<T>n)) nodes.push(<T>n);
         }
+
+        return nodes;
     }
 }
