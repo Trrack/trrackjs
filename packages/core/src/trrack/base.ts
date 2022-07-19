@@ -64,7 +64,6 @@ export class Trrack<
         this.store.dispatch(action);
         const newState = this.store.getState();
         this.graph.addState(label, { type: 'state', val: newState });
-        console.log(this.graph.backend);
     }
 
     print() {
