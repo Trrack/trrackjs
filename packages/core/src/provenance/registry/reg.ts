@@ -1,52 +1,66 @@
-import { ActionFunctionMap, IActionRegistry } from '..';
-import { ApplyActionObject, TrrackAction, TrrackActionFunction } from '../action';
+import {
+    ActionFunctionRegistry,
+    ActionParameterMap,
+    IActionRegistry,
+    LabelGenerator,
+    LabelGeneratorWithArgs,
+    TrrackActionFunction,
+} from '..';
 
-export class ActionRegistry<T extends ActionFunctionMap>
-    implements IActionRegistry<T>
+export class ActionRegistry<
+    T extends ActionParameterMap & { [key: string]: any }
+> implements IActionRegistry<T>
 {
-    static init<T extends ActionFunctionMap = Record<string, any>>(
-        reg?: T
+    static create<T extends ActionParameterMap>(
+        strictMode = true
     ): IActionRegistry<T> {
-        return new ActionRegistry<T>(reg);
+        return new ActionRegistry<T>(strictMode);
     }
 
-    private constructor(readonly registry: T = {} as T) {}
+    private registry: ActionFunctionRegistry<T> = {} as any;
+    private labelRegistry: Record<string, LabelGeneratorWithArgs<any>> =
+        {} as any;
 
-    register<K extends string, S extends TrrackActionFunction<any, any, any>>(
+    private constructor(private strictMode: boolean) {}
+
+    private has(id: string) {
+        if (id in this.registry) return true;
+
+        return false;
+    }
+
+    register<
+        K extends Extract<keyof T, string>,
+        Action extends ActionFunctionRegistry<T>[K]
+    >(
         name: K,
-        action: S
-    ): IActionRegistry<Record<K, S> & T> {
-        console.log('Add checks');
-        return ActionRegistry.init<Record<K, S> & T>({
-            ...this.registry,
-            [name]: action,
-        });
+        labelGenerator: LabelGenerator<Parameters<Action>>,
+        action: Action
+    ) {
+        if (this.has(name))
+            throw new Error(`Action ${name} already registered.`);
+
+        if (!(name in this.labelRegistry))
+            throw new Error(`Action ${name} already registered.`);
+
+        if (typeof labelGenerator === 'string') {
+            this.labelRegistry[name] = () => labelGenerator;
+        } else {
+            this.labelRegistry[name] = this.labelRegistry as any;
+        }
+
+        this.registry[name] = action;
+        return this;
     }
 
-    get<K extends keyof T>(name: K) {
-        return this.registry[name];
-    }
+    registerUnchecked(
+        name: string,
+        labelGenerator: LabelGenerator<any>,
+        action: TrrackActionFunction<any, any, any>
+    ) {
+        if (this.strictMode)
+            throw new Error('Cannot register unsafe functions in strict mode.');
 
-    apply<K extends keyof T>({
-        name,
-        args,
-    }: ApplyActionObject<Extract<K, string>, Parameters<T[K]>>): TrrackAction<
-        any,
-        any,
-        any,
-        any
-    > {
-        const action = this.get(name);
-        const actionResult = action(...(args as any[]));
-
-        return {
-            do: {
-                name,
-                args,
-            },
-            undo: {
-                ...actionResult,
-            },
-        };
+        return this.register(name as any, labelGenerator as any, action as any);
     }
 }

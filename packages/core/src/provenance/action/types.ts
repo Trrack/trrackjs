@@ -1,17 +1,20 @@
 import { GenericArgs } from '../../utils';
 
+/**
+ * Action Tracking
+ */
 export type ApplyActionObject<
-    TActionName extends string,
-    Args extends GenericArgs
+    TActionName extends string = string,
+    Args extends GenericArgs = GenericArgs
 > = {
     name: TActionName;
     args: Args;
 };
 
 export type TrrackActionFunction<
-    TDoArgs extends GenericArgs,
-    TUndoArgs extends GenericArgs = TDoArgs,
-    TUndoActionName extends string = string
+    TDoArgs extends GenericArgs = GenericArgs,
+    TUndoActionName extends string = string,
+    TUndoArgs extends GenericArgs = TDoArgs
 > = (...args: TDoArgs) => ApplyActionObject<TUndoActionName, TUndoArgs>;
 
 export type TrrackAction<
@@ -23,3 +26,9 @@ export type TrrackAction<
     do: ApplyActionObject<TDoActionName, TDoArgs>;
     undo: ApplyActionObject<TUndoActionName, TUndoArgs>;
 };
+
+/**
+ * State tracking
+ */
+export type TrrackStateUpdateType = 'Regular' | 'Ephemeral';
+export type TrrackStateSaveMode = 'Auto' | 'Complete' | 'Patch';

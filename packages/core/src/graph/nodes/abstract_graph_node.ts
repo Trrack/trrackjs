@@ -34,18 +34,4 @@ export abstract class AProvenanceNode
     constructor(public readonly label: string) {
         super();
     }
-
-    get parent() {
-        if (this.incoming.length === 0) throw new Error('No parent node.');
-
-        if (this.incoming.length > 1)
-            throw new Error('More than one parent node.');
-
-        return <IProvenanceNode>this.incoming[0].from;
-    }
-
-    get level() {
-        if (this.incoming.length === 0) return 0;
-        return this.parent.level + 1;
-    }
 }

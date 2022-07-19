@@ -26,10 +26,4 @@ describe('Testing ProvenanceNode API', () => {
 
         expect(node.type).toBeDefined();
     });
-
-    it('should have level', () => {
-        const node = createMockProvenanceNode();
-
-        expect(typeof node.level).toBe('number');
-    });
 });

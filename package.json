@@ -8,6 +8,8 @@
   },
   "private": true,
   "dependencies": {
+    "@mantine/core": "^4.2.12",
+    "@mantine/hooks": "^4.2.12",
     "@swc/helpers": "^0.4.0",
     "core-js": "^3.6.5",
     "react": "18.2.0",

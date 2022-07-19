@@ -1,9 +1,13 @@
 import { GraphEdge } from './graph_edge';
-import { EdgeType, IGraphEdge, IGraphNode } from './nodes/types';
+import { EdgeType, IGraph, IGraphEdge, IGraphNode } from './nodes/types';
 
-export class Graph {
-    private nodes = new Map<string, IGraphNode>();
-    private edges = new Map<string, IGraphEdge>();
+export class Graph implements IGraph {
+    static create(): IGraph {
+        return new Graph();
+    }
+
+    nodes = new Map<string, IGraphNode>();
+    edges = new Map<string, IGraphEdge>();
 
     get nnodes() {
         return this.nodes.size;
@@ -47,23 +51,19 @@ export class Graph {
         return edge;
     }
 
-    getNode(id: string): IGraphNode {
+    getNode<T extends IGraphNode = IGraphNode>(id: string): T {
         const node = this.nodes.get(id);
 
         if (!node) throw new Error(`Node ${id} not found!`);
 
-        return node;
+        return node as T;
     }
 
     nodesBy<T extends IGraphNode = IGraphNode>(
         callback: (node: T) => boolean
     ): T[] {
-        const nodes: T[] = [];
-
-        for (const n of this.nodes.values()) {
-            if (callback(<T>n)) nodes.push(<T>n);
-        }
-
-        return nodes;
+        return Array.from(this.nodes.values()).filter((node) =>
+            callback(<T>node)
+        ) as T[];
     }
 }

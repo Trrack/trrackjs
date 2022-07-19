@@ -3,14 +3,17 @@ import { GraphEdge } from '../graph_edge';
 import { AProvenanceNode } from './abstract_graph_node';
 import { IActionNode, IStateNode } from './types';
 
-export class ActionNode extends AProvenanceNode implements IActionNode {
-    static create(
+export class ActionNode<TState>
+    extends AProvenanceNode
+    implements IActionNode<TState>
+{
+    static create<TState>(
         label: string,
         record: ApplyActionObject<any, any>,
         hasSideEffects: boolean,
         isInverse: boolean
-    ): IActionNode {
-        return new ActionNode(label, record, hasSideEffects, isInverse);
+    ): IActionNode<TState> {
+        return new ActionNode<TState>(label, record, hasSideEffects, isInverse);
     }
 
     type: 'Action' = 'Action';
@@ -25,7 +28,8 @@ export class ActionNode extends AProvenanceNode implements IActionNode {
     }
 
     get isInvertible() {
-        return !this.isInverse && this.inverse === null;
+        if (!this.hasSideEffects) return false;
+        return !this.isInverse && this.inverse !== null;
     }
 
     get inverse() {
@@ -41,7 +45,7 @@ export class ActionNode extends AProvenanceNode implements IActionNode {
         if (invertingEdges.length > 1)
             throw new Error('Too many inverting edges.');
 
-        const invertingNode = invertingEdges[0].to as IActionNode;
+        const invertingNode = invertingEdges[0].to as IActionNode<TState>;
 
         if (!invertingNode.isInverse)
             throw new Error('Incorrect inverting node.');
@@ -61,10 +65,10 @@ export class ActionNode extends AProvenanceNode implements IActionNode {
         if (invertsEdges.length > 1)
             throw new Error('Too many nodes to invert');
 
-        return invertsEdges[0].to as IActionNode;
+        return invertsEdges[0].to as IActionNode<TState>;
     }
 
-    get result(): IStateNode {
+    get result(): IStateNode<TState> {
         const resultsIn = this.outgoing.filter(
             GraphEdge.edgeType('results_in')
         );
@@ -72,6 +76,6 @@ export class ActionNode extends AProvenanceNode implements IActionNode {
         if (resultsIn.length !== 1)
             throw new Error('Incorrect pointer to result from action node.');
 
-        return resultsIn[0].to as IStateNode;
+        return resultsIn[0].to as IStateNode<TState>;
     }
 }

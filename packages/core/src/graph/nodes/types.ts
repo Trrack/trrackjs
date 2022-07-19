@@ -1,3 +1,5 @@
+import { Patch } from 'immer';
+
 import { ApplyActionObject } from '../../provenance';
 
 /**
@@ -47,24 +49,59 @@ export type NodeType = 'Root' | 'Action' | 'State';
 export interface IProvenanceNode extends IGraphNode {
     readonly type: NodeType;
     readonly label: string;
-    readonly level: number;
 }
 
-export interface IStateNode extends IProvenanceNode {
+export type StateLike<T> =
+    | {
+          type: 'state';
+          val: T;
+      }
+    | {
+          type: 'patches';
+          val: Patch[];
+      };
+
+export interface IStateNode<TState> extends IProvenanceNode {
     readonly type: 'State';
     isLeaf: boolean;
-    children: IStateNode[];
+    parent: IStateNode<TState> | null;
+    children: IStateNode<TState>[];
+    state: Promise<StateLike<TState>>;
 }
 
-export interface IActionNode extends IProvenanceNode {
+export interface IActionNode<TState> extends IProvenanceNode {
     readonly type: 'Action';
     readonly record: ApplyActionObject<any, any>;
     readonly isInverse: boolean;
     readonly isInvertible: boolean;
     readonly hasSideEffects: boolean;
-    inverse: IActionNode | null;
-    inverts: IActionNode | null;
-    result: IStateNode;
+    inverse: IActionNode<TState> | null;
+    inverts: IActionNode<TState> | null;
+    result: IStateNode<TState>;
+}
+
+/**
+ * IGraph
+ */
+export interface IGraphLike {
+    nodes: Map<string, IGraphNode>;
+    edges: Map<string, IGraphEdge>;
+
+    nnodes: number;
+    nedges: number;
+}
+
+export interface IGraph extends IGraphLike {
+    hasNode(id: string): boolean;
+    hasEdge(id: string): boolean;
+
+    addNode<T extends IGraphNode>(node: T): T;
+    addEdge(source: IGraphNode, target: IGraphNode, type: EdgeType): IGraphEdge;
+
+    getNode<T extends IGraphNode = IGraphNode>(id: string): T;
+    nodesBy<T extends IGraphNode = IGraphNode>(
+        callback: (node: T) => boolean
+    ): T[];
 }
 
 /**

@@ -1,21 +1,43 @@
-import { ApplyActionObject, TrrackAction, TrrackActionFunction } from '../action';
+import { GenericArgs } from '../../utils';
+import { TrrackActionFunction } from '../action';
 
-export type ActionFunctionMap = Record<
-    string,
-    TrrackActionFunction<any, any, any>
->;
+export type ActionParameterMap = Record<string, GenericArgs>;
 
-export interface IActionRegistry<T extends ActionFunctionMap> {
-    readonly registry: T;
+export type ActionFunctionRegistry<
+    T extends ActionParameterMap,
+    DoKey extends Extract<keyof T, string> = Extract<keyof T, string>,
+    DoArgs extends T[DoKey] = T[DoKey],
+    UndoKey extends Extract<keyof T, string> = Extract<keyof T, string>,
+    UndoArgs extends T[UndoKey] = T[UndoKey]
+> = Record<DoKey, TrrackActionFunction<DoArgs, UndoKey, UndoArgs>>;
 
-    register<K extends string, S extends TrrackActionFunction<any, any, any>>(
+export type LabelGeneratorWithArgs<Args extends GenericArgs> = (
+    ...args: Args
+) => string;
+
+export type LabelGenerator<Args extends GenericArgs> =
+    | string
+    | LabelGeneratorWithArgs<Args>;
+
+export type LabelRegistry<
+    T extends ActionParameterMap,
+    DoKey extends Extract<keyof T, string> = Extract<keyof T, string>,
+    DoArgs extends T[DoKey] = T[DoKey]
+> = Record<DoKey, LabelGenerator<DoArgs>>;
+
+export interface IActionRegistry<APM extends ActionParameterMap> {
+    register<
+        K extends Extract<keyof APM, string>,
+        Action extends ActionFunctionRegistry<APM>[K]
+    >(
         name: K,
-        action: S
-    ): IActionRegistry<Record<K, S> & T>;
+        labelGenerator: LabelGenerator<Parameters<Action>>,
+        action: Action
+    ): IActionRegistry<APM>;
 
-    get<K extends keyof T>(name: K): T[K];
-
-    apply<K extends keyof T>(
-        applyObject: ApplyActionObject<Extract<K, string>, Parameters<T[K]>>
-    ): TrrackAction<any, any, any, any>;
+    registerUnchecked(
+        name: string,
+        labelGenerator: LabelGenerator<any>,
+        action: TrrackActionFunction<any, any, any>
+    ): IActionRegistry<APM>;
 }
