@@ -46,15 +46,15 @@ export class ProvenanceGraph<TState> implements IProvenanceGraph<TState> {
         return stateNode;
     }
 
-    addAction(label: string, action: TrrackAction) {
-        this.current.state.then((state) => {
+    addAction(label: string, action: TrrackAction, state?: StateLike<TState>) {
+        this.current.state.then((currentState) => {
             const actionNode = this.addNode(
                 ActionNode.create(`Do: ${label}`, action.do, true, false) // Create action node
             );
             this.addEdge(this.current, actionNode, 'next'); // connect current state node to action node
 
             const newStateNode = this.addNode(
-                StateNode.create<TState>(label, state)
+                StateNode.create<TState>(label, state ? state : currentState)
             ); // Create new statenode
             this.addEdge(actionNode, newStateNode, 'results_in'); // Connect action to newState node
 
@@ -72,17 +72,14 @@ export class ProvenanceGraph<TState> implements IProvenanceGraph<TState> {
     }
 
     addState(label: string, stateLike: StateLike<TState>) {
-        const dummyAction = this.addNode(
-            ActionNode.create(`Do: dummy`, { name: '', args: [] }, false, false)
+        this.addAction(
+            label,
+            {
+                do: { name: '', args: [] },
+                undo: { name: '', args: [] },
+            },
+            stateLike
         );
-        this.addEdge(this.current, dummyAction, 'next');
-
-        const stateNode = this.addNode(
-            StateNode.create<TState>(label, stateLike)
-        );
-        this.addEdge(dummyAction, stateNode, 'results_in');
-
-        this.changeCurrent(stateNode);
     }
 
     goTo(node: IStateNode<TState>): IStateNode<TState>[] {

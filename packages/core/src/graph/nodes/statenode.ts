@@ -1,3 +1,4 @@
+import { GraphUtils } from '../base';
 import { GraphEdge } from '../graph_edge';
 import { AProvenanceNode } from './abstract_graph_node';
 import { NodeUtils } from './node_utils';
@@ -14,12 +15,16 @@ export class StateNode<TState>
         return new StateNode<TState>(label, state);
     }
 
-    declare state: Promise<StateLike<TState>>;
+    state: PromiseLike<StateLike<TState>>;
 
     constructor(label: string, state: StateLike<TState>) {
         super(label);
         this.state = Promise.resolve(state);
-        console.log('Remove declare from stateLike');
+    }
+
+    get level() {
+        if (this.parent) return this.parent.level + 1;
+        return 0;
     }
 
     get type(): 'State' {
@@ -28,6 +33,23 @@ export class StateNode<TState>
 
     get isLeaf() {
         return this.children.length === 0;
+    }
+
+    get nextActions() {
+        return this.outgoing
+            .filter(GraphEdge.edgeType('next'))
+            .map((e) => <IActionNode<TState>>e.to);
+    }
+
+    get resultsFrom(): IActionNode<TState> {
+        const resultsFromNodes = this.incoming
+            .filter(GraphEdge.edgeType('results_in'))
+            .map((e) => <IActionNode<TState>>e.from);
+
+        if (resultsFromNodes.length !== 1)
+            throw new Error('State should result from only one action.');
+
+        return resultsFromNodes[0];
     }
 
     get children(): IStateNode<TState>[] {
@@ -51,24 +73,49 @@ export class StateNode<TState>
     }
 
     get parent() {
-        const previousPointedNodes = this.outgoing
-            .filter(GraphEdge.edgeType('previous'))
-            .map((e) => e.to);
+        const creatorActions = this.incoming
+            .filter(GraphEdge.edgeType('results_in'))
+            .map((e) => <IActionNode<TState>>e.from);
 
-        if (previousPointedNodes.length === 0) return null; // This is root
+        if (creatorActions.length === 0) return null; // This is root
 
-        if (previousPointedNodes.length > 1)
+        if (creatorActions.length > 1)
             throw new Error('Invalid provenance graph. Too many parent nodes.'); // Throw error on multiple parent nodes.
 
-        const previousNode = <IProvenanceNode>previousPointedNodes[0];
+        return creatorActions[0].invokedBy;
+    }
 
-        console.log('Hello');
+    actionNodeTo(node: IStateNode<TState>): IActionNode<TState> {
+        const isNodeUp = GraphUtils.isNextNodeUp(this, node);
 
-        if (NodeUtils.isState<TState>(previousNode)) return previousNode;
-        else if (NodeUtils.isAction<TState>(previousNode)) {
-            return previousNode.result;
+        if (isNodeUp) {
+            const prevs = this.outgoing
+                .filter(GraphEdge.edgeType('previous'))
+                .map((e) => <IActionNode<TState>>e.to);
+
+            return prevs[0];
         } else {
-            throw new Error('Cannot determine parent.');
+            const nexts = this.outgoing
+                .filter(GraphEdge.edgeType('next'))
+                .map((e) => <IActionNode<TState>>e.to);
+
+            const nodeResultsFrom = node.incoming
+                .filter(GraphEdge.edgeType('results_in'))
+                .map((e) => <IActionNode<TState>>e.from);
+
+            const commonNode = new Set(
+                nexts.filter((n) => nodeResultsFrom.includes(n))
+            );
+            if (commonNode.size === 1) return Array.from(commonNode)[0];
+            throw new Error('Multiple transition node detected.');
         }
+
+        if (this.nextActions.includes(node.resultsFrom))
+            return node.resultsFrom;
+
+        if (node.nextActions.includes(this.resultsFrom))
+            return this.resultsFrom;
+
+        throw new Error('No transition action between give state nodes.');
     }
 }

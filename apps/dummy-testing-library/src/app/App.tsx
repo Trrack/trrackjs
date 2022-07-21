@@ -2,6 +2,7 @@ import { Button } from '@mantine/core';
 import { useElementSize } from '@mantine/hooks';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { IProvenanceGraph, ProvenanceGraph, Trrack } from '@trrack/core';
+import test from 'node:test';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import styles from './App.module.css';
@@ -24,12 +25,10 @@ function useGraph<T>(state: T) {
       test: reducer,
     },
   });
-  t.print();
-
-  setTimeout(() => {
-    t.apply('Change test string', actions.change('Hello'));
-    t.print();
-  }, 1500);
+  t.apply('A', actions.change('Bye'));
+  t.apply('2', actions.change('Bye eqr'));
+  t.apply('3', actions.change('Bye asd'));
+  t.apply('4', actions.change('Bye 1'));
 
   const [provenance, setProvenance] = useState<IProvenanceGraph<T> | null>(
     null

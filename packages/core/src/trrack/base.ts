@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Action,
     AnyAction,
@@ -6,33 +7,27 @@ import {
     createSlice,
     CreateSliceOptions,
     EnhancedStore,
-    Middleware,
     SliceCaseReducers,
 } from '@reduxjs/toolkit';
 import { ThunkMiddleware } from 'redux-thunk';
 
-import { IProvenanceGraph, ProvenanceGraph, TrrackStateSaveMode, TrrackStateUpdateType } from '../provenance';
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-type ReduxMiddlewares<T> = ReadonlyArray<Middleware<Record<string, never>, T>>;
-
-type TrrackStateUpdateOpts = {
-    stateUpdateType: TrrackStateUpdateType;
-    saveMode: TrrackStateSaveMode;
-};
+import { GraphUtils, IStateNode } from '../graph';
+import { IProvenanceGraph, ProvenanceGraph } from '../provenance';
+import { ITrrack, ReduxMiddlewares, TrrackStateUpdateOpts } from './types';
 
 export class Trrack<
     S = any,
     A extends Action<any> = AnyAction,
     M extends ReduxMiddlewares<S> = [ThunkMiddleware<S, AnyAction, undefined>]
-> {
+> implements ITrrack<S, A>
+{
     static init<
         S = any,
         A extends Action<any> = AnyAction,
         M extends ReduxMiddlewares<S> = [
             ThunkMiddleware<S, AnyAction, undefined>
         ]
-    >(opts: ConfigureStoreOptions<S, A, M>) {
+    >(opts: ConfigureStoreOptions<S, A, M>): ITrrack<S, A> {
         return new Trrack<S, A, M>(opts);
     }
 
@@ -59,6 +54,14 @@ export class Trrack<
         this.graph = ProvenanceGraph.create(this.initialState);
     }
 
+    get root() {
+        return this.graph.root;
+    }
+
+    get current() {
+        return this.graph.current;
+    }
+
     apply(label: string, action: A, opts?: Partial<TrrackStateUpdateOpts>) {
         const { stateUpdateType = 'Regular', saveMode = 'Auto' } = opts || {};
         this.store.dispatch(action);
@@ -66,7 +69,36 @@ export class Trrack<
         this.graph.addState(label, { type: 'state', val: newState });
     }
 
-    print() {
-        console.log(this.store.getState());
+    private applyPatch(opts: any): S {
+        console.warn('Implement apply pathch');
+        return opts as S;
     }
+
+    getCurrentState() {
+        return this.current.state.then((state) => {
+            if (state.type === 'state') return state.val;
+            else return this.applyPatch(state.val);
+        });
+    }
+
+    print() {
+        const path = GraphUtils.getPath(this.current, this.root);
+
+        for (let i = 0; i < path.length - 1; ++i) {
+            const c = path[i];
+            const n = path[i + 1];
+
+            console.group(c.id, '---->', n.id);
+            console.log(GraphUtils.isNextNodeUp(c, n));
+            console.log(GraphUtils.isNextNodeUp(n, c));
+            console.groupEnd();
+        }
+    }
+
+    to(node: IStateNode<S>): void {
+        const path = GraphUtils.getPath(this.current, node);
+        console.table(path);
+    }
+    undo(): void {}
+    redo(): void {}
 }

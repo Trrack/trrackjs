@@ -66,7 +66,11 @@ export interface IStateNode<TState> extends IProvenanceNode {
     isLeaf: boolean;
     parent: IStateNode<TState> | null;
     children: IStateNode<TState>[];
-    state: Promise<StateLike<TState>>;
+    state: PromiseLike<StateLike<TState>>;
+    level: number;
+    nextActions: Array<IActionNode<TState>>;
+    resultsFrom: IActionNode<TState>;
+    actionNodeTo(node: IStateNode<TState>): IActionNode<TState>;
 }
 
 export interface IActionNode<TState> extends IProvenanceNode {
@@ -78,6 +82,7 @@ export interface IActionNode<TState> extends IProvenanceNode {
     inverse: IActionNode<TState> | null;
     inverts: IActionNode<TState> | null;
     result: IStateNode<TState>;
+    invokedBy: IStateNode<TState>;
 }
 
 /**

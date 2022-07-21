@@ -2,7 +2,7 @@ import { ProvenanceGraph } from '../src';
 
 describe('test', () => {
     it('should work', () => {
-        const t = new ProvenanceGraph();
+        const t = new ProvenanceGraph<null>(null);
         t.addAction('Hello', {
             do: {
                 name: 'test',

@@ -1,5 +1,78 @@
 import { GraphEdge } from './graph_edge';
-import { EdgeType, IGraph, IGraphEdge, IGraphNode } from './nodes/types';
+import { EdgeType, IGraph, IGraphEdge, IGraphNode, IStateNode } from './nodes/types';
+
+export class GraphUtils {
+    private static LCA<T>(
+        current: IStateNode<T>,
+        destination: IStateNode<T>
+    ): IStateNode<T> {
+        let [source, target] = [current, destination];
+
+        if (source.level > target.level) {
+            [source, target] = [target, source];
+        }
+
+        let diff = target.level - source.level;
+
+        while (diff !== 0) {
+            if (!target.parent) break;
+            target = target.parent;
+            diff -= 1;
+        }
+
+        if (source.id === target.id) return source;
+
+        while (source.id !== target.id) {
+            if (source.parent) source = source.parent;
+            if (target.parent) target = target.parent;
+        }
+
+        return source;
+    }
+
+    static getPath<T>(
+        current: IStateNode<T>,
+        destination: IStateNode<T>
+    ): Array<IStateNode<T>> {
+        const lca = GraphUtils.LCA(current, destination);
+
+        const pathFromSourceToLca: IStateNode<T>[] = [];
+        const pathFromDestinationToLca: IStateNode<T>[] = [];
+
+        let [source, target] = [current, destination];
+
+        while (source !== lca) {
+            pathFromSourceToLca.push(source);
+            if (source.parent) {
+                source = source.parent;
+            }
+        }
+
+        pathFromSourceToLca.push(source);
+
+        while (target !== lca) {
+            pathFromDestinationToLca.push(target);
+            if (target.parent) {
+                target = target.parent;
+            }
+        }
+
+        return [...pathFromSourceToLca, ...pathFromDestinationToLca.reverse()];
+    }
+
+    static isNextNodeUp<T>(
+        source: IStateNode<T>,
+        target: IStateNode<T>
+    ): boolean {
+        if (source.parent && source.parent.id === target.id) return true;
+
+        if (target.parent && target.parent.id === source.id) return false;
+
+        throw new Error(
+            `Illegal use of function. Nodes ${source.id} and ${target.id} are not connected.`
+        );
+    }
+}
 
 export class Graph implements IGraph {
     static create(): IGraph {

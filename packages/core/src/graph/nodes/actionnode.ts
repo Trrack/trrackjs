@@ -78,4 +78,15 @@ export class ActionNode<TState>
 
         return resultsIn[0].to as IStateNode<TState>;
     }
+
+    get invokedBy(): IStateNode<TState> {
+        const comingFromNodes = this.incoming
+            .filter(GraphEdge.edgeType('next'))
+            .map((e) => <IStateNode<TState>>e.from);
+
+        if (comingFromNodes.length !== 1)
+            throw new Error('Action can only be invoked by one state node.');
+
+        return comingFromNodes[0];
+    }
 }
