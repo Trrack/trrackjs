@@ -1,3 +1,1 @@
-export * from './action';
-export * from './registry';
-export * from './provenance-graph';
+export type Test2 = 'string';

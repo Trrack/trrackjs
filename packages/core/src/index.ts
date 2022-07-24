@@ -1,4 +1,4 @@
-// export * from './utils';
-export * from './trrack';
+export * from './utils';
 export * from './graph';
+export * from './registry';
 export * from './provenance';

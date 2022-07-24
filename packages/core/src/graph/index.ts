@@ -1,2 +1,1 @@
-export * from './base';
-export * from './nodes';
+export type Test = 'string';
