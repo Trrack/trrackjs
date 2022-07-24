@@ -1,18 +1,13 @@
-import { ActionNode, EdgeType, Graph, IGraph, IGraphNode, IStateNode, StateLike, StateNode } from '../graph';
+import { ActionNode, Graph, IRootNode, IStateNode, RootNode, StateLike } from '../graph';
 import { TrrackAction } from './action';
-import { IProvenanceGraph } from './type';
 
-export class ProvenanceGraph<TState> implements IProvenanceGraph<TState> {
-    static create<TState>(initialState: TState): IProvenanceGraph<TState> {
-        return new ProvenanceGraph<TState>(initialState);
-    }
-
-    current: IStateNode<TState>;
-    readonly backend: IGraph = Graph.create();
+export class ProvenanceGraph<TState> {
+    current: IRootNode<TState> | IStateNode<TState>;
+    readonly backend: Graph = new Graph();
 
     constructor(initialState: TState) {
-        this.addNode(
-            StateNode.create('Start', {
+        this.backend.addNode(
+            new RootNode({
                 type: 'state',
                 val: initialState,
             })
@@ -20,66 +15,45 @@ export class ProvenanceGraph<TState> implements IProvenanceGraph<TState> {
         this.current = this.root;
     }
 
-    private verifyAndGetRoot() {
-        const stateNodes = this.backend.nodesBy<IStateNode<TState>>((n) => {
-            return (
-                n.type === 'State' &&
-                n.incoming.length === 0 &&
-                n.label === 'Start'
-            );
-        });
+    get root(): IRootNode<TState> {
+        const root = this.backend.root;
 
-        return stateNodes.length === 1 ? stateNodes[0] : stateNodes.length;
-    }
+        if (!root) throw new Error('No root node in provenance graph.');
 
-    get root(): IStateNode<TState> {
-        const stateNode = this.verifyAndGetRoot();
-
-        if (typeof stateNode === 'number') {
-            throw new Error(
-                stateNode === 0
-                    ? 'No root node found. Incorrect provenance initialization.'
-                    : 'Too many root nodes found. Invalid provenance graph.'
-            );
-        }
-
-        return stateNode;
+        return root;
     }
 
     addAction(label: string, action: TrrackAction, state?: StateLike<TState>) {
-        this.current.state.then((currentState) => {
-            const actionNode = this.addNode(
-                ActionNode.create(`Do: ${label}`, action.do, true, false) // Create action node
-            );
-            this.addEdge(this.current, actionNode, 'next'); // connect current state node to action node
-
-            const newStateNode = this.addNode(
-                StateNode.create<TState>(label, state ? state : currentState)
-            ); // Create new statenode
-            this.addEdge(actionNode, newStateNode, 'results_in'); // Connect action to newState node
-
-            const inverseActionNode = this.addNode(
-                ActionNode.create(`Undo: ${label}`, action.undo, true, true) // Create inverse action node
-            );
-            this.addEdge(actionNode, inverseActionNode, 'inverted_by'); // connect action to inverse
-            this.addEdge(inverseActionNode, actionNode, 'inverts'); // connect inverse to action
-
-            this.addEdge(newStateNode, inverseActionNode, 'previous'); // connect newstate to inverse
-            this.addEdge(inverseActionNode, this.current, 'results_in'); // connect inverse to current state
-
-            this.changeCurrent(newStateNode); // update current state to new state
+        const actionNode = new ActionNode({
+            label,
+            action,
+            hasSideEffects: true,
+            triggeredBy: this.current,
         });
+        const newStateNode = actionNode.result;
+        const inverseNode = actionNode.inverseAction;
+
+        this.backend.addNode(actionNode);
+        this.backend.addNode(newStateNode);
+        this.backend.addNode(inverseNode);
     }
 
     addState(label: string, stateLike: StateLike<TState>) {
-        this.addAction(
+        const actionNode = new ActionNode({
             label,
-            {
+            action: {
                 do: { name: '', args: [] },
                 undo: { name: '', args: [] },
             },
-            stateLike
-        );
+            hasSideEffects: false,
+            triggeredBy: this.current,
+        });
+        const newStateNode = actionNode.result;
+        const inverseNode = actionNode.inverseAction;
+
+        this.backend.addNode(actionNode);
+        this.backend.addNode(newStateNode);
+        this.backend.addNode(inverseNode);
     }
 
     goTo(node: IStateNode<TState>): IStateNode<TState>[] {
@@ -89,13 +63,5 @@ export class ProvenanceGraph<TState> implements IProvenanceGraph<TState> {
 
     private changeCurrent(node: IStateNode<TState>) {
         this.current = node;
-    }
-
-    private addNode<T extends IGraphNode>(node: T): T {
-        return this.backend.addNode(node);
-    }
-
-    private addEdge(source: IGraphNode, target: IGraphNode, type: EdgeType) {
-        return this.backend.addEdge(source, target, type);
     }
 }

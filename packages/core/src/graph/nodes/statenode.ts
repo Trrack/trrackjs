@@ -1,121 +1,70 @@
-import { GraphUtils } from '../base';
-import { GraphEdge } from '../graph_edge';
 import { AProvenanceNode } from './abstract_graph_node';
-import { NodeUtils } from './node_utils';
-import { IActionNode, IProvenanceNode, IStateNode, StateLike } from './types';
+import { IActionNode, IInverseActionNode, IRootNode, IStateNode, StateLike } from './types';
 
-export class StateNode<TState>
+abstract class AStateNode<TState>
     extends AProvenanceNode
-    implements IStateNode<TState>
+    implements IRootNode<TState>
 {
-    static create<TState>(
-        label: string,
-        state: StateLike<TState>
-    ): IStateNode<TState> {
-        return new StateNode<TState>(label, state);
-    }
+    abstract get level(): number;
 
-    state: PromiseLike<StateLike<TState>>;
+    private childActionMap: Map<string, IActionNode<TState>> = new Map();
+
+    readonly state: PromiseLike<StateLike<TState>>;
 
     constructor(label: string, state: StateLike<TState>) {
         super(label);
         this.state = Promise.resolve(state);
     }
 
+    actionToChild(child: IStateNode<TState>): IActionNode<TState> {
+        const action = this.childActionMap.get(child.id);
+        if (!action)
+            throw new Error(`No action to go to ${child.label} (${child.id})`);
+
+        return action;
+    }
+
+    addChildNode(child: IStateNode<TState>, action: IActionNode<TState>): void {
+        if (this.childActionMap.has(child.id))
+            throw new Error('This child is already registered!');
+        this.childActionMap.set(child.id, action);
+    }
+
+    get children(): IStateNode<TState>[] {
+        return Array.from(this.childActionMap.values()).map((a) => a.result);
+    }
+}
+
+export class RootNode<TState> extends AStateNode<TState> {
+    constructor(state: StateLike<TState>, label = 'Root') {
+        super(label, state);
+    }
+
+    get type(): 'Root' {
+        return 'Root';
+    }
+
     get level() {
-        if (this.parent) return this.parent.level + 1;
         return 0;
+    }
+}
+
+export class StateNode<TState>
+    extends AStateNode<TState>
+    implements IStateNode<TState>
+{
+    declare parent: IStateNode<TState>;
+    declare actionToParent: IInverseActionNode<TState>;
+
+    constructor(label: string, state: StateLike<TState>) {
+        super(label, state);
     }
 
     get type(): 'State' {
         return 'State';
     }
 
-    get isLeaf() {
-        return this.children.length === 0;
-    }
-
-    get nextActions() {
-        return this.outgoing
-            .filter(GraphEdge.edgeType('next'))
-            .map((e) => <IActionNode<TState>>e.to);
-    }
-
-    get resultsFrom(): IActionNode<TState> {
-        const resultsFromNodes = this.incoming
-            .filter(GraphEdge.edgeType('results_in'))
-            .map((e) => <IActionNode<TState>>e.from);
-
-        if (resultsFromNodes.length !== 1)
-            throw new Error('State should result from only one action.');
-
-        return resultsFromNodes[0];
-    }
-
-    get children(): IStateNode<TState>[] {
-        const nextEdges = this.outgoing.filter(GraphEdge.edgeType('next'));
-
-        if (nextEdges.length === 0) return [];
-
-        const nextNodes = nextEdges.map((edge) => <IProvenanceNode>edge.to);
-
-        const directStateNodes = <IStateNode<TState>[]>(
-            nextNodes.filter((node) => NodeUtils.isState(node))
-        );
-
-        const actionNodes = <IActionNode<TState>[]>(
-            nextNodes.filter((node) => NodeUtils.isAction(node))
-        );
-
-        const actionDerivedStates = actionNodes.map((node) => node.result);
-
-        return [...directStateNodes, ...actionDerivedStates];
-    }
-
-    get parent() {
-        const creatorActions = this.incoming
-            .filter(GraphEdge.edgeType('results_in'))
-            .map((e) => <IActionNode<TState>>e.from);
-
-        if (creatorActions.length === 0) return null; // This is root
-
-        if (creatorActions.length > 1)
-            throw new Error('Invalid provenance graph. Too many parent nodes.'); // Throw error on multiple parent nodes.
-
-        return creatorActions[0].invokedBy;
-    }
-
-    actionNodeTo(node: IStateNode<TState>): IActionNode<TState> {
-        const isNodeUp = GraphUtils.isNextNodeUp(this, node);
-
-        if (isNodeUp) {
-            const prevs = this.outgoing
-                .filter(GraphEdge.edgeType('previous'))
-                .map((e) => <IActionNode<TState>>e.to);
-
-            return prevs[0];
-        } else {
-            const nexts = this.outgoing
-                .filter(GraphEdge.edgeType('next'))
-                .map((e) => <IActionNode<TState>>e.to);
-
-            const nodeResultsFrom = node.incoming
-                .filter(GraphEdge.edgeType('results_in'))
-                .map((e) => <IActionNode<TState>>e.from);
-
-            const commonNode = new Set(
-                nexts.filter((n) => nodeResultsFrom.includes(n))
-            );
-            if (commonNode.size === 1) return Array.from(commonNode)[0];
-            throw new Error('Multiple transition node detected.');
-        }
-
-        if (this.nextActions.includes(node.resultsFrom))
-            return node.resultsFrom;
-
-        if (node.nextActions.includes(this.resultsFrom))
-            return this.resultsFrom;
-
-        throw new Error('No transition action between give state nodes.');
+    get level() {
+        return this.parent.level;
     }
 }

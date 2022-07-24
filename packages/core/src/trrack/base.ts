@@ -12,25 +12,14 @@ import {
 import { ThunkMiddleware } from 'redux-thunk';
 
 import { GraphUtils, IStateNode } from '../graph';
-import { IProvenanceGraph, ProvenanceGraph } from '../provenance';
-import { ITrrack, ReduxMiddlewares, TrrackStateUpdateOpts } from './types';
+import { ProvenanceGraph } from '../provenance';
+import { ReduxMiddlewares, TrrackStateUpdateOpts } from './types';
 
 export class Trrack<
     S = any,
     A extends Action<any> = AnyAction,
     M extends ReduxMiddlewares<S> = [ThunkMiddleware<S, AnyAction, undefined>]
-> implements ITrrack<S, A>
-{
-    static init<
-        S = any,
-        A extends Action<any> = AnyAction,
-        M extends ReduxMiddlewares<S> = [
-            ThunkMiddleware<S, AnyAction, undefined>
-        ]
-    >(opts: ConfigureStoreOptions<S, A, M>): ITrrack<S, A> {
-        return new Trrack<S, A, M>(opts);
-    }
-
+> {
     static createState<
         State,
         CaseReducers extends SliceCaseReducers<State>,
@@ -46,12 +35,12 @@ export class Trrack<
     // ! Check for redux integration
     store: EnhancedStore<S, A, M>;
     initialState: S;
-    graph: IProvenanceGraph<S>;
+    graph: ProvenanceGraph<S>;
 
     constructor(opts: ConfigureStoreOptions<S, A, M>) {
         this.store = configureStore(opts);
         this.initialState = this.store.getState();
-        this.graph = ProvenanceGraph.create(this.initialState);
+        this.graph = new ProvenanceGraph(this.initialState);
     }
 
     get root() {

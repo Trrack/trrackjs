@@ -1,37 +1,10 @@
 import { ID } from '../../utils';
-import { IGraphEdge, IGraphNode, IProvenanceNode, NodeType, SerializableGraphNode } from './types';
+import { IProvenanceNode, NodeType } from './types';
 
-export abstract class AGraphNode implements IGraphNode {
-    id: string;
-    outgoing: IGraphEdge[] = [];
-    incoming: IGraphEdge[] = [];
-    createdOn = new Date();
-
-    constructor() {
-        this.id = ID.get();
-    }
-
-    get edges(): IGraphEdge[] {
-        return [...this.outgoing, ...this.incoming];
-    }
-
-    toJson(): SerializableGraphNode {
-        return {
-            id: this.id,
-            createdOn: this.createdOn.toJSON(),
-            outgoing: this.outgoing.map((e) => e.id),
-            incoming: this.incoming.map((e) => e.id),
-        };
-    }
-}
-
-export abstract class AProvenanceNode
-    extends AGraphNode
-    implements IProvenanceNode
-{
+export abstract class AProvenanceNode implements IProvenanceNode {
     abstract type: NodeType;
+    readonly id: string = ID.get();
+    readonly createdOn: Date = new Date();
 
-    constructor(public readonly label: string) {
-        super();
-    }
+    constructor(public readonly label: string) {}
 }
