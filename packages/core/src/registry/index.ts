@@ -1,1 +1,2 @@
-export type Test3 = 'string';
+export * from './action';
+export * from './reg';

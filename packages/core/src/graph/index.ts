@@ -1,1 +1,2 @@
-export type Test = 'string';
+export * from './components';
+export * from './provenance-graph';

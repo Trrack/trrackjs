@@ -1,12 +1,14 @@
+import AddIcon from '@mui/icons-material/Add';
 import RedoIcon from '@mui/icons-material/Redo';
+import RemoveIcon from '@mui/icons-material/Remove';
 import UndoIcon from '@mui/icons-material/Undo';
-import { AppBar, Button, Toolbar, Typography } from '@mui/material';
+import { AppBar, Button, IconButton, Toolbar, Typography } from '@mui/material';
 
-import { useTrrack } from '../store/trrack';
+import { Trrack } from '../store/trrack';
 import { Task } from '../store/types';
 
-export function Navbar() {
-  const { trrack, isAtLatest, isAtRoot } = useTrrack();
+export function Navbar({ t }: { t: Trrack }) {
+  const { trrack, isAtLatest, isAtRoot, actions, counter } = t;
 
   return (
     <>
@@ -15,6 +17,23 @@ export function Navbar() {
           <Typography color="black" variant="h6" sx={{ flexGrow: 1 }}>
             Action based tracking with React
           </Typography>
+          <IconButton
+            onClick={() => {
+              trrack.apply('Increment counter', actions.incrementCounter(1));
+            }}
+          >
+            <AddIcon />
+          </IconButton>
+          <Typography color="black" variant="h6">
+            Counter: {counter}
+          </Typography>
+          <IconButton
+            onClick={() => {
+              trrack.apply('Increment counter', actions.decrementCounter(1));
+            }}
+          >
+            <RemoveIcon />
+          </IconButton>
           <Button
             sx={{ margin: '0.2em' }}
             variant="contained"
@@ -24,14 +43,10 @@ export function Navbar() {
               const task: Task = {
                 id: Date.now().toString(),
                 createdOn: Date.now(),
-                desc: `Task ${Math.floor(Math.random() * 100)}`,
+                desc: `Task ${taskNumber}`,
                 completed: false,
               };
-              trrack.apply({
-                name: 'add',
-                label: `Add task: ${taskNumber}`,
-                args: [task],
-              });
+              trrack.apply(`Add task: ${taskNumber}`, actions.addTask(task));
             }}
           >
             Add Random Task
