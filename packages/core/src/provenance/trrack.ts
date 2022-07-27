@@ -1,9 +1,23 @@
-import { createStateNode, initializeProvenanceGraph, isStateNode, NodeId, Nodes, ProvenanceNode } from '../graph';
+import {
+    createStateNode,
+    initializeProvenanceGraph,
+    isStateNode,
+    NodeId,
+    Nodes,
+    ProvenanceNode,
+    SideEffects,
+} from '../graph';
 import { Registry, TrrackAction } from '../registry';
 
 type ConfigureTrrackOptions<S> = {
     registry: Registry<any>;
     initialState: S;
+};
+
+type RecordActionArgs<S> = {
+    label: string;
+    state: S;
+    sideEffects: SideEffects;
 };
 
 function getState<S>(node: ProvenanceNode<S>): S {
@@ -33,32 +47,42 @@ export function initializeTrrack<S = any>({
         get root() {
             return graph.root;
         },
+        record({ label, state, sideEffects }: RecordActionArgs<S>) {
+            const newStateNode = createStateNode({
+                label,
+                state,
+                parent: this.current,
+                sideEffects,
+            });
+            graph.update(graph.addNode(newStateNode));
+        },
         apply<T extends string, Payload = any>(
             label: string,
             act: TrrackAction<T, Payload>
         ) {
             if (act.meta.hasSideEffects) {
                 const action = registry.get(act.type);
+
                 const undoParams = action(act.payload);
-                const newStateNode = createStateNode(
-                    this.current,
-                    this.current.state.val as any,
+
+                this.record({
                     label,
-                    { do: [act], undo: [undoParams] }
-                );
-                graph.update(graph.addNode(newStateNode));
+                    state: this.current.state.val as any,
+                    sideEffects: { do: [act], undo: [undoParams] },
+                });
             } else {
                 const action = registry.getState(act.type);
+
                 const newState = action(
                     this.current.state.val as any,
                     act.payload
                 );
-                const newStateNode = createStateNode(
-                    this.current,
-                    newState,
-                    label
-                );
-                graph.update(graph.addNode(newStateNode));
+
+                this.record({
+                    label,
+                    state: newState,
+                    sideEffects: { do: [], undo: [] },
+                });
             }
         },
         to(node: NodeId) {

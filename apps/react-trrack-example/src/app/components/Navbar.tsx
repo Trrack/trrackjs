@@ -29,7 +29,7 @@ export function Navbar({ t }: { t: Trrack }) {
           </Typography>
           <IconButton
             onClick={() => {
-              trrack.apply('Increment counter', actions.decrementCounter(1));
+              trrack.apply('Decrement counter', actions.decrementCounter(1));
             }}
           >
             <RemoveIcon />

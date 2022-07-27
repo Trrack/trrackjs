@@ -30,7 +30,7 @@ export type RootNode<S> = BaseNode<S> & {
     label: string;
 };
 
-type SideEffects = {
+export type SideEffects = {
     do: Array<TrrackAction<any, any>>;
     undo: Array<TrrackAction<any, any>>;
 };
@@ -52,15 +52,20 @@ export function isRootNode<S>(node: ProvenanceNode<S>): node is RootNode<S> {
     return !isStateNode(node);
 }
 
-export function createStateNode<S>(
-    parent: ProvenanceNode<S>,
-    state: S,
-    label: string,
-    sideEffects: SideEffects = {
+export function createStateNode<S>({
+    parent,
+    state,
+    label,
+    sideEffects = {
         do: [],
         undo: [],
-    }
-): StateNode<S> {
+    },
+}: {
+    parent: ProvenanceNode<S>;
+    state: S;
+    label: string;
+    sideEffects?: SideEffects;
+}): StateNode<S> {
     return {
         id: ID.get(),
         label,
