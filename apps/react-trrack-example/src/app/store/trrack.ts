@@ -17,39 +17,33 @@ export function useTrrackTaskManager() {
   const { registry, actions } = useMemo(() => {
     const reg = Registry.create();
 
-    const addTask = reg.registerState<State>({
-      type: 'add-task',
-      action: (state, task: Task) => {
-        state.tasks.push(task);
-      },
+    const addTask = reg.register('add-task', (state, task: Task) => {
+      state.tasks.push(task);
     });
 
-    const removeTask = reg.registerState<State>({
-      type: 'remove-task',
-      action: (state, task: Task) => {
-        state.tasks = state.tasks.filter((t) => t.id !== task.id);
-      },
+    const removeTask = reg.register('remove-task', (state, task: Task) => {
+      state.tasks = state.tasks.filter((t: Task) => t.id !== task.id);
     });
 
-    const markTaskComplete = reg.registerState<State>({
-      type: 'complete-task',
-      action: (state, task: Task) => {
-        const idx = state.tasks.findIndex((d) => d.id === task.id);
+    const markTaskComplete = reg.register(
+      'complete-task',
+      (state, task: Task) => {
+        const idx = state.tasks.findIndex((d: any) => d.id === task.id);
         state.tasks[idx].completed = true;
-      },
-    });
+      }
+    );
 
-    const markTaskIncomplete = reg.registerState<State>({
-      type: 'incomplete-task',
-      action: (state, task: Task) => {
-        const idx = state.tasks.findIndex((d) => d.id === task.id);
+    const markTaskIncomplete = reg.register(
+      'incomplete-task',
+      (state, task: Task) => {
+        const idx = state.tasks.findIndex((d: any) => d.id === task.id);
         state.tasks[idx].completed = false;
-      },
-    });
+      }
+    );
 
-    const incrementCounter = reg.register({
-      type: 'increment-counter',
-      action: (add: number) => {
+    const incrementCounter = reg.register(
+      'increment-counter',
+      (add: number) => {
         setCounter((c) => c + add);
         return {
           type: 'decrement-counter',
@@ -58,12 +52,12 @@ export function useTrrackTaskManager() {
             hasSideEffects: true,
           },
         };
-      },
-    });
+      }
+    );
 
-    const decrementCounter = reg.register({
-      type: 'decrement-counter',
-      action: (sub: number) => {
+    const decrementCounter = reg.register(
+      'decrement-counter',
+      (sub: number) => {
         setCounter((c) => c - sub);
         return {
           type: 'increment-counter',
@@ -72,8 +66,8 @@ export function useTrrackTaskManager() {
             hasSideEffects: true,
           },
         };
-      },
-    });
+      }
+    );
 
     return {
       registry: reg,

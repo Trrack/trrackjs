@@ -1,23 +1,49 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 
-export type TrrackActionMeta = {
-    hasSideEffects: boolean;
-};
-
 /**
  * Action Tracking
  */
 export type TrrackAction<T extends string = string, P = void> = PayloadAction<
     P,
-    T,
-    TrrackActionMeta
+    T
 >;
+
+type TAF<
+    DoActionPayload = any,
+    UndoActionType extends string = string,
+    UndoActionPayload = DoActionPayload
+> = (args: DoActionPayload) => TrrackAction<UndoActionType, UndoActionPayload>;
+
+type StateChangeFunction<State = any, Payload = any> = (
+    state: State,
+    payload: Payload
+) => void;
 
 export type TrrackActionFunction<
     DoActionPayload = any,
     UndoActionType extends string = string,
     UndoActionPayload = DoActionPayload
-> = (args: DoActionPayload) => TrrackAction<UndoActionType, UndoActionPayload>;
+> =
+    | TAF<DoActionPayload, UndoActionType, UndoActionPayload>
+    | StateChangeFunction;
+
+export type LabelGenerator<Args> = (args: Args) => string;
+
+export type TrrackActionConfig<Args, Event> = {
+    hasSideEffects: boolean;
+    eventType: Event;
+    label: LabelGenerator<Args>;
+};
+
+export type TrrackActionFunctionObject<
+    Event extends string = string,
+    DoActionPayload = any,
+    UndoActionType extends string = string,
+    UndoActionPayload = DoActionPayload
+> = {
+    func: any;
+    config: TrrackActionConfig<DoActionPayload, Event>;
+};
 
 export type TrrackActionRecord<
     DoActionType extends string,

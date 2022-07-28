@@ -2,8 +2,6 @@ import './app.element.css';
 
 const lineupRootSelector = 'lineup-root';
 
-export const LINEUP_NODE = () => document.getElementById(lineupRootSelector);
-
 export class AppElement extends HTMLElement {
   public static observedAttributes = [];
 
@@ -20,11 +18,18 @@ export class AppElement extends HTMLElement {
 
         <!--  LINE UP  -->
         <div id="lineup-wrapper">
-          <div id="${lineupRootSelector}"/>
-        </div>
+
+          <div id="${lineupRootSelector}-1" class="lineup-div"></div>
+
+          <div id="${lineupRootSelector}-2" class="lineup-div"></div>
+
+
+        <div>
           <button id="undo">Undo</button>
           <button id="redo">Redo</button>
           <button id="log">Log</button>
+        </div>
+        </div>
       </div>
     </div>
       `;

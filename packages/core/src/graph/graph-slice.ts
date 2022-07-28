@@ -1,28 +1,29 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { ID } from '../utils';
-import { NodeId, Nodes, RootNode, StateNode } from './components';
+import { BaseArtifactType, createRootNode, NodeId, Nodes, StateNode } from './components';
 
-type ProvenanceGraph<S> = {
-    nodes: Nodes<S>;
+type ProvenanceGraph<
+    State,
+    Event extends string,
+    Artifact extends BaseArtifactType<any>
+> = {
+    nodes: Nodes<State, Event, Artifact>;
     current: NodeId;
     root: NodeId;
 };
 
-export function graphSliceCreator<S>(initialState: S) {
-    const root: RootNode<S> = {
-        id: ID.get(),
-        label: 'Root',
-        children: [],
-        createdOn: Date.now(),
-        state: {
-            type: 'checkpoint',
-            val: initialState,
-        },
-        level: 0,
-    };
+export function graphSliceCreator<
+    State,
+    Event extends string,
+    Artifact extends BaseArtifactType<any>
+>(initialState: State, rootArtifact?: Artifact) {
+    const root = createRootNode<State, Event, Artifact>({
+        state: initialState,
+        label: 'Root' as Event,
+        artifact: rootArtifact,
+    });
 
-    const graph: ProvenanceGraph<S> = {
+    const graph: ProvenanceGraph<State, Event, Artifact> = {
         nodes: {
             [root.id]: root,
         },
@@ -37,7 +38,10 @@ export function graphSliceCreator<S>(initialState: S) {
             changeCurrent(g, action: PayloadAction<NodeId>) {
                 g.current = action.payload;
             },
-            addNode(g, { payload }: PayloadAction<StateNode<S>>) {
+            addNode(
+                g,
+                { payload }: PayloadAction<StateNode<State, Event, Artifact>>
+            ) {
                 g.nodes[payload.id] = payload as any;
                 g.nodes[payload.parent].children.push(payload.id);
                 g.current = payload.id;

@@ -9,26 +9,29 @@ import {
 } from '../graph';
 import { Registry, TrrackAction } from '../registry';
 
-type ConfigureTrrackOptions<S> = {
+type ConfigureTrrackOptions<State> = {
     registry: Registry<any>;
-    initialState: S;
+    initialState: State;
 };
 
-type RecordActionArgs<S> = {
+type RecordActionArgs<State, Event extends string> = {
     label: string;
-    state: S;
+    state: State;
+    eventType: Event;
     sideEffects: SideEffects;
 };
 
-function getState<S>(node: ProvenanceNode<S>): S {
+function getState<State, Event extends string>(
+    node: ProvenanceNode<State, Event, any>
+): State {
     console.warn('Implement');
-    return node.state.val as S;
+    return node.state.val as State;
 }
 
-export function initializeTrrack<S = any>({
+export function initializeTrrack<State = any, Event extends string = string>({
     registry,
     initialState,
-}: ConfigureTrrackOptions<S>) {
+}: ConfigureTrrackOptions<State>) {
     const graph = initializeProvenanceGraph(initialState);
 
     function getNode(id: NodeId) {
@@ -47,12 +50,18 @@ export function initializeTrrack<S = any>({
         get root() {
             return graph.root;
         },
-        record({ label, state, sideEffects }: RecordActionArgs<S>) {
+        record({
+            label,
+            state,
+            sideEffects,
+            eventType,
+        }: RecordActionArgs<State, Event>) {
             const newStateNode = createStateNode({
                 label,
                 state,
                 parent: this.current,
                 sideEffects,
+                eventType,
             });
             graph.update(graph.addNode(newStateNode));
         },
@@ -60,20 +69,18 @@ export function initializeTrrack<S = any>({
             label: string,
             act: TrrackAction<T, Payload>
         ) {
-            if (act.meta.hasSideEffects) {
-                const action = registry.get(act.type);
-
-                const undoParams = action(act.payload);
+            const action = registry.get(act.type);
+            if (action.config.hasSideEffects) {
+                const undoParams = (action as any).func(act.payload);
 
                 this.record({
                     label,
                     state: this.current.state.val as any,
                     sideEffects: { do: [act], undo: [undoParams] },
+                    eventType: action.config.eventType as Event,
                 });
             } else {
-                const action = registry.getState(act.type);
-
-                const newState = action(
+                const newState = action.func(
                     this.current.state.val as any,
                     act.payload
                 );
@@ -82,10 +89,11 @@ export function initializeTrrack<S = any>({
                     label,
                     state: newState,
                     sideEffects: { do: [], undo: [] },
+                    eventType: action.config.eventType as Event,
                 });
             }
         },
-        to(node: NodeId) {
+        async to(node: NodeId) {
             const path = getPath(
                 graph.current,
                 graph.backend.nodes[node],
@@ -111,10 +119,10 @@ export function initializeTrrack<S = any>({
                 }
             }
 
-            sideEffectsToApply.forEach((s) => {
-                const action = registry.get(s.type);
-                action(s.payload);
-            });
+            for (const sf of sideEffectsToApply) {
+                const action = registry.get(sf.type);
+                await action.func(sf.payload);
+            }
 
             graph.update(graph.changeCurrent(node));
         },
@@ -151,9 +159,9 @@ export function initializeTrrack<S = any>({
 }
 
 function LCA<S>(
-    current: ProvenanceNode<S>,
-    destination: ProvenanceNode<S>,
-    nodes: Nodes<S>
+    current: ProvenanceNode<S, any, any>,
+    destination: ProvenanceNode<S, any, any>,
+    nodes: Nodes<S, any, any>
 ): NodeId {
     let [source, target] = [current, destination];
 
@@ -179,15 +187,15 @@ function LCA<S>(
 }
 
 function getPath<S>(
-    current: ProvenanceNode<S>,
-    destination: ProvenanceNode<S>,
-    nodes: Nodes<S>
+    current: ProvenanceNode<S, any, any>,
+    destination: ProvenanceNode<S, any, any>,
+    nodes: Nodes<S, any, any>
 ): Array<NodeId> {
     const lcaId = LCA(current, destination, nodes);
     const lca = nodes[lcaId];
 
-    const pathFromSourceToLca: ProvenanceNode<S>[] = [];
-    const pathFromDestinationToLca: ProvenanceNode<S>[] = [];
+    const pathFromSourceToLca: ProvenanceNode<S, any, any>[] = [];
+    const pathFromDestinationToLca: ProvenanceNode<S, any, any>[] = [];
 
     let [source, target] = [current, destination];
 
@@ -209,8 +217,8 @@ function getPath<S>(
 }
 
 function isNextNodeUp(
-    source: ProvenanceNode<unknown>,
-    target: ProvenanceNode<unknown>
+    source: ProvenanceNode<unknown, any, any>,
+    target: ProvenanceNode<unknown, any, any>
 ): boolean {
     if (isStateNode(source) && source.parent === target.id) return true;
     if (isStateNode(target) && target.parent === source.id) return false;
@@ -220,14 +228,14 @@ function isNextNodeUp(
     );
 }
 
-type TreeNode = Omit<ProvenanceNode<any>, 'children' | 'name'> & {
+type TreeNode = Omit<ProvenanceNode<any, any, any>, 'children' | 'name'> & {
     name: string;
     children: TreeNode[];
 };
 
 function getTreeFromNode(
-    node: ProvenanceNode<any>,
-    nodes: Nodes<any>
+    node: ProvenanceNode<any, any, any>,
+    nodes: Nodes<any, any, any>
 ): TreeNode {
     return {
         ...node,

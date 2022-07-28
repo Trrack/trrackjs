@@ -1,96 +1,70 @@
-import { PayloadAction } from '@reduxjs/toolkit';
 import { produce } from 'immer';
 
-import { TrrackActionFunction, TrrackActionMeta } from './action';
-
-type TrrackActionConfig<
-    DoActionName extends string,
-    DoActionPayload,
-    UndoActionType extends string,
-    UndoActionPayload
-> = {
-    type: DoActionName;
-    action: TrrackActionFunction<
-        DoActionPayload,
-        UndoActionType,
-        UndoActionPayload
-    >;
-};
+import { LabelGenerator, TrrackAction, TrrackActionFunction, TrrackActionFunctionObject } from './action';
 
 type TrrackActionCreator<P, T extends string> = (
     payload: P
-) => PayloadAction<P, T, TrrackActionMeta>;
+) => TrrackAction<T, P>;
 
 export function createActionCreator<
     DoActionName extends string = string,
     DoActionPayload = any
->(
-    type: DoActionName,
-    meta: TrrackActionMeta
-): TrrackActionCreator<DoActionPayload, DoActionName> {
+>(type: DoActionName): TrrackActionCreator<DoActionPayload, DoActionName> {
     return (payload: DoActionPayload) => ({
         type,
         payload,
-        meta,
     });
 }
 
-export class Registry<T> {
-    static create<T>(): Registry<T> {
-        return new Registry<T>();
+function prepareAction(action: any) {
+    return action.length === 2 ? produce(action) : action;
+}
+
+export class Registry<Event extends string> {
+    static create<Event extends string>(): Registry<Event> {
+        return new Registry<Event>();
     }
 
-    private registry: any;
-    private registryState: any;
+    private registry: Map<string, TrrackActionFunctionObject>;
 
     private constructor() {
         this.registry = new Map();
-        this.registryState = new Map();
     }
 
     private has(name: string) {
         return this.registry.has(name);
     }
 
-    registerState<S, P = any>({
-        type,
-        action,
-    }: {
-        type: string;
-        action: (state: S, payload: P) => void;
-    }) {
-        this.registryState.set(type, produce(action));
-
-        return createActionCreator<string, P>(type, { hasSideEffects: false });
-    }
-
-    register<
-        DoActionName extends string,
-        DoActionPayload,
-        UndoActionType extends string,
-        UndoActionPayload
-    >(
-        act: TrrackActionConfig<
-            DoActionName,
-            DoActionPayload,
-            UndoActionType,
-            UndoActionPayload
-        >
+    register(
+        type: string,
+        action: TrrackActionFunction,
+        config?: {
+            label?: string | LabelGenerator<Parameters<typeof action>>;
+            eventType?: Event;
+        }
     ) {
-        if (this.has(act.type))
-            throw new Error(`Already registered: ${act.type}`);
+        if (action.length < 1 || action.length > 2)
+            throw new Error('Incorrect action!');
 
-        this.registry.set(act.type, act.action);
+        if (this.has(type)) throw new Error(`Already registered: ${type}`);
 
-        return createActionCreator<DoActionName, DoActionPayload>(act.type, {
-            hasSideEffects: true,
+        const { label = type, eventType = type } = config || {};
+
+        this.registry.set(type, {
+            func: prepareAction(action),
+            config: {
+                hasSideEffects: action.length === 1,
+                label:
+                    typeof label === 'string'
+                        ? ((() => label) as LabelGenerator<
+                              Parameters<typeof action>
+                          >)
+                        : label,
+                eventType,
+            },
         });
-    }
 
-    getState(type: string) {
-        const action = this.registryState.get(type);
-        if (!action) throw new Error(`Not registered: ${type}`);
-        return action;
+        return createActionCreator<typeof type>(type);
     }
 
     get(type: string) {

@@ -1,2 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'https://unpkg.com/lineupjs/build/LineUpJS.css';
+
+#lineup-wrapper {
+  display: grid;
+  grid-template-rows: 1fr 1fr min-content;
+}
+
+.lineup-div {
+  margin: 0.5em;
+}

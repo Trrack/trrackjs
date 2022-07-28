@@ -5,9 +5,9 @@ import { FlavoredId, ID } from '../../utils';
 
 export type NodeId = FlavoredId<string, 'Node'>;
 
-type Checkpoint<S> = {
+type Checkpoint<State> = {
     type: 'checkpoint';
-    val: S;
+    val: State;
 };
 
 type Patches = {
@@ -16,18 +16,46 @@ type Patches = {
     val: Array<Patch>;
 };
 
-type StateLike<S> = Checkpoint<S> | Patches;
+type StateLike<State> = Checkpoint<State> | Patches;
 
-type BaseNode<S> = {
-    id: NodeId;
+/**
+ * Artifact Types
+ */
+export type ArtifactId = FlavoredId<string, 'Artifact'>;
+
+export type BaseArtifactType<A> = {
+    id: ArtifactId;
     createdOn: number;
+    val: A;
+};
+
+/**
+ * Node Metadata Type
+ */
+type NodeMetadata<Event extends string = any> = {
+    createdOn: number;
+    eventType: Event | 'Root';
+    [key: string]: any;
+};
+
+/**
+ * Node Types
+ */
+type BaseNode<State, Event extends string> = {
+    id: NodeId;
+    meta: NodeMetadata<Event>;
     children: NodeId[];
-    state: StateLike<S>;
+    state: StateLike<State>;
     level: number;
 };
 
-export type RootNode<S> = BaseNode<S> & {
+export type RootNode<
+    State = any,
+    Event extends string = any,
+    Artifact extends BaseArtifactType<any> = any
+> = BaseNode<State, Event> & {
     label: string;
+    artifact?: Artifact;
 };
 
 export type SideEffects = {
@@ -35,24 +63,80 @@ export type SideEffects = {
     undo: Array<TrrackAction<any, any>>;
 };
 
-export type StateNode<S> = RootNode<S> & {
+export type StateNode<
+    State,
+    Event extends string,
+    Artifact extends BaseArtifactType<any>
+> = RootNode<State, Event, Artifact> & {
     parent: NodeId;
     sideEffects: SideEffects;
 };
 
-export type ProvenanceNode<S> = RootNode<S> | StateNode<S>;
+export type ProvenanceNode<
+    State,
+    Event extends string,
+    Artifact extends BaseArtifactType<any>
+> = RootNode<State, Event, Artifact> | StateNode<State, Event, Artifact>;
 
-export type Nodes<S> = Record<string, ProvenanceNode<S>>;
+export type Nodes<
+    State,
+    Event extends string,
+    Artifact extends BaseArtifactType<any>
+> = Record<string, ProvenanceNode<State, Event, Artifact>>;
 
-export function isStateNode<S>(node: ProvenanceNode<S>): node is StateNode<S> {
+export function isStateNode<
+    State,
+    Event extends string,
+    Artifact extends BaseArtifactType<any>
+>(
+    node: ProvenanceNode<State, Event, Artifact>
+): node is StateNode<State, Event, Artifact> {
     return 'parent' in node;
 }
 
-export function isRootNode<S>(node: ProvenanceNode<S>): node is RootNode<S> {
+export function isRootNode<
+    State,
+    Event extends string,
+    Artifact extends BaseArtifactType<any>
+>(
+    node: ProvenanceNode<State, Event, Artifact>
+): node is RootNode<State, Event, Artifact> {
     return !isStateNode(node);
 }
 
-export function createStateNode<S>({
+export function createRootNode<
+    State,
+    Event extends string,
+    Artifact extends BaseArtifactType<any>
+>(args: {
+    state: State;
+    artifact?: Artifact;
+    label?: string;
+}): RootNode<State, Event, Artifact> {
+    const { label = undefined, state, artifact } = args;
+
+    return {
+        id: ID.get(),
+        label: label || 'Root',
+        children: [],
+        level: 0,
+        meta: {
+            createdOn: Date.now(),
+            eventType: 'Root',
+        },
+        state: {
+            type: 'checkpoint',
+            val: state,
+        },
+        artifact,
+    };
+}
+
+export function createStateNode<
+    State,
+    Event extends string,
+    Artifact extends BaseArtifactType<any>
+>({
     parent,
     state,
     label,
@@ -60,23 +144,31 @@ export function createStateNode<S>({
         do: [],
         undo: [],
     },
+    artifact = undefined,
+    eventType,
 }: {
-    parent: ProvenanceNode<S>;
-    state: S;
+    parent: ProvenanceNode<State, Event, Artifact>;
+    state: State;
     label: string;
     sideEffects?: SideEffects;
-}): StateNode<S> {
+    artifact?: Artifact;
+    eventType: Event;
+}): StateNode<State, Event, Artifact> {
     return {
         id: ID.get(),
         label,
         children: [],
         parent: parent.id,
-        createdOn: Date.now(),
+        meta: {
+            createdOn: Date.now(),
+            eventType: eventType,
+        },
         sideEffects,
         state: {
             type: 'checkpoint',
             val: state,
         },
         level: parent.level + 1,
+        artifact,
     };
 }
