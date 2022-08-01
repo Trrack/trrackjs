@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { applyPatches, Patch } from 'immer';
+
+import { initEventManager } from '../event';
 import {
     createStateNode,
     initializeProvenanceGraph,
@@ -6,8 +10,15 @@ import {
     Nodes,
     ProvenanceNode,
     SideEffects,
+    StateLike,
+    StateNode,
 } from '../graph';
 import { Registry, TrrackAction } from '../registry';
+
+export enum TrrackEvents {
+    TRAVERSAL_START = 'Traversal_Start',
+    TRAVERSAL_END = 'Traversal_End',
+}
 
 type ConfigureTrrackOptions<State> = {
     registry: Registry<any>;
@@ -16,32 +27,78 @@ type ConfigureTrrackOptions<State> = {
 
 type RecordActionArgs<State, Event extends string> = {
     label: string;
-    state: State;
+    state:
+        | {
+              type: 'stateLike';
+              val: StateLike<State>;
+          }
+        | {
+              type: 'stateWithPatches';
+              val: [State, Patch[], Patch[]];
+          };
     eventType: Event;
     sideEffects: SideEffects;
 };
 
 function getState<State, Event extends string>(
-    node: ProvenanceNode<State, Event, any>
+    node: ProvenanceNode<State, Event, any>,
+    nodes: Nodes<State, Event, any>
 ): State {
-    console.warn('Implement');
-    return node.state.val as State;
+    const stateLike = node.state;
+
+    if (stateLike.type === 'checkpoint') return stateLike.val;
+
+    const { checkpointRef, val } = stateLike;
+    const checkpointNode = nodes[checkpointRef];
+    const checkpointState = getState(checkpointNode, nodes);
+
+    return applyPatches(checkpointState, val);
+}
+
+function determineSaveStrategy<T>(
+    state: T,
+    patches: Array<Patch>
+): 'checkpoint' | 'patch' {
+    const objectKeysLength = Object.keys(state).length;
+
+    const uniquePatchesLength = new Set(
+        patches.map((patch) => {
+            return patch.path[0];
+        })
+    ).size;
+
+    if (uniquePatchesLength < objectKeysLength / 2) return 'patch';
+
+    return 'checkpoint';
 }
 
 export function initializeTrrack<State = any, Event extends string = string>({
     registry,
     initialState,
 }: ConfigureTrrackOptions<State>) {
+    let isTraversing = false;
+    const eventManager = initEventManager();
     const graph = initializeProvenanceGraph(initialState);
 
     function getNode(id: NodeId) {
         return graph.backend.nodes[id];
     }
 
+    eventManager.listen(TrrackEvents.TRAVERSAL_START, () => {
+        isTraversing = true;
+    });
+
+    eventManager.listen(TrrackEvents.TRAVERSAL_END, () => {
+        isTraversing = false;
+    });
+
     return {
         registry,
-        get state() {
-            return getState(graph.current);
+        get isTraversing() {
+            return isTraversing;
+        },
+        getState(node: ProvenanceNode<State, any, any> = graph.current) {
+            return getState(node, graph.backend.nodes);
         },
         graph,
         get current() {
@@ -56,13 +113,53 @@ export function initializeTrrack<State = any, Event extends string = string>({
             sideEffects,
             eventType,
         }: RecordActionArgs<State, Event>) {
-            const newStateNode = createStateNode({
-                label,
-                state,
-                parent: this.current,
-                sideEffects,
-                eventType,
-            });
+            let newStateNode: StateNode<State, any, any> | null = null;
+
+            if (state.type === 'stateLike') {
+                newStateNode = createStateNode({
+                    label,
+                    state: state.val,
+                    parent: this.current,
+                    sideEffects,
+                    eventType,
+                });
+            } else if (state.type === 'stateWithPatches') {
+                const newState = state.val[0];
+                const patches = state.val[1];
+
+                const saveStrategy = determineSaveStrategy(newState, patches);
+
+                let stateLike: StateLike<State>;
+
+                if (saveStrategy === 'checkpoint') {
+                    stateLike = {
+                        type: 'checkpoint',
+                        val: newState,
+                    };
+                } else {
+                    const lastRef =
+                        this.current.state.type === 'checkpoint'
+                            ? this.current.id
+                            : this.current.state.checkpointRef;
+
+                    stateLike = {
+                        type: 'patch',
+                        val: patches,
+                        checkpointRef: lastRef,
+                    };
+                }
+
+                newStateNode = createStateNode({
+                    label,
+                    state: stateLike,
+                    parent: this.current,
+                    sideEffects,
+                    eventType,
+                });
+            }
+
+            if (!newStateNode) throw new Error('State Node creation failed!');
+
             graph.update(graph.addNode(newStateNode));
         },
         apply<T extends string, Payload = any>(
@@ -75,25 +172,33 @@ export function initializeTrrack<State = any, Event extends string = string>({
 
                 this.record({
                     label,
-                    state: this.current.state.val as any,
+                    state: {
+                        type: 'stateLike',
+                        val: this.current.state,
+                    },
                     sideEffects: { do: [act], undo: [undoParams] },
                     eventType: action.config.eventType as Event,
                 });
             } else {
-                const newState = action.func(
+                const stateWithPatches = action.func(
                     this.current.state.val as any,
                     act.payload
                 );
 
                 this.record({
                     label,
-                    state: newState,
+                    state: {
+                        type: 'stateWithPatches',
+                        val: stateWithPatches,
+                    },
                     sideEffects: { do: [], undo: [] },
                     eventType: action.config.eventType as Event,
                 });
             }
         },
         async to(node: NodeId) {
+            eventManager.fire(TrrackEvents.TRAVERSAL_START);
+
             const path = getPath(
                 graph.current,
                 graph.backend.nodes[node],
@@ -125,25 +230,29 @@ export function initializeTrrack<State = any, Event extends string = string>({
             }
 
             graph.update(graph.changeCurrent(node));
+
+            eventManager.fire(TrrackEvents.TRAVERSAL_END);
         },
         undo() {
             const { current } = graph;
             if (isStateNode(current)) {
-                this.to(current.parent);
+                return this.to(current.parent);
             } else {
-                console.warn('Already at root!');
+                return Promise.resolve(console.warn('Already at root!'));
             }
         },
         redo(to?: 'latest' | 'oldest') {
             const { current } = graph;
             if (current.children.length > 0) {
-                this.to(
+                return this.to(
                     current.children[
                         to === 'oldest' ? 0 : current.children.length - 1
                     ]
                 );
             } else {
-                console.warn('Already at latest in this branch!');
+                return Promise.resolve(
+                    console.warn('Already at latest in this branch!')
+                );
             }
         },
         currentChange(listener: any) {
@@ -154,6 +263,9 @@ export function initializeTrrack<State = any, Event extends string = string>({
         },
         tree() {
             return getTreeFromNode(graph.root, graph.backend.nodes);
+        },
+        on(event: TrrackEvents, listener: (args?: any) => void) {
+            eventManager.listen(event, listener);
         },
     };
 }

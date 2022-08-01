@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { BaseArtifactType, createRootNode, NodeId, Nodes, StateNode } from './components';
@@ -11,6 +12,8 @@ type ProvenanceGraph<
     current: NodeId;
     root: NodeId;
 };
+
+// Maybe swithc to reduxtoolkit createEntityAdapter
 
 export function graphSliceCreator<
     State,

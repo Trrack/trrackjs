@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { configureStore, createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 
 import { RootNode } from './components';

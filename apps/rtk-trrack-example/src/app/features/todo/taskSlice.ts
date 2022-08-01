@@ -1,12 +1,13 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { createTrrackableSlice } from '@trrack/redux';
 import { v4 as uuid } from 'uuid';
 
 import { Todo } from './types';
 
 const initialState: Todo[] = [];
 
-export const tasksSlice = createSlice({
-  name: "tasks",
+export const tasksSlice = createTrrackableSlice({
+  name: 'tasks',
   initialState,
   reducers: {
     addTodo: {
@@ -35,32 +36,56 @@ export const tasksSlice = createSlice({
       state[index].completed = action.payload.completed;
     },
   },
+  labels: {
+    setTodoStatus: (payload: { id: string; completed: boolean }) => {
+      return `Mark ${payload.id} as ${
+        payload.completed ? 'complete' : 'incomplete'
+      }`;
+    },
+    addTodo: ((task: Todo) => {
+      return `Add task ${task.description}`;
+    }) as any,
+  },
+  eventTypes: {
+    addTodo: 'AddTask',
+    removeTodo: 'RemoveTask',
+    setTodoStatus: 'ToggleTaskStatus',
+  },
 });
 
-export const { addTodo, removeTodo, setTodoStatus } = tasksSlice.actions;
+export const { addTodo, setTodoStatus, removeTodo } = tasksSlice.actions;
 
-type Test = {
-  foo: string;
-  bar: {
-    bazz: string;
-  };
+const counterInitState = {
+  counter: 0,
 };
 
-const testInit: Test = {
-  foo: "hello",
-  bar: {
-    bazz: "world",
-  },
-};
+type Counter = typeof counterInitState;
 
-export const testSlice = createSlice({
-  name: "testing",
-  initialState: testInit,
+export const counterSlice = createTrrackableSlice({
+  name: 'counter',
+  initialState: counterInitState,
   reducers: {
-    changeName(state, action: PayloadAction<string>) {
-      state.bar.bazz = action.payload;
+    increment(state: Counter) {
+      state.counter += 1;
+    },
+    decrement(state: Counter) {
+      state.counter -= 1;
+    },
+  },
+  sideEffectReducers: {
+    increment: () => {
+      return {
+        type: 'decrement',
+        payload: null,
+      };
+    },
+    decrement: () => {
+      return {
+        type: 'increment',
+        payload: null,
+      };
     },
   },
 });
 
-export const { changeName } = testSlice.actions;
+export const { increment, decrement } = counterSlice.actions;

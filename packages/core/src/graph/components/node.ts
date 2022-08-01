@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Patch } from 'immer';
 
 import { TrrackAction } from '../../registry';
@@ -16,7 +17,7 @@ type Patches = {
     val: Array<Patch>;
 };
 
-type StateLike<State> = Checkpoint<State> | Patches;
+export type StateLike<State> = Checkpoint<State> | Patches;
 
 /**
  * Artifact Types
@@ -148,7 +149,7 @@ export function createStateNode<
     eventType,
 }: {
     parent: ProvenanceNode<State, Event, Artifact>;
-    state: State;
+    state: StateLike<State>;
     label: string;
     sideEffects?: SideEffects;
     artifact?: Artifact;
@@ -164,10 +165,7 @@ export function createStateNode<
             eventType: eventType,
         },
         sideEffects,
-        state: {
-            type: 'checkpoint',
-            val: state,
-        },
+        state,
         level: parent.level + 1,
         artifact,
     };

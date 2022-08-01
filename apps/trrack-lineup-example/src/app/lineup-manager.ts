@@ -42,26 +42,19 @@ function initDialogTracker() {
 type DialogTracker = ReturnType<typeof initDialogTracker>;
 
 function dirtyRankingWaiter(ranking: Ranking) {
-  let waiter: Promise<void> | null = null;
-
   const trrackDirtyOrder = `${Ranking.EVENT_DIRTY_ORDER}.trrack`;
   const trrackOrderChange = `${Ranking.EVENT_ORDER_CHANGED}.trrack`;
 
-  ranking.on(trrackDirtyOrder, (a) => {
-    ranking.on(trrackDirtyOrder, null);
+  return new Promise((res) => {
+    ranking.on(trrackDirtyOrder, (a) => {
+      ranking.on(trrackDirtyOrder, null);
 
-    let resolver = null;
-    waiter = new Promise((res) => {
-      resolver = res;
-    });
-
-    ranking.on(trrackOrderChange, () => {
-      ranking.on(trrackOrderChange, null);
-      if (resolver) resolver();
+      ranking.on(trrackOrderChange, () => {
+        ranking.on(trrackOrderChange, null);
+        res(null);
+      });
     });
   });
-
-  return waiter;
 }
 
 // ? Look at filter events in setColumn

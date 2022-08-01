@@ -1,11 +1,15 @@
-import { produce } from 'immer';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { enablePatches, produceWithPatches } from 'immer';
 
 import { LabelGenerator, TrrackAction, TrrackActionFunction, TrrackActionFunctionObject } from './action';
+
+enablePatches();
 
 type TrrackActionCreator<P, T extends string> = (
     payload: P
 ) => TrrackAction<T, P>;
 
+// ! Use redux create Action
 export function createActionCreator<
     DoActionName extends string = string,
     DoActionPayload = any
@@ -17,7 +21,7 @@ export function createActionCreator<
 }
 
 function prepareAction(action: any) {
-    return action.length === 2 ? produce(action) : action;
+    return action.length === 2 ? produceWithPatches(action) : action;
 }
 
 export class Registry<Event extends string> {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PayloadAction } from '@reduxjs/toolkit';
 
 /**
@@ -37,9 +38,7 @@ export type TrrackActionConfig<Args, Event> = {
 
 export type TrrackActionFunctionObject<
     Event extends string = string,
-    DoActionPayload = any,
-    UndoActionType extends string = string,
-    UndoActionPayload = DoActionPayload
+    DoActionPayload = any
 > = {
     func: any;
     config: TrrackActionConfig<DoActionPayload, Event>;
