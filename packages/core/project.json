@@ -40,12 +40,10 @@
                 "passWithNoTests": true
             }
         },
-        "release": {
-            "executor": "nx:run-commands",
-            "outputs": [],
+        "version": {
+            "executor": "@jscutlery/semver:version",
             "options": {
-                "command": "npx semantic-release-plus --extends ./packages/core/release.config.js",
-                "parallel": false
+                "preset": "angular"
             }
         }
     },
