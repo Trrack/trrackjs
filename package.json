@@ -21,6 +21,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.0.0",
     "@commitlint/config-angular": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3",
     "@jscutlery/semver": "^2.25.2",
