@@ -42,6 +42,7 @@ export function Navbar({ t }: { t: Trrack }) {
 
               const task: Task = {
                 id: Date.now().toString(),
+                taskNumber,
                 createdOn: Date.now(),
                 desc: `Task ${taskNumber}`,
                 completed: false,
