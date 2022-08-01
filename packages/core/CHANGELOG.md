@@ -15,6 +15,19 @@ registration
 * 🎸 Moved to nx monorepo for latest build support ([de91c39](https://github.com/Trrack/trrackjs/commit/de91c39d649d2442df12bbd06b40b5b274f961f9))
 * 🎸 Refactored inverse action creation API ([8a3df49](https://github.com/Trrack/trrackjs/commit/8a3df49058ffe8ac62dba1a648fefe218db35873)), closes [datavisyn/reprovisyn#439](https://github.com/datavisyn/reprovisyn/issues/439)
 
+### 0.0.1 (2022-08-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* 🧨 Action should return Inverse action name and Arguments during
+registration
+
+### Features
+
+* 🎸 Moved to nx monorepo for latest build support ([de91c39](https://github.com/Trrack/trrackjs/commit/de91c39d649d2442df12bbd06b40b5b274f961f9))
+* 🎸 Refactored inverse action creation API ([8a3df49](https://github.com/Trrack/trrackjs/commit/8a3df49058ffe8ac62dba1a648fefe218db35873)), closes [datavisyn/reprovisyn#439](https://github.com/datavisyn/reprovisyn/issues/439)
+
 ### [0.0.1](https://github.com/Trrack/trrackjs/compare/core-0.0.1-0...core-0.0.1) (2022-08-01)
 
 ### [0.0.1-0](https://github.com/Trrack/trrackjs/compare/core-0.0.1-alpha.0...core-0.0.1-0) (2022-08-01)
