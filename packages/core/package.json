@@ -1,6 +1,6 @@
 {
   "name": "@trrack/core",
-  "version": "0.0.1-0",
+  "version": "0.0.1",
   "type": "commonjs",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.3",

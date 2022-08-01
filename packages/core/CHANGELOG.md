@@ -2,6 +2,8 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [0.0.1](https://github.com/Trrack/trrackjs/compare/core-0.0.1-0...core-0.0.1) (2022-08-01)
+
 ### [0.0.1-0](https://github.com/Trrack/trrackjs/compare/core-0.0.1-alpha.0...core-0.0.1-0) (2022-08-01)
 
 ### 0.0.1-alpha.0 (2022-08-01)
