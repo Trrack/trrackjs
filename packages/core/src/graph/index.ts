@@ -1,3 +1,2 @@
-export * from './base';
-export * from './types';
-export * from './graph-elements';
+export * from './components';
+export * from './provenance-graph';

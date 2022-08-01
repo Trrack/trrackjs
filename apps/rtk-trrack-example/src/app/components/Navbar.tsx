@@ -1,12 +1,15 @@
+import AddIcon from '@mui/icons-material/Add';
 import RedoIcon from '@mui/icons-material/Redo';
+import RemoveIcon from '@mui/icons-material/Remove';
 import UndoIcon from '@mui/icons-material/Undo';
-import { AppBar, Button, Toolbar, Typography } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { AppBar, Button, IconButton, Toolbar, Typography } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { addTodo } from '../features/todo/taskSlice';
-import { AppDispatch, trrack } from '../store/store';
+import { addTodo, decrement, increment } from '../features/todo/taskSlice';
+import { AppDispatch, RootState, trrack } from '../store/store';
 
 export const Navbar = () => {
+  const counter = useSelector<RootState>((s) => s.counter.counter);
   const dispatch = useDispatch<AppDispatch>();
 
   return (
@@ -16,6 +19,24 @@ export const Navbar = () => {
           <Typography color="black" variant="h6" sx={{ flexGrow: 1 }}>
             Action based tracking with Redux-Toolkit
           </Typography>
+          <IconButton
+            onClick={() => {
+              dispatch(increment());
+            }}
+          >
+            <AddIcon />
+          </IconButton>
+          <Typography color="black" variant="h6">
+            Counter: {counter as any}
+          </Typography>
+          <IconButton
+            onClick={() => {
+              dispatch(decrement());
+            }}
+          >
+            <RemoveIcon />
+          </IconButton>
+
           <Button
             sx={{ margin: '0.2em' }}
             variant="contained"

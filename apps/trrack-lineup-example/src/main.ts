@@ -1,12 +1,13 @@
 import './app/app.element.ts';
 
-import { LINEUP_NODE } from './app/app.element';
 import { setup } from './app/lineup-setup';
 
-const node = LINEUP_NODE();
+const lineupRootSelector = 'lineup-root';
+const node1 = document.getElementById(`${lineupRootSelector}-1`);
+const node2 = document.getElementById(`${lineupRootSelector}-2`);
 
-if (node) {
-  setup(node);
+if (node1 && node2) {
+  setup([node1, node2]);
 } else {
   document.body.innerHTML = 'Something went wrong';
 }

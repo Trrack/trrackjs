@@ -1,10 +1,10 @@
-import { trrackableStore } from '@trrack/redux';
+import { createTrrackableStore } from '@trrack/redux';
 
-import { tasksSlice, testSlice } from '../features/todo/taskSlice';
+import { counterSlice, tasksSlice } from '../features/todo/taskSlice';
 
-const slices = { tasks: tasksSlice, test: testSlice };
-
-export const { store, trrack } = trrackableStore(slices);
+export const { store, trrack } = createTrrackableStore({
+  slices: { tasks: tasksSlice, counter: counterSlice },
+});
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;

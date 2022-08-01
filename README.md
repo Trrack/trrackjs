@@ -1,5 +1,3 @@
-
-
 # Trrack
 
 Trrack stands for **r**eproducible **track**ing. Originally Trrack is a web-based provenance tracking library that can track application state in directed provenance graph.
@@ -8,7 +6,7 @@ This branch implements action based provenance tracking.
 
 ## Development
 
-Clone the repository and switch to `trrack-action` branch. 
+Clone the repository and switch to `trrack-action` branch.
 This project was generated using [Nx](https://nx.dev). Please refer to [Nx](https://nx.dev) for more any questions about monorepo setup.
 
 To get started with development run:
@@ -34,6 +32,5 @@ trrack-monorepo
     |--- react-trrack-example
     |--- rtk-trrack-example
 ```
-
 
 Following the standards for Nx monorepos please install any dependency for the applications directly to root workspace. This ensures all the applications use same versions of any dependency. For the packages, install the dependency to appropriate package.

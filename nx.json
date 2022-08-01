@@ -48,5 +48,10 @@
       "unitTestRunner": "jest"
     }
   },
-  "defaultProject": "react-trrack-example"
+  "defaultProject": "core",
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
+  }
 }

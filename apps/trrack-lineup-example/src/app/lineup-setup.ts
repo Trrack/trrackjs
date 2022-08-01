@@ -1,11 +1,16 @@
-import { Trrack } from '@trrack/core';
-import { buildCategoricalColumn, builder as bld, buildNumberColumn, buildStringColumn } from 'lineupjs';
+import { initializeTrrack, Registry } from '@trrack/core';
+import {
+  buildCategoricalColumn,
+  builder as bld,
+  buildNumberColumn,
+  buildStringColumn,
+} from 'lineupjs';
 
-import { LUManager } from './lineup-manager';
+import { initLineupManager } from './lineup-manager';
 
 const arr: any[] = [];
 const cats = ['c1', 'c2', 'c3'];
-for (let i = 0; i < 100; ++i) {
+for (let i = 0; i < 10000; ++i) {
   arr.push({
     a: Math.random() * 10,
     d: 'Row ' + i,
@@ -14,24 +19,35 @@ for (let i = 0; i < 100; ++i) {
   });
 }
 
-export function setup(node: HTMLElement) {
-  const builder = bld(arr);
+export function setup(node: HTMLElement[]) {
+  const builder1 = bld(arr);
 
-  builder
+  builder1
     .column(buildStringColumn('d'))
     .column(buildCategoricalColumn('cat', cats))
     .column(buildCategoricalColumn('cat2', cats))
     .column(buildNumberColumn('a'));
 
-  let trrack = Trrack.init();
+  const builder2 = bld(arr);
 
-  const manager = LUManager.setup(trrack);
+  builder2
+    .column(buildStringColumn('d'))
+    .column(buildCategoricalColumn('cat', cats))
+    .column(buildCategoricalColumn('cat2', cats))
+    .column(buildNumberColumn('a'));
 
-  trrack = manager.addInstance(builder.build(node));
+  const registry = Registry.create();
+  const trrack = initializeTrrack({
+    registry,
+    initialState: null,
+  });
 
-  console.log((trrack as any).registry);
+  const manager = initLineupManager(trrack, registry);
 
-  // lineup.trrackLineUpEvent(Ranking.EVENT_SORT_CRITERIA_CHANGED);
+  manager.add('first', builder1.build(node[0]));
+  manager.add('second', builder2.build(node[1]));
+
+  console.log(trrack.registry);
 
   document.querySelector<HTMLButtonElement>('#undo').onclick = (e) => {
     trrack.undo();

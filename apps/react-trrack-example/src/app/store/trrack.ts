@@ -1,30 +1,102 @@
-import { IProvenanceNode, LabelGenerator, Trrack, TrrackActionFunction } from '@trrack/core';
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { initializeTrrack, Registry } from '@trrack/core';
+import { useMemo, useState } from 'react';
 
-export function useTrrackSetup() {
-  const [trrack, setTrrack] = useState<Trrack>(Trrack.init());
+import { Task } from './types';
 
-  const [current, setCurrent] = useState<IProvenanceNode>(trrack.current);
+const initialState = {
+  tasks: [] as Task[],
+};
 
-  const addAction = useCallback(
-    (
-      name: string,
-      action: TrrackActionFunction,
-      labelGenerator: LabelGenerator
-    ) => {
-      setTrrack((t) => {
-        return t.has(name) ? t : t.register(name, action, labelGenerator);
-      });
-    },
-    []
-  );
+type State = typeof initialState;
 
-  useEffect(() => {
-    const sub = trrack.currentChangeListener(({ current }) => {
-      setCurrent(current);
+// ! Add example for async action (e.g. data loading)
+export function useTrrackTaskManager() {
+  const [counter, setCounter] = useState(0);
+  const [state, setState] = useState(initialState);
+
+  const { registry, actions } = useMemo(() => {
+    const reg = Registry.create();
+
+    const addTask = reg.register('add-task', (state, task: Task) => {
+      state.tasks.push(task);
     });
 
-    return () => sub.unsubscribe();
+    const removeTask = reg.register('remove-task', (state, task: Task) => {
+      state.tasks = state.tasks.filter((t: Task) => t.id !== task.id);
+    });
+
+    const markTaskComplete = reg.register(
+      'complete-task',
+      (state, task: Task) => {
+        const idx = state.tasks.findIndex((d: any) => d.id === task.id);
+        state.tasks[idx].completed = true;
+      }
+    );
+
+    const markTaskIncomplete = reg.register(
+      'incomplete-task',
+      (state, task: Task) => {
+        const idx = state.tasks.findIndex((d: any) => d.id === task.id);
+        state.tasks[idx].completed = false;
+      }
+    );
+
+    const incrementCounter = reg.register(
+      'increment-counter',
+      (add: number) => {
+        setCounter((c) => c + add);
+        return {
+          type: 'decrement-counter',
+          payload: add,
+          meta: {
+            hasSideEffects: true,
+          },
+        };
+      }
+    );
+
+    const decrementCounter = reg.register(
+      'decrement-counter',
+      (sub: number) => {
+        setCounter((c) => c - sub);
+        return {
+          type: 'increment-counter',
+          payload: sub,
+          meta: {
+            hasSideEffects: true,
+          },
+        };
+      }
+    );
+
+    return {
+      registry: reg,
+      actions: {
+        addTask,
+        removeTask,
+        markTaskComplete,
+        markTaskIncomplete,
+        incrementCounter,
+        decrementCounter,
+      },
+    };
+  }, []);
+
+  const trrack = useMemo(() => {
+    const t = initializeTrrack({
+      initialState,
+      registry,
+    });
+
+    t.currentChange(() => {
+      setState(t.current.state.val as State);
+    });
+
+    return t;
+  }, [registry]);
+
+  const current = useMemo(() => {
+    return trrack.current;
   }, [trrack]);
 
   const isAtLatest = current ? current.children.length === 0 : false;
@@ -32,19 +104,13 @@ export function useTrrackSetup() {
   const isAtRoot = current ? current.id === trrack.root.id : false;
 
   return {
-    addAction,
     trrack,
     isAtLatest,
     isAtRoot,
+    state,
+    counter,
+    actions,
   };
 }
 
-export type TrrackContextType = ReturnType<typeof useTrrackSetup>;
-
-// Disabling because this is a valid use case
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-export const TrrackContext = createContext<TrrackContextType>(undefined!);
-
-export function useTrrack() {
-  return useContext(TrrackContext);
-}
+export type Trrack = ReturnType<typeof useTrrackTaskManager>;
