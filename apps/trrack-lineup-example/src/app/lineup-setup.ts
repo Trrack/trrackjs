@@ -1,5 +1,10 @@
 import { initializeTrrack, Registry } from '@trrack/core';
-import { buildCategoricalColumn, builder as bld, buildNumberColumn, buildStringColumn } from 'lineupjs';
+import {
+  buildCategoricalColumn,
+  builder as bld,
+  buildNumberColumn,
+  buildStringColumn,
+} from 'lineupjs';
 
 import { initLineupManager } from './lineup-manager';
 

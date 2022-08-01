@@ -55,6 +55,8 @@
     "react-hyper-tree": "^0.3.12",
     "react-redux": "8.0.2",
     "react-test-renderer": "18.2.0",
+    "semantic-release-npm-github-publish": "^1.5.1",
+    "semantic-release-plus": "^20.0.0",
     "swc-loader": "0.1.15",
     "ts-jest": "27.1.4",
     "ts-node": "10.8.2",

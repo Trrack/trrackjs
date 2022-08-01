@@ -1,5 +1,11 @@
 import { initializeTrrack, Registry } from '@trrack/core';
-import { Column, EngineRenderer, ISortCriteria, LineUp, Ranking } from 'lineupjs';
+import {
+  Column,
+  EngineRenderer,
+  ISortCriteria,
+  LineUp,
+  Ranking,
+} from 'lineupjs';
 
 // * To Track:
 // * https://github.com/datavisyn/tdp_core/blob/49700025e732529bd2592e8371c29d2f1bdf51ee/src/lineup/internal/cmds.ts

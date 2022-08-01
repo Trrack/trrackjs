@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { enablePatches, produceWithPatches } from 'immer';
 
-import { LabelGenerator, TrrackAction, TrrackActionFunction, TrrackActionFunctionObject } from './action';
+import {
+    LabelGenerator,
+    TrrackAction,
+    TrrackActionFunction,
+    TrrackActionFunctionObject,
+} from './action';
 
 enablePatches();
 
