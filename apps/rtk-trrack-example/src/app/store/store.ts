@@ -2,7 +2,7 @@ import { createTrrackableStore } from '@trrack/redux';
 
 import { counterSlice, tasksSlice } from '../features/todo/taskSlice';
 
-export const { store, trrack } = createTrrackableStore({
+export const { store, trrack, trrackStore } = createTrrackableStore({
   slices: { tasks: tasksSlice, counter: counterSlice },
 });
 
