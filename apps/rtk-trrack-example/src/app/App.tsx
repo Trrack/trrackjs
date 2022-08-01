@@ -1,17 +1,10 @@
-import {
-  Box,
-  Checkbox,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-} from '@mui/material';
+import { Box, Checkbox, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import React from 'react';
 import { Tree, useTreeState } from 'react-hyper-tree';
 import { TreeNode } from 'react-hyper-tree/dist/helpers/node';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useTrrackSelector } from '../main';
 import { Navbar } from './components/Navbar';
 import { setTodoStatus } from './features/todo/taskSlice';
 import { AppDispatch, RootState, trrack } from './store/store';
@@ -19,7 +12,7 @@ import { AppDispatch, RootState, trrack } from './store/store';
 function App() {
   const tasks = useSelector((state: RootState) => state.tasks);
   const dispatch = useDispatch<AppDispatch>();
-  const counter = useSelector<RootState>((state) => state.counter.counter);
+  const current = useTrrackSelector((state: any) => state.current);
 
   const { required, handlers } = useTreeState({
     data: trrack.tree(),
@@ -27,7 +20,7 @@ function App() {
     defaultOpened: true,
   });
 
-  open(required.data, trrack.current.id);
+  open(required.data, current);
 
   return (
     <Box sx={{ height: '100vh', width: '100vw' }}>

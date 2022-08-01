@@ -21,6 +21,7 @@ import {
   SideEffectReducers,
   TrrackableSlice,
 } from './createTrrackedSlice';
+import { changeCurrent, getTrrackStore } from './trrackStore';
 
 type SliceMap<State> = {
   [K in keyof State]: Slice<State[K]> | TrrackableSlice<State[K], any>;
@@ -114,6 +115,10 @@ export function createTrrackableStore<
     registry: Registry.create(),
   });
 
+  const trrackStore = getTrrackStore({
+    current: trrack.current.id,
+  });
+
   Object.keys(sideEffectReducers).forEach((key) => {
     trrack.registry.register(key, (action: any) => {
       store.dispatch(action);
@@ -132,6 +137,7 @@ export function createTrrackableStore<
   trrack.currentChange(() => {
     pauseMiddleware = true;
     store.dispatch(trrackTraverseUpdateAction(trrack.getState()));
+    trrackStore.dispatch(changeCurrent(trrack.current.id));
     pauseMiddleware = false;
   });
 
@@ -180,5 +186,5 @@ export function createTrrackableStore<
     },
   });
 
-  return { store, trrack };
+  return { store, trrackStore, trrack };
 }
