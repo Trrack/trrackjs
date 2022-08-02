@@ -39,8 +39,14 @@ type EventMap<CaseReducers extends SliceCaseReducers<any>> = {
 
 export type SideEffectReducers<S> = Partial<{
   [key: string]: (opts: { originalPayload: any; state: S }) => {
-    type: string;
-    payload: any;
+    do?: {
+      type: string;
+      payload: any;
+    };
+    undo: {
+      type: string;
+      payload: any;
+    };
   };
 }>;
 

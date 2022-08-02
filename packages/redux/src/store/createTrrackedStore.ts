@@ -157,13 +157,18 @@ export function createTrrackableStore<
       const label = labelGenerator(payload);
 
       if (sideEffect) {
-        const doAct = action;
-        const undoAct = sideEffect({
+        const { do: d = null, undo } = sideEffect({
           originalPayload: payload,
           state: listenerApi.getState(),
         });
 
-        undoAct.type = generatedEventMap[undoAct.type];
+        const doAct = d ? d : action;
+
+        undo.type = generatedEventMap[undo.type];
+
+        if (d) {
+          doAct.type = generatedEventMap[doAct.type];
+        }
 
         trrack.record({
           label,
@@ -177,7 +182,7 @@ export function createTrrackableStore<
           eventType: 'Any',
           sideEffects: {
             do: [{ type: doAct.type, payload: doAct as any }],
-            undo: [{ type: undoAct.type, payload: undoAct as any }],
+            undo: [{ type: undo.type, payload: undo as any }],
           },
         });
       } else {
