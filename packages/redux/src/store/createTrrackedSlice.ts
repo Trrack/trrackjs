@@ -37,7 +37,7 @@ type EventMap<CaseReducers extends SliceCaseReducers<any>> = {
 //     : never;
 // }>;
 
-export type SideEffectReducers<S> = Partial<{
+export type DoUndoActionCreators<S> = Partial<{
   [key: string]: (opts: { originalPayload: any; state: S }) => {
     do?: {
       type: string;
@@ -64,7 +64,7 @@ export type TrrackableSlice<
   [LABELS]: LabelGenerators;
   [EVENTS]: EventMap<CaseReducers>;
   [TRRACKABLE]: boolean;
-  [SIDEEFFECT_REDUCERS]: SideEffectReducers<State>;
+  [SIDEEFFECT_REDUCERS]: DoUndoActionCreators<State>;
   [GENERATED_EVENT_MAP]: { [key: string]: string };
 };
 
@@ -76,7 +76,7 @@ export function createTrrackableSlice<
   options: CreateSliceOptions<State, CaseReducers, Name> & {
     labels?: LabelLike<CaseReducers>;
     eventTypes?: Partial<EventMap<CaseReducers>>;
-    sideEffectReducers?: SideEffectReducers<State>;
+    doUndoActionCreators?: DoUndoActionCreators<State>;
   }
 ): TrrackableSlice<State, CaseReducers, Name> {
   const slice = createSlice(options);
@@ -86,7 +86,7 @@ export function createTrrackableSlice<
   const eventMap: EventMap<CaseReducers> = {} as any;
   const suppliedEventMap = options.eventTypes;
 
-  const sideEffectReducer: SideEffectReducers<State> = {};
+  const sideEffectReducer: DoUndoActionCreators<State> = {};
 
   const generatedEventMap: { [key: string]: string } = {};
 

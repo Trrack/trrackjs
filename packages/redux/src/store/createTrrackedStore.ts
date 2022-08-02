@@ -13,12 +13,12 @@ import {
 import { initializeTrrack, Registry } from '@trrack/core';
 
 import {
+  DoUndoActionCreators,
   GENERATED_EVENT_MAP,
   isSliceTrrackable,
   LabelGenerator,
   LABELS,
   SIDEEFFECT_REDUCERS,
-  SideEffectReducers,
   TrrackableSlice,
 } from './createTrrackedSlice';
 import { changeCurrent, getTrrackStore } from './trrackStore';
@@ -81,7 +81,7 @@ export function createTrrackableStore<
 
   let labels: { [key: string]: LabelGenerator<any> } = {};
 
-  let sideEffectReducers: SideEffectReducers<any> = {};
+  let sideEffectReducers: DoUndoActionCreators<any> = {};
 
   let generatedEventMap: { [key: string]: string } = {};
 
