@@ -113,7 +113,7 @@ export function createTrrackableSlice<
       }
 
       // SideEffect
-      const sideEffect = (options.sideEffectReducers || {})[key];
+      const sideEffect = (options.doUndoActionCreators || {})[key];
 
       if (sideEffect) {
         sideEffectReducer[action.type] = sideEffect;
