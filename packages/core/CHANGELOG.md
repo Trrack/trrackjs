@@ -2,6 +2,20 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### 0.0.1 (2022-08-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* 🧨 Action should return Inverse action name and Arguments during
+registration
+
+### Features
+
+* 🎸 Moved to nx monorepo for latest build support ([de91c39](https://github.com/Trrack/trrackjs/commit/de91c39d649d2442df12bbd06b40b5b274f961f9))
+* 🎸 Refactored inverse action creation API ([8a3df49](https://github.com/Trrack/trrackjs/commit/8a3df49058ffe8ac62dba1a648fefe218db35873)), closes [datavisyn/reprovisyn#439](https://github.com/datavisyn/reprovisyn/issues/439)
+* guitar Added API for handling thunk actions with createAsync  ([a2ecf38](https://github.com/Trrack/trrackjs/commit/a2ecf381aba0b9964bea1593761bc061187e7a9d))
+
 ### [0.0.2](https://github.com/Trrack/trrackjs/compare/core-0.0.1...core-0.0.2) (2022-08-01)
 
 ### 0.0.1 (2022-08-01)
