@@ -46,46 +46,6 @@ export const tasksSlice = createTrrackableSlice({
       return `Add task ${task.description}`;
     }) as any,
   },
-  eventTypes: {
-    addTodo: 'AddTask',
-    removeTodo: 'RemoveTask',
-    setTodoStatus: 'ToggleTaskStatus',
-  },
 });
 
 export const { addTodo, setTodoStatus, removeTodo } = tasksSlice.actions;
-
-const counterInitState = {
-  counter: 0,
-};
-
-type Counter = typeof counterInitState;
-
-export const counterSlice = createTrrackableSlice({
-  name: 'counter',
-  initialState: counterInitState,
-  reducers: {
-    increment(state: Counter) {
-      state.counter += 1;
-    },
-    decrement(state: Counter) {
-      state.counter -= 1;
-    },
-  },
-  sideEffectReducers: {
-    increment: () => {
-      return {
-        type: 'decrement',
-        payload: null,
-      };
-    },
-    decrement: () => {
-      return {
-        type: 'increment',
-        payload: null,
-      };
-    },
-  },
-});
-
-export const { increment, decrement } = counterSlice.actions;

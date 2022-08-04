@@ -13,9 +13,11 @@ const trrackSlice = createSlice({
   name: 'trrack',
   initialState,
   reducers: {
-    changeCurrent: (_, action: PayloadAction<NodeId>) => ({
-      current: action.payload,
-    }),
+    changeCurrent(_state, action: PayloadAction<NodeId>) {
+      return {
+        current: action.payload,
+      };
+    },
   },
 });
 
@@ -30,4 +32,5 @@ export function getTrrackStore(init: TrrackSliceState) {
 
 type TrrackStore = ReturnType<typeof getTrrackStore>;
 
-export type TrrackStoreType = ReturnType<TrrackStore['getState']>;
+export type TrrackAppDispatch = TrrackStore['dispatch'];
+export type TrrackStoreState = ReturnType<TrrackStore['getState']>;

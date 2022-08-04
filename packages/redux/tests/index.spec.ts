@@ -1,39 +1,64 @@
-import { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
-import { createTrrackableSlice, createTrrackableStore } from '../src';
+import { configureTrrackableStore, createTrrackableSlice } from '../src';
 
 describe('it', () => {
   it('should work', () => {
-    const slice = createTrrackableSlice({
-      name: 'hello-slice',
+    const getPostById = createAsyncThunk(
+      'test/getpostById',
+      async (postId: number, api) => {
+        const response = await fetch(
+          ` https://jsonplaceholder.typicode.com/posts/${postId} `
+        );
+
+        return response.json();
+      }
+    );
+
+    const testSlice = createTrrackableSlice({
+      name: 'test',
       initialState: {
-        who: 'World',
+        hello: 'World',
+        post: {
+          userId: -1,
+          id: -1,
+          title: '',
+          body: '',
+        },
       },
       reducers: {
-        change(state: { who: string }, action: PayloadAction<string>) {
-          state.who = action.payload;
+        sayHello(state, action: PayloadAction<string>) {
+          state.hello = action.payload;
         },
-        reset() {
-          return { who: 'World' };
-        },
+      },
+      extraReducers: (builder) => {
+        builder.addCase(getPostById.fulfilled, (state, action) => {
+          state.post = action.payload;
+        });
       },
       labels: {
-        change(who: string) {
-          return `Say hello to ${who}!`;
+        sayHello: (args) => `Say hello to ${args}`,
+      },
+      doUndoActionCreators: {
+        sayHello({ previousState }) {
+          return {
+            undo: sayHello(previousState.test.hello),
+          };
         },
       },
-      eventTypes: {
-        change: 'Change',
-      },
     });
 
-    const { store } = createTrrackableStore({
-      slices: {
-        hello: slice,
+    const { sayHello } = testSlice.actions as any;
+
+    const { store, trrack } = configureTrrackableStore({
+      reducer: {
+        test: testSlice.reducer,
       },
+      slices: [testSlice],
     });
 
-    store.dispatch(slice.actions.change('Mars'));
+    // store.dispatch(sayHello('Mars'));
+    // trrack.undo();
 
     expect(true).toBeTruthy();
   });

@@ -226,6 +226,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
 
             for (const sf of sideEffectsToApply) {
                 const action = registry.get(sf.type);
+
                 await action.func(sf.payload);
             }
 

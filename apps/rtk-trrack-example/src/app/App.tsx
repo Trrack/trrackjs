@@ -13,6 +13,7 @@ function App() {
   const tasks = useSelector((state: RootState) => state.tasks);
   const dispatch = useDispatch<AppDispatch>();
   const current = useTrrackSelector((state: any) => state.current);
+  const post = useSelector((state: RootState) => state.post);
 
   const { required, handlers } = useTreeState({
     data: trrack.tree(),
@@ -74,6 +75,7 @@ function App() {
           setSelected={(node) => trrack.to(node.id)}
         />
       </Box>
+      <pre>{JSON.stringify(post, null, 2)}</pre>
     </Box>
   );
 }
