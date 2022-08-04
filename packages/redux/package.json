@@ -3,6 +3,7 @@
   "version": "0.0.3",
   "type": "commonjs",
   "dependencies": {
+    "@reduxjs/toolkit": "^1.8.3",
     "@trrack/core": "*"
   }
 }
