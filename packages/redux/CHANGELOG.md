@@ -2,6 +2,14 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [0.0.4](https://github.com/Trrack/trrackjs/compare/redux-0.0.3...redux-0.0.4) (2022-08-04)
+
+
+### Features
+
+*  Updating sideEffectReducer ([#12](https://github.com/Trrack/trrackjs/issues/12)) ([5b138f2](https://github.com/Trrack/trrackjs/commit/5b138f2a9cdad18e61933d2390c51ee656f0f709))
+* guitar Added API for handling thunk actions with createAsync  ([a2ecf38](https://github.com/Trrack/trrackjs/commit/a2ecf381aba0b9964bea1593761bc061187e7a9d))
+
 ### [0.0.3](https://github.com/Trrack/trrackjs/compare/redux-0.0.2...redux-0.0.3) (2022-08-02)
 
 ### 0.0.1 (2022-08-02)
