@@ -37,7 +37,7 @@
     "@nrwl/react": "14.5.2",
     "@nrwl/web": "14.5.2",
     "@nrwl/workspace": "14.5.2",
-    "@reduxjs/toolkit": "1.8.3",
+    "@reduxjs/toolkit": "^1.8.3",
     "@swc/cli": "~0.1.55",
     "@swc/core": "~1.2.143",
     "@swc/jest": "0.2.20",

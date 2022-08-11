@@ -2,8 +2,7 @@
   "name": "@trrack/core",
   "version": "0.0.4",
   "type": "commonjs",
-  "dependencies": {
-    "@reduxjs/toolkit": "^1.8.3",
+  "peerDependencies": {
     "uuid": "^8.3.2"
   },
   "devDependencies": {
