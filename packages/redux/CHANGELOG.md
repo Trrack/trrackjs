@@ -2,6 +2,8 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [0.0.5](https://github.com/Trrack/trrackjs/compare/redux-0.0.4...redux-0.0.5) (2022-08-11)
+
 ### [0.0.4](https://github.com/Trrack/trrackjs/compare/redux-0.0.3...redux-0.0.4) (2022-08-04)
 
 
