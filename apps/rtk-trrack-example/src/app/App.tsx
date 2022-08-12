@@ -18,7 +18,12 @@ function App() {
   useEffect(() => {
     const url = new URLSearchParams(window.location.search);
     const importString = url.get('prov');
-    if (importString) trrack.import(importString);
+    if (importString) {
+      const g = JSON.parse(importString);
+      if (trrack.root.id !== g.root) {
+        trrack.import(importString);
+      }
+    }
   }, []);
 
   const { required, handlers } = useTreeState({

@@ -239,8 +239,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
             for (const sf of sideEffectsToApply) {
                 const actionFunction = registry.get(sf.type)
                     .func as TrrackActionFunction<any, any, any, any>;
-
-                await actionFunction(sf.payload);
+                 await actionFunction(sf.payload);
             }
 
             graph.update(graph.changeCurrent(node));

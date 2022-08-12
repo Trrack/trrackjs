@@ -187,10 +187,14 @@ export function configureTrrackableStore<State>(
     registry: Registry.create(),
   });
 
+  let middlewareStatus: 'active' | 'paused' = 'active';
+
   Object.values(asyncThunks).forEach((thunk) => {
     if (!trrack.registry.has(thunk.typePrefix)) {
       trrack.registry.register(thunk.typePrefix, (args: any) => {
-        return store.dispatch(thunk(args) as any);
+        middlewareStatus = 'paused';
+        const th = store.dispatch(thunk(args) as any);
+        return th.then(() => middlewareStatus = 'active');
       });
     }
   });
@@ -207,7 +211,6 @@ export function configureTrrackableStore<State>(
     current: trrack.current.id,
   });
 
-  let middlewareStatus: 'active' | 'paused' = 'active';
 
   trrack.currentChange(() => {
     middlewareStatus = 'paused';
@@ -218,6 +221,7 @@ export function configureTrrackableStore<State>(
 
   startListening({
     predicate(action) {
+
       if (trrack.isTraversing) return false; // Never run middleware when trrack is traversing.
 
       if (middlewareStatus === 'paused') return false; // Never run middleware when middleware is set to pause.
@@ -253,6 +257,7 @@ export function configureTrrackableStore<State>(
         const doAct = NO_OP_ACTION.match(doUndoObject.do)
           ? (action as PayloadAction)
           : (doUndoObject.do as PayloadAction);
+
 
         trrack.record({
           label,
