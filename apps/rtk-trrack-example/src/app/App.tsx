@@ -1,5 +1,5 @@
 import { Box, Checkbox, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Tree, useTreeState } from 'react-hyper-tree';
 import { TreeNode } from 'react-hyper-tree/dist/helpers/node';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +14,12 @@ function App() {
   const dispatch = useDispatch<AppDispatch>();
   const current = useTrrackSelector((state: any) => state.current);
   const post = useSelector((state: RootState) => state.post);
+
+  useEffect(() => {
+    const url = new URLSearchParams(window.location.search);
+    const importString = url.get('prov');
+    if (importString) trrack.import(importString);
+  }, []);
 
   const { required, handlers } = useTreeState({
     data: trrack.tree(),

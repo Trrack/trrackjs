@@ -8,13 +8,8 @@ import {
   Slice,
   SliceCaseReducers,
 } from '@reduxjs/toolkit';
+import { Label, LabelGenerator } from '@trrack/core';
 
-/**
- * Labels
- */
-type Label = string;
-
-export type LabelGenerator<Args> = (args: Args) => Label;
 
 export type LabelLike<CaseReducers extends SliceCaseReducers<any>> = Partial<{
   [K in keyof CaseReducerActions<CaseReducers>]: CaseReducerActions<CaseReducers>[K] extends PayloadActionCreator<

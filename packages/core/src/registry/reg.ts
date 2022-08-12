@@ -1,32 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { enablePatches, produceWithPatches } from 'immer';
+import { createAction } from '@reduxjs/toolkit';
+import produce, { enablePatches } from 'immer';
 
 import {
+    Label,
     LabelGenerator,
-    TrrackAction,
+    ProduceWrappedStateChangeFunction,
+    StateChangeFunction,
+    TrrackActionConfig,
     TrrackActionFunction,
-    TrrackActionFunctionObject,
 } from './action';
 
 enablePatches();
 
-type TrrackActionCreator<P, T extends string> = (
-    payload: P
-) => TrrackAction<T, P>;
 
-// ! Use redux create Action
-export function createActionCreator<
-    DoActionName extends string = string,
-    DoActionPayload = any
->(type: DoActionName): TrrackActionCreator<DoActionPayload, DoActionName> {
-    return (payload: DoActionPayload) => ({
-        type,
-        payload,
-    });
-}
+type TrrackActionRegisteredObject = {
+    func: TrrackActionFunction<any, any, any, any> | ProduceWrappedStateChangeFunction<any>;
+    config: TrrackActionConfig<any, any>;
+};
 
-function prepareAction(action: any) {
-    return action.length === 2 ? produceWithPatches(action) : action;
+function prepareAction(action: TrrackActionFunction<any, any, any, any> | StateChangeFunction<any, any>) {
+    return action.length === 2 ? produce(action) as unknown as ProduceWrappedStateChangeFunction<any> : action as TrrackActionFunction<any, any, any, any>;
 }
 
 export class Registry<Event extends string> {
@@ -34,46 +28,57 @@ export class Registry<Event extends string> {
         return new Registry<Event>();
     }
 
-    private registry: Map<string, TrrackActionFunctionObject>;
+    private registry: Map<string, TrrackActionRegisteredObject>;
 
     private constructor() {
         this.registry = new Map();
     }
 
-    private has(name: string) {
+    has(name: string) {
         return this.registry.has(name);
     }
 
-    register(
-        type: string,
-        action: TrrackActionFunction,
+    register<
+        DoActionType extends string,
+        UndoActionType extends string,
+        DoActionPayload = any,
+        UndoActionPayload = any,
+        State = any
+    >(
+        type: DoActionType,
+        actionFunction: TrrackActionFunction<
+            DoActionType,
+            UndoActionType,
+            UndoActionPayload,
+            DoActionPayload
+        > | StateChangeFunction<State, DoActionPayload>,
         config?: {
-            label?: string | LabelGenerator<Parameters<typeof action>>;
-            eventType?: Event;
+            eventType: Event;
+            label: Label | LabelGenerator<DoActionPayload>
         }
     ) {
-        if (action.length < 1 || action.length > 2)
-            throw new Error('Incorrect action!');
+        const isState = actionFunction.length === 2;
+
+        if (actionFunction.length > 2)
+            throw new Error('Incorrect action function signature. Action function can only have two arguments at most!');
 
         if (this.has(type)) throw new Error(`Already registered: ${type}`);
 
-        const { label = type, eventType = type } = config || {};
+        const { label = type, eventType = type as unknown as Event } = config || {};
 
         this.registry.set(type, {
-            func: prepareAction(action),
+            func: prepareAction(actionFunction),
             config: {
-                hasSideEffects: action.length === 1,
+                hasSideEffects: !isState,
                 label:
                     typeof label === 'string'
-                        ? ((() => label) as LabelGenerator<
-                              Parameters<typeof action>
-                          >)
+                        ? ((() => label) as LabelGenerator<void>)
                         : label,
                 eventType,
             },
         });
 
-        return createActionCreator<typeof type>(type);
+        return createAction<DoActionPayload>(type);
     }
 
     get(type: string) {

@@ -3,7 +3,7 @@ import { asyncDoUndoActionCreatorHelper, createTrrackableSlice } from '@trrack/r
 
 export const getPostById = createAsyncThunk(
   'post/getpostById',
-  async (postId: number, api) => {
+  async (postId: number, _api) => {
     if (postId < 1) {
       return Promise.resolve({
         userId: -1,
@@ -41,7 +41,7 @@ export const postSlice = createTrrackableSlice({
       return {
         do: asyncDoUndoActionCreatorHelper(
           getPostById.typePrefix,
-          action.payload.id - 1
+          action.payload.id
         ),
         undo: asyncDoUndoActionCreatorHelper(
           getPostById.typePrefix,

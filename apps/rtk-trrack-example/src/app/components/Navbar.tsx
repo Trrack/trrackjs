@@ -26,6 +26,18 @@ export const Navbar = () => {
             sx={{ margin: '0.2em' }}
             variant="contained"
             onClick={() => {
+              const url = new URL(window.location.href);
+              const params = new URLSearchParams(url.search);
+              params.set('prov', trrack.export());
+              window.history.replaceState({}, '', `${url.pathname}?${params}`)
+            }}
+          >
+            Update URL
+          </Button>
+          <Button
+            sx={{ margin: '0.2em' }}
+            variant="contained"
+            onClick={() => {
               dispatch(getPostById(post.id === -1 ? 1 : post.id + 1) as any);
             }}
           >

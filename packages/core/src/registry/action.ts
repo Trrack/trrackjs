@@ -1,47 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PayloadAction } from '@reduxjs/toolkit';
 
-/**
- * Action Tracking
- */
-export type TrrackAction<T extends string = string, P = void> = PayloadAction<
-    P,
-    T
->;
+export type TrrackActionFunction<
+    DoActionType extends string,
+    UndoActionType extends string,
+    UndoActionPayload,
+    DoActionPayload
+> = (args: DoActionPayload) => {
+    do?: PayloadAction<DoActionPayload, DoActionType>;
+    undo: PayloadAction<UndoActionPayload, UndoActionType>;
+};
 
-type TAF<
-    DoActionPayload = any,
-    UndoActionType extends string = string,
-    UndoActionPayload = DoActionPayload
-> = (args: DoActionPayload) => TrrackAction<UndoActionType, UndoActionPayload>;
+export type ProduceWrappedStateChangeFunction<T> = (state: T, args: any) => T
 
-type StateChangeFunction<State = any, Payload = any> = (
+export type StateChangeFunction<State, Payload> = (
     state: State,
     payload: Payload
-) => void;
+) => ReturnType<ProduceWrappedStateChangeFunction<State>>;
 
-export type TrrackActionFunction<
-    DoActionPayload = any,
-    UndoActionType extends string = string,
-    UndoActionPayload = DoActionPayload
-> =
-    | TAF<DoActionPayload, UndoActionType, UndoActionPayload>
-    | StateChangeFunction;
 
-export type LabelGenerator<Args> = (args: Args) => string;
+export type Label = string;
+export type LabelGenerator<Args> = (args: Args) => Label;
 
 export type TrrackActionConfig<Args, Event> = {
     hasSideEffects: boolean;
     eventType: Event;
     label: LabelGenerator<Args>;
-};
-
-export type TrrackActionFunctionObject<
-    Event extends string = string,
-    DoActionPayload = any
-> = {
-    func: any;
-    config: TrrackActionConfig<DoActionPayload, Event>;
 };
 
 export type TrrackActionRecord<
@@ -50,12 +34,6 @@ export type TrrackActionRecord<
     UndoActionType extends string,
     UndoActionPayload
 > = {
-    do: TrrackAction<DoActionType, DoActionPayload>;
-    undo: TrrackAction<UndoActionType, UndoActionPayload>;
+    do: PayloadAction<DoActionPayload, DoActionType>;
+    undo: PayloadAction<UndoActionPayload, UndoActionType>;
 };
-
-// /**
-//  * State tracking
-//  */
-// export type TrrackStateUpdateType = 'Regular' | 'Ephemeral';
-// export type TrrackStateSaveMode = 'Auto' | 'Complete' | 'Patch';

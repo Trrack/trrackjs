@@ -72,7 +72,6 @@ function normalizeLabelGenerators<
 
     if (typeof suppliedLabelLike === 'function') {
       labelGenerators[key] = suppliedLabelLike;
-      return;
     }
 
     throw new Error(`Error creating label generator for ${key.toString()}`);
@@ -124,8 +123,11 @@ function createReducerEventTypes<
     const key = thunk.typePrefix;
     const suppliedEventType = suppliedEventTypes[key];
 
-    if (!suppliedEventType) reducerEventTypes[key] = key;
-    else reducerEventTypes[key] = suppliedEventType;
+    if (!suppliedEventType) {
+      reducerEventTypes[key] = key;
+    } else {
+      reducerEventTypes[key] = suppliedEventType;
+    }
   });
 
   Object.entries(slice.actions).forEach(
@@ -156,17 +158,18 @@ function createDoUndoActionCreators<
   thunks.forEach((thunk) => {
     const key = thunk.typePrefix;
 
-    const suppliedDoUndoActionCreator =
-      suppliedDoUndoActionCreators[key as string];
+    const suppliedDoUndoActionCreator = suppliedDoUndoActionCreators[key];
+
     if (!suppliedDoUndoActionCreator) {
-      duac[key] = () => {
+      const act = () => {
         return {
           do: NO_OP_ACTION(),
           undo: NO_OP_ACTION(),
         };
       };
+      duac[key] = act;
     } else {
-      duac[key] = (args: {
+      const act = (args: {
         action: PayloadAction;
         previousState: State;
         currentState: State;
@@ -178,6 +181,8 @@ function createDoUndoActionCreators<
           undo,
         };
       };
+
+      duac[key] = act;
     }
   });
 

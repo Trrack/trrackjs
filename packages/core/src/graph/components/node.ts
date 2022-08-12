@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Patch } from 'immer';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { Operation } from 'fast-json-patch';
 
-import { TrrackAction } from '../../registry';
 import { FlavoredId, ID } from '../../utils';
 
 export type NodeId = FlavoredId<string, 'Node'>;
@@ -14,7 +14,7 @@ type Checkpoint<State> = {
 type Patches = {
     type: 'patch';
     checkpointRef: NodeId;
-    val: Array<Patch>;
+    val: Array<Operation>;
 };
 
 export type StateLike<State> = Checkpoint<State> | Patches;
@@ -60,8 +60,8 @@ export type RootNode<
 };
 
 export type SideEffects = {
-    do: Array<TrrackAction<any, any>>;
-    undo: Array<TrrackAction<any, any>>;
+    do: Array<PayloadAction<any, any>>;
+    undo: Array<PayloadAction<any, any>>;
 };
 
 export type StateNode<

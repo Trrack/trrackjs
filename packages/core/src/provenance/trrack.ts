@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { applyPatches, Patch } from 'immer';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { applyPatch, compare, Operation } from 'fast-json-patch';
 
 import { initEventManager } from '../event';
 import {
+    BaseArtifactType,
     createStateNode,
     initializeProvenanceGraph,
     isStateNode,
@@ -13,7 +15,8 @@ import {
     StateLike,
     StateNode,
 } from '../graph';
-import { Registry, TrrackAction } from '../registry';
+import { ProvenanceGraph } from '../graph/graph-slice';
+import { ProduceWrappedStateChangeFunction, Registry, TrrackActionFunction } from '../registry';
 
 export enum TrrackEvents {
     TRAVERSAL_START = 'Traversal_Start',
@@ -27,17 +30,10 @@ type ConfigureTrrackOptions<State> = {
 
 type RecordActionArgs<State, Event extends string> = {
     label: string;
-    state:
-        | {
-              type: 'stateLike';
-              val: StateLike<State>;
-          }
-        | {
-              type: 'stateWithPatches';
-              val: [State, Patch[], Patch[]];
-          };
+    state: State;
     eventType: Event;
     sideEffects: SideEffects;
+    onlySideEffects?: boolean;
 };
 
 function getState<State, Event extends string>(
@@ -45,25 +41,31 @@ function getState<State, Event extends string>(
     nodes: Nodes<State, Event, any>
 ): State {
     const stateLike = node.state;
-
     if (stateLike.type === 'checkpoint') return stateLike.val;
 
-    const { checkpointRef, val } = stateLike;
+    const { checkpointRef } = stateLike;
     const checkpointNode = nodes[checkpointRef];
+    const path = getPath(checkpointNode, node, nodes);
+    path.shift();
+    const patches = path
+        .map((p) => nodes[p])
+        .map((n) => n.state.val as Operation[])
+        .reduce((acc, patch) => [...acc, ...patch], []);
+
     const checkpointState = getState(checkpointNode, nodes);
 
-    return applyPatches(checkpointState, val);
+    return applyPatch(checkpointState, patches, true, false).newDocument;
 }
 
 function determineSaveStrategy<T>(
     state: T,
-    patches: Array<Patch>
+    patches: Array<Operation>
 ): 'checkpoint' | 'patch' {
     const objectKeysLength = Object.keys(state).length;
 
     const uniquePatchesLength = new Set(
         patches.map((patch) => {
-            return patch.path[0];
+            return patch.path.split('/')[0];
         })
     ).size;
 
@@ -112,29 +114,26 @@ export function initializeTrrack<State = any, Event extends string = string>({
             state,
             sideEffects,
             eventType,
+            onlySideEffects = false,
         }: RecordActionArgs<State, Event>) {
             let newStateNode: StateNode<State, any, any> | null = null;
 
-            if (state.type === 'stateLike') {
-                newStateNode = createStateNode({
-                    label,
-                    state: state.val,
-                    parent: this.current,
-                    sideEffects,
-                    eventType,
-                });
-            } else if (state.type === 'stateWithPatches') {
-                const newState = state.val[0];
-                const patches = state.val[1];
+            let stateToSave: StateLike<State> | null = null;
 
-                const saveStrategy = determineSaveStrategy(newState, patches);
+            const originalState = getState(
+                this.current,
+                this.graph.backend.nodes
+            );
 
-                let stateLike: StateLike<State>;
+            if (!onlySideEffects) {
+                const patches = compare(originalState, state);
+
+                const saveStrategy = determineSaveStrategy(state, patches);
 
                 if (saveStrategy === 'checkpoint') {
-                    stateLike = {
+                    stateToSave = {
                         type: 'checkpoint',
-                        val: newState,
+                        val: state,
                     };
                 } else {
                     const lastRef =
@@ -142,55 +141,68 @@ export function initializeTrrack<State = any, Event extends string = string>({
                             ? this.current.id
                             : this.current.state.checkpointRef;
 
-                    stateLike = {
+                    stateToSave = {
                         type: 'patch',
                         val: patches,
                         checkpointRef: lastRef,
                     };
                 }
-
-                newStateNode = createStateNode({
-                    label,
-                    state: stateLike,
-                    parent: this.current,
-                    sideEffects,
-                    eventType,
-                });
+            } else {
+                stateToSave = {
+                    type: 'checkpoint',
+                    val: state,
+                };
             }
+            if (!stateToSave)
+                throw new Error(
+                    `Could not calculate new state. Previous state is: ${JSON.stringify(
+                        this.current.state,
+                        null,
+                        2
+                    )}`
+                );
+
+            newStateNode = createStateNode({
+                label,
+                state: stateToSave,
+                parent: this.current,
+                sideEffects,
+                eventType,
+            });
 
             if (!newStateNode) throw new Error('State Node creation failed!');
 
             graph.update(graph.addNode(newStateNode));
         },
-        apply<T extends string, Payload = any>(
+        async apply<T extends string, Payload = any>(
             label: string,
-            act: TrrackAction<T, Payload>
+            act: PayloadAction<Payload, T>
         ) {
             const action = registry.get(act.type);
+            const originalState = getState(
+                this.current,
+                this.graph.backend.nodes
+            );
+
             if (action.config.hasSideEffects) {
-                const undoParams = (action as any).func(act.payload);
+                const { do: doAct = act, undo } = (
+                    action.func as TrrackActionFunction<any, any, any, any>
+                )(act.payload);
 
                 this.record({
                     label,
-                    state: {
-                        type: 'stateLike',
-                        val: this.current.state,
-                    },
-                    sideEffects: { do: [act], undo: [undoParams] },
+                    state: originalState,
+                    sideEffects: { do: [doAct], undo: [undo] },
                     eventType: action.config.eventType as Event,
                 });
             } else {
-                const stateWithPatches = action.func(
-                    this.current.state.val as any,
-                    act.payload
-                );
+                const newState = (
+                    action.func as ProduceWrappedStateChangeFunction<State>
+                )(originalState, act.payload);
 
                 this.record({
                     label,
-                    state: {
-                        type: 'stateWithPatches',
-                        val: stateWithPatches,
-                    },
+                    state: newState,
                     sideEffects: { do: [], undo: [] },
                     eventType: action.config.eventType as Event,
                 });
@@ -205,7 +217,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
                 graph.backend.nodes
             );
 
-            const sideEffectsToApply: Array<TrrackAction<any, any>> = [];
+            const sideEffectsToApply: Array<PayloadAction<any, any>> = [];
 
             for (let i = 0; i < path.length - 1; ++i) {
                 const currentNode = getNode(path[i]);
@@ -225,9 +237,10 @@ export function initializeTrrack<State = any, Event extends string = string>({
             }
 
             for (const sf of sideEffectsToApply) {
-                const action = registry.get(sf.type);
+                const actionFunction = registry.get(sf.type)
+                    .func as TrrackActionFunction<any, any, any, any>;
 
-                await action.func(sf.payload);
+                await actionFunction(sf.payload);
             }
 
             graph.update(graph.changeCurrent(node));
@@ -267,6 +280,21 @@ export function initializeTrrack<State = any, Event extends string = string>({
         },
         on(event: TrrackEvents, listener: (args?: any) => void) {
             eventManager.listen(event, listener);
+        },
+        export() {
+            return JSON.stringify(graph.backend);
+        },
+        import(graphString: string) {
+            const g: ProvenanceGraph<
+                State,
+                Event,
+                BaseArtifactType<any>
+            > = JSON.parse(graphString);
+
+            const current = g.current;
+            g.current = g.root;
+            graph.update(graph.load(g));
+            this.to(current);
         },
     };
 }

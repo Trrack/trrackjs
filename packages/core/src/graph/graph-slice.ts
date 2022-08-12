@@ -1,15 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import {
-    BaseArtifactType,
-    createRootNode,
-    NodeId,
-    Nodes,
-    StateNode,
-} from './components';
+import { BaseArtifactType, createRootNode, NodeId, Nodes, StateNode } from './components';
 
-type ProvenanceGraph<
+export type ProvenanceGraph<
     State,
     Event extends string,
     Artifact extends BaseArtifactType<any>
@@ -55,6 +49,9 @@ export function graphSliceCreator<
                 g.nodes[payload.parent].children.push(payload.id);
                 g.current = payload.id;
             },
+            load(_, {payload}: PayloadAction<ProvenanceGraph<State, Event, Artifact>>) {
+                return payload;
+            }
         },
     });
 }
