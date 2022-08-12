@@ -2,6 +2,18 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+### [0.0.6](https://github.com/Trrack/trrackjs/compare/core-0.0.5...core-0.0.6) (2022-08-12)
+
+
+### Features
+
+* 🎸 Fixed import and export ([2ce70eb](https://github.com/Trrack/trrackjs/commit/2ce70eb8c0be115771ee7f6dc7c8730e21366b51))
+
+
+### Bug Fixes
+
+* 🐛 Handled double rendering in useEffect ([eccc4c1](https://github.com/Trrack/trrackjs/commit/eccc4c11a296e2dd0d77f7c10c9ead04b48831c8))
+
 ### [0.0.5](https://github.com/Trrack/trrackjs/compare/core-0.0.4...core-0.0.5) (2022-08-11)
 
 ### [0.0.4](https://github.com/Trrack/trrackjs/compare/core-0.0.3...core-0.0.4) (2022-08-04)
