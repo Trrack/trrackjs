@@ -16,17 +16,9 @@ import {
     StateNode,
 } from '../graph';
 import { ProvenanceGraph } from '../graph/graph-slice';
-import { ProduceWrappedStateChangeFunction, Registry, TrrackActionFunction } from '../registry';
-
-export enum TrrackEvents {
-    TRAVERSAL_START = 'Traversal_Start',
-    TRAVERSAL_END = 'Traversal_End',
-}
-
-type ConfigureTrrackOptions<State> = {
-    registry: Registry<any>;
-    initialState: State;
-};
+import { ProduceWrappedStateChangeFunction, TrrackActionFunction } from '../registry';
+import { ConfigureTrrackOptions } from './trrack-config-opts';
+import { TrrackEvents } from './trrack-events';
 
 type RecordActionArgs<State, Event extends string> = {
     label: string;
@@ -239,7 +231,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
             for (const sf of sideEffectsToApply) {
                 const actionFunction = registry.get(sf.type)
                     .func as TrrackActionFunction<any, any, any, any>;
-                 await actionFunction(sf.payload);
+                await actionFunction(sf.payload);
             }
 
             graph.update(graph.changeCurrent(node));
