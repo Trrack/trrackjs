@@ -12,10 +12,12 @@
         "tsConfig": "packages/redux/tsconfig.lib.json",
         "assets": ["packages/redux/*.md"]
       },
-      "dependsOn": [{
-        "projects": "dependencies",
-        "target": "build"
-      }]
+      "dependsOn": [
+        {
+          "projects": "dependencies",
+          "target": "build"
+        }
+      ]
     },
     "publish": {
       "executor": "@nrwl/workspace:run-commands",
@@ -38,7 +40,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/redux"],
+      "outputs": ["{workspaceRoot}/coverage/packages/redux"],
       "options": {
         "jestConfig": "packages/redux/jest.config.ts",
         "passWithNoTests": true

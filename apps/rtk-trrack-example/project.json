@@ -73,7 +73,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/rtk-trrack-example"],
+      "outputs": ["{workspaceRoot}/coverage/apps/rtk-trrack-example"],
       "options": {
         "jestConfig": "apps/rtk-trrack-example/jest.config.ts",
         "passWithNoTests": true
