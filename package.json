@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "build:all": "nx run-many --target=build",
     "dev:all": "nx run-many --target=serve --projects=react-trrack-example,rtk-trrack-example --output-style=stream",
     "test:all:watch": "nx run-many --target=test --projects=core,redux --watch",
     "prepare": "husky install",
