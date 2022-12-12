@@ -16,7 +16,7 @@ yarn install # Trrack can also work with npm, but it uses workspaces feature whi
 
 yarn dev:all # Will run all examples
 
-yarn test:watch:all # Will run tests for all trrack pacakges in watch mode
+yarn test:all:watch # Will run tests for all trrack pacakges in watch mode
 ```
 
 The repository is structured as follows:
