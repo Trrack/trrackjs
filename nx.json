@@ -10,7 +10,8 @@
     "libsDir": "packages"
   },
   "cli": {
-    "defaultCollection": "@nrwl/react"
+    "defaultCollection": "@nrwl/react",
+    "packageManager": "yarn"
   },
   "tasksRunnerOptions": {
     "default": {

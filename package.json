@@ -8,7 +8,7 @@
     "prepare": "husky install",
     "commit": "npx git-cz",
     "nx-create-migrations": "nx migrate latest",
-    "nx-migrate": "nx migrate --run-migrations --create-commits"
+    "nx-migrate": "nx migrate --run-migrations --create-commits && rm -rf migrations.json && git add . && git commit -m 'chore: [nx migration] remove migrations.json'"
   },
   "private": true,
   "dependencies": {
