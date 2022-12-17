@@ -66,5 +66,6 @@
         "passWithNoTests": true
       }
     }
-  }
+  },
+  "name": "trrack-lineup-example"
 }

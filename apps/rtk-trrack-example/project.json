@@ -80,5 +80,6 @@
       }
     }
   },
-  "tags": []
+  "tags": [],
+  "name": "rtk-trrack-example"
 }

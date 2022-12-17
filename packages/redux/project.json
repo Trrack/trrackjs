@@ -59,5 +59,6 @@
       }
     }
   },
-  "tags": []
+  "tags": [],
+  "name": "redux"
 }
