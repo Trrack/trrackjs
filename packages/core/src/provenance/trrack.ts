@@ -53,7 +53,7 @@ function determineSaveStrategy<T>(
     state: T,
     patches: Array<Operation>
 ): 'checkpoint' | 'patch' {
-    const objectKeysLength = Object.keys(state).length;
+    const objectKeysLength = Object.keys(state as any).length;
 
     const uniquePatchesLength = new Set(
         patches.map((patch) => {
@@ -118,7 +118,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
             );
 
             if (!onlySideEffects) {
-                const patches = compare(originalState, state);
+                const patches = compare(originalState as any, state as any);
 
                 const saveStrategy = determineSaveStrategy(state, patches);
 

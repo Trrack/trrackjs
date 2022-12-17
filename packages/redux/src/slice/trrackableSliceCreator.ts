@@ -35,7 +35,7 @@ function createNameToTypeMap<
 
   Object.entries(slice.actions).forEach(
     ([key, action]: [
-      keyof CaseReducerActions<CaseReducers>,
+      keyof CaseReducerActions<CaseReducers, any>,
       PayloadActionCreator<any>
     ]) => {
       actionNameToType[key] =
@@ -79,7 +79,7 @@ function normalizeLabelGenerators<
 
   Object.entries(slice.actions).forEach(
     ([key, action]: [
-      keyof CaseReducerActions<CaseReducers>,
+      keyof CaseReducerActions<CaseReducers, any>,
       PayloadActionCreator<any>
     ]) => {
       const suppliedLabelLike = suppliedLabelLikes[key];
@@ -132,7 +132,7 @@ function createReducerEventTypes<
 
   Object.entries(slice.actions).forEach(
     ([key, action]: [
-      keyof CaseReducerActions<CaseReducers>,
+      keyof CaseReducerActions<CaseReducers, any>,
       PayloadActionCreator<any>
     ]) => {
       const suppliedEventType = suppliedEventTypes[key];
@@ -187,9 +187,9 @@ function createDoUndoActionCreators<
   });
 
   Object.entries(slice.actions).forEach(
-    <K extends keyof CaseReducerActions<CaseReducers>>([key, action]: [
+    <K extends keyof CaseReducerActions<CaseReducers, any>>([key, action]: [
       K,
-      Exclude<CaseReducerActions<CaseReducers>[K], void>
+      Exclude<CaseReducerActions<CaseReducers, any>[K], void>
     ]) => {
       const suppliedDoUndoActionCreator =
         suppliedDoUndoActionCreators[key as string];
