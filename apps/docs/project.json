@@ -11,7 +11,9 @@
       "defaultConfiguration": "production",
       "options": {
         "root": "apps/docs",
-        "outputPath": "dist/apps/docs"
+        "outputPath": "dist/apps/docs",
+        "command": "npx next build",
+        "cwd": "apps/docs"
       },
       "configurations": {
         "development": {
@@ -41,9 +43,11 @@
       }
     },
     "export": {
-      "executor": "@nrwl/next:export",
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "docs:build:production"
+        "buildTarget": "docs:build:production",
+        "cwd": "apps/docs",
+        "commands": ["npx next start", "npx next export"]
       }
     },
     "lint": {
