@@ -5,7 +5,7 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nrwl/web:webpack",
+      "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
@@ -41,7 +41,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/web:dev-server",
+      "executor": "@nrwl/webpack:dev-server",
       "options": {
         "buildTarget": "trrack-lineup-example:build"
       },
@@ -60,11 +60,12 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/trrack-lineup-example"],
+      "outputs": ["{workspaceRoot}/coverage/apps/trrack-lineup-example"],
       "options": {
         "jestConfig": "apps/trrack-lineup-example/jest.config.ts",
         "passWithNoTests": true
       }
     }
-  }
+  },
+  "name": "trrack-lineup-example"
 }

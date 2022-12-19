@@ -4,7 +4,7 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/web:webpack",
+      "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
@@ -47,7 +47,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/web:dev-server",
+      "executor": "@nrwl/webpack:dev-server",
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "rtk-trrack-example:build",
@@ -73,12 +73,13 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/rtk-trrack-example"],
+      "outputs": ["{workspaceRoot}/coverage/apps/rtk-trrack-example"],
       "options": {
         "jestConfig": "apps/rtk-trrack-example/jest.config.ts",
         "passWithNoTests": true
       }
     }
   },
-  "tags": []
+  "tags": [],
+  "name": "rtk-trrack-example"
 }

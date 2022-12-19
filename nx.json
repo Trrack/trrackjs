@@ -10,7 +10,8 @@
     "libsDir": "packages"
   },
   "cli": {
-    "defaultCollection": "@nrwl/react"
+    "defaultCollection": "@nrwl/react",
+    "packageManager": "yarn"
   },
   "tasksRunnerOptions": {
     "default": {
@@ -46,12 +47,40 @@
       "style": "css",
       "linter": "eslint",
       "unitTestRunner": "jest"
+    },
+    "@nrwl/next": {
+      "application": {
+        "style": "css",
+        "linter": "eslint"
+      }
     }
   },
   "defaultProject": "core",
   "pluginsConfig": {
     "@nrwl/js": {
       "analyzeSourceFiles": true
+    }
+  },
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "sharedGlobals": ["{workspaceRoot}/babel.config.json"],
+    "production": [
+      "default",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/jest.config.[jt]s",
+      "!{projectRoot}/.eslintrc.json"
+    ]
+  },
+  "targetDefaults": {
+    "build": {
+      "inputs": ["production", "^production"]
+    },
+    "test": {
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
+    },
+    "lint": {
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
     }
   }
 }

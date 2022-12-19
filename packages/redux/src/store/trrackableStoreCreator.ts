@@ -118,25 +118,24 @@ function mergeReducers(slices: Slice[]) {
     const scr: SliceCaseReducers<any> = {};
 
     Object.entries(slice.actions).forEach(([key, action]) => {
-      scr[action.type] = slice.caseReducers[key]
-    })
+      scr[action.type] = slice.caseReducers[key];
+    });
 
-    return {...acc, ...scr}
-  }, {} as SliceCaseReducers<any>)
+    return { ...acc, ...scr };
+  }, {} as SliceCaseReducers<any>);
 }
 
 function mergeActionToSliceName(slices: Slice[]) {
   return slices.reduce((acc, slice) => {
-    const scr: {[key: string]: string}= {};
+    const scr: { [key: string]: string } = {};
 
     Object.values(slice.actions).forEach((action) => {
-      scr[action.type] = slice.name
-    })
+      scr[action.type] = slice.name;
+    });
 
-    return {...acc, ...scr}
-  }, {} as {[key: string]: string})
+    return { ...acc, ...scr };
+  }, {} as { [key: string]: string });
 }
-
 
 export function configureTrrackableStore<State>(
   opts: ConfigureStoreOptions<State, AnyAction> & {
@@ -150,7 +149,9 @@ export function configureTrrackableStore<State>(
   const store = configureStore({
     ...opts,
     reducer: makeTrrackable(
-      typeof _reducer === 'function' ? _reducer : combineReducers(_reducer)
+      typeof _reducer === 'function'
+        ? _reducer
+        : (combineReducers(_reducer) as any)
     ),
     middleware(getDefaultMiddleware) {
       const suppliedMiddleware = opts.middleware;
@@ -194,7 +195,7 @@ export function configureTrrackableStore<State>(
       trrack.registry.register(thunk.typePrefix, (args: any) => {
         middlewareStatus = 'paused';
         const th = store.dispatch(thunk(args) as any);
-        return th.then(() => middlewareStatus = 'active');
+        return th.then(() => (middlewareStatus = 'active'));
       });
     }
   });
@@ -211,7 +212,6 @@ export function configureTrrackableStore<State>(
     current: trrack.current.id,
   });
 
-
   trrack.currentChange(() => {
     middlewareStatus = 'paused';
     store.dispatch(trrackTraverseAction(trrack.getState()));
@@ -221,7 +221,6 @@ export function configureTrrackableStore<State>(
 
   startListening({
     predicate(action) {
-
       if (trrack.isTraversing) return false; // Never run middleware when trrack is traversing.
 
       if (middlewareStatus === 'paused') return false; // Never run middleware when middleware is set to pause.
@@ -258,7 +257,6 @@ export function configureTrrackableStore<State>(
           ? (action as PayloadAction)
           : (doUndoObject.do as PayloadAction);
 
-
         trrack.record({
           label,
           state: api.getState(),
@@ -277,7 +275,7 @@ export function configureTrrackableStore<State>(
               },
             ],
           },
-          onlySideEffects: true
+          onlySideEffects: true,
         });
       } else {
         // ! Fix

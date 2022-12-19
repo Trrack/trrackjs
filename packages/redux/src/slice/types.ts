@@ -10,11 +10,11 @@ import {
 } from '@reduxjs/toolkit';
 import { Label, LabelGenerator } from '@trrack/core';
 
-
 export type LabelLike<CaseReducers extends SliceCaseReducers<any>> = Partial<{
-  [K in keyof CaseReducerActions<CaseReducers>]: CaseReducerActions<CaseReducers>[K] extends PayloadActionCreator<
-    infer P
-  >
+  [K in keyof CaseReducerActions<CaseReducers, any>]: CaseReducerActions<
+    CaseReducers,
+    any
+  >[K] extends PayloadActionCreator<infer P>
     ? Label | LabelGenerator<P>
     : never;
 }>;
@@ -30,7 +30,7 @@ export type ReducerEventTypes<
   Event extends string,
   CaseReducers extends SliceCaseReducers<any>
 > = {
-  [K in keyof CaseReducerActions<CaseReducers>]: Event;
+  [K in keyof CaseReducerActions<CaseReducers, any>]: Event;
 };
 
 /**
@@ -39,7 +39,10 @@ export type ReducerEventTypes<
 
 export type ActionNameToTypeMap<
   CaseReducers extends SliceCaseReducers<any>,
-  CRA extends CaseReducerActions<CaseReducers> = CaseReducerActions<CaseReducers>
+  CRA extends CaseReducerActions<CaseReducers, any> = CaseReducerActions<
+    CaseReducers,
+    any
+  >
 > = {
   [K in keyof CRA]: CRA[K] extends ActionCreatorWithPayload<any, infer T>
     ? T
