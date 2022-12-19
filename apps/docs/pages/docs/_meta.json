@@ -1,8 +1,4 @@
 {
   "index": "Introduction",
-  "tutorial": "Tutorial",
-  "-- Themes --": {
-    "type": "separator",
-    "title": "Themes"
-  }
+  "tutorial": "Tutorial"
 }
