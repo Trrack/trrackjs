@@ -31,7 +31,8 @@ const theme = {
       };
   },
   chat: {
-    link: 'https://twitter.com/shuding_',
+    link: 'https://github.com/kirangadhave/',
+    icon: 'Get in touch',
   },
   banner: {
     key: '2.0-release',
