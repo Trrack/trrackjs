@@ -49,10 +49,12 @@ registry.register('sort', (sortBy: 'asc' | 'dsc') => {
   if (sortBy === 'dsc') arr.sort().reverse();
 
   return {
-    type: 'sort',
-    payload: sortBy === 'asc' ? 'dsc' : 'asc',
-    meta: {
-      hasSideEffects: true,
+    undo: {
+      type: 'sort',
+      payload: sortBy === 'asc' ? 'dsc' : 'asc',
+      meta: {
+        hasSideEffects: true,
+      },
     },
   };
 });
