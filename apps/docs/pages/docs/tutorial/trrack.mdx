@@ -1,0 +1,61 @@
+# Trrack
+
+## State
+
+After creating the `registry` and registering our actions we can initialize Trrack instance.
+
+Apart from the `registry`, we need the `application state` to initilize Trrack.
+
+```typescript copy
+type State {
+    // ... model your application state here. Flat structure is better for modular updates as well as storing diffs.
+}
+
+const state: State = {
+    // ... initialize your application state here with default values
+}
+```
+
+## Trrack Instance
+
+Now with the `registry` and `state` we can initialize Trrack.
+
+```typescript copy
+import { initializeTrrack } from '@trrack/core';
+
+const trrack = initializeTrrack({
+  initialState: state,
+  registry, // registry created in the previous section
+});
+```
+
+## Listener
+
+Trrack provides a listener to subscribe to state change. State change happens when moving between nodes in the provenance graph either due to creation of a new node, an undo or a redo.
+
+```typescript copy
+trrack.currentChange(() => {
+  // Response to state change here
+});
+```
+
+You can register multiple listeners and Trrack will call them all in order.
+
+## Accessing current state
+
+Trrack stores the state as either as entire snapshot or a diff from the previous state.
+You can access the current state using the `getState` method as follows.
+
+```typescript copy
+const state = trrack.getState();
+```
+
+## Traversal
+
+You can jump to any node in the provenance graph using the `to` method.
+
+```typescript copy
+trrack.to(// node id);
+```
+
+Trrack also provides helper methods to `undo` and `redo` in the provenance graph using methods of the same name.
