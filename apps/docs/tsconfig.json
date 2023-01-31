@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "preserve",
-
+    "baseUrl": ".",
     "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
