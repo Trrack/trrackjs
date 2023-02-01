@@ -40,3 +40,9 @@ Thumbs.db
 
 # Next.js
 .next
+
+# Nx
+migrations.json
+
+_core
+_redux
