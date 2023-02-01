@@ -1,5 +1,4 @@
-import { createRootNode } from '../src';
-import { createStateNode } from '../src/graph/components/node';
+import { createRootNode, createStateNode } from '../src';
 
 describe('Provenance Node', () => {
     it('should create root node', () => {
