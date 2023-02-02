@@ -25,8 +25,7 @@
             "outputs": [],
             "options": {
                 "command": "npx semantic-release-plus --extends ./packages/core/release.config.js",
-                "parallel": false,
-                "dryRun": true
+                "parallel": false
             }
         },
         "publish": {
