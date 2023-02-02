@@ -1,8 +1,11 @@
 name: Release
 
 on:
+  pull_request:
+    branches: [main, beta]
+    types: [closed]
   push:
-    branches: [main, alpha, beta]
+    branches: [alpha]
 
 env:
   HUSKY: 0
