@@ -51,7 +51,7 @@ jobs:
 
       - name: Build
         run: |
-          RUN=CI nx affected:build --exclude $(nx print-affected --type=app --select=projects)
+          RUN=CI yarn run build-affected-libs
 
       - name: Release
         if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
@@ -59,4 +59,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          RUN=CI nx affected:release --exclude $(nx print-affected --type=app --select=projects)
+          RUN=CI yarn run release

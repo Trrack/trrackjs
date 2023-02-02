@@ -8,7 +8,9 @@
     "prepare": "husky install",
     "commit": "npx git-cz",
     "nx-create-migrations": "nx migrate latest",
-    "nx-migrate": "nx migrate --run-migrations --create-commits"
+    "nx-migrate": "nx migrate --run-migrations --create-commits",
+    "build-affected-libs": "nx affected:build --exclude $(nx print-affected --type=app --select=projects)",
+    "release": "nx affected:release --exclude $(nx print-affected --type=app --select=projects)"
   },
   "private": true,
   "dependencies": {
