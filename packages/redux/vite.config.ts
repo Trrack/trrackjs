@@ -6,7 +6,7 @@ import dts from 'vite-plugin-dts';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-    cacheDir: '../../node_modules/.vite/core',
+    cacheDir: '../../node_modules/.vite/redux',
     define: {
         'process.env': {},
     },
@@ -41,17 +41,18 @@ export default defineConfig({
             fileName: 'index',
 
             // UMD name
-            name: 'Trrack',
+            name: 'TrrackRTK',
             // Change this to the formats you want to support.
             // Don't forgot to update your package.json as well.
             formats: ['es', 'cjs', 'umd'],
         },
         rollupOptions: {
             // External packages that should not be bundled into your library.
-            external: ['@reduxjs/toolkit'],
+            external: ['@reduxjs/toolkit', '@trrack/core'],
             output: {
                 globals: {
                     '@reduxjs/toolkit': 'RTK',
+                    '@trrack/core': 'Trrack',
                 },
             },
         },

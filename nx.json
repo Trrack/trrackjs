@@ -74,7 +74,8 @@
   },
   "targetDefaults": {
     "build": {
-      "inputs": ["production", "^production"]
+      "inputs": ["production", "^production"],
+      "dependsOn": ["^build"]
     },
     "test": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]

@@ -1,64 +1,47 @@
 {
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/redux/src",
-  "projectType": "library",
-  "targets": {
-    "build": {
-      "executor": "@nrwl/js:swc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/packages/redux",
-        "main": "packages/redux/src/index.ts",
-        "tsConfig": "packages/redux/tsconfig.lib.json",
-        "assets": ["packages/redux/*.md"]
-      },
-      "dependsOn": [
-        {
-          "projects": "dependencies",
-          "target": "build"
+    "name": "redux",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "packages/redux/src",
+    "projectType": "library",
+    "targets": {
+        "build": {
+            "executor": "@nrwl/vite:build",
+            "outputs": ["{options.outputPath}"],
+            "defaultConfiguration": "production",
+            "options": {
+                "outputPath": "dist/packages/redux"
+            },
+            "configurations": {
+                "development": {
+                    "mode": "development"
+                },
+                "production": {
+                    "mode": "production"
+                }
+            }
+        },
+        "publish": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node tools/scripts/publish.mjs redux {args.ver} {args.tag}"
+            },
+            "dependsOn": ["build"]
+        },
+        "test": {
+            "executor": "@nrwl/vite:test",
+            "outputs": ["coverage/packages/redux"],
+            "options": {
+                "passWithNoTests": true,
+                "reportsDirectory": "../../coverage/packages/redux"
+            }
+        },
+        "lint": {
+            "executor": "@nrwl/linter:eslint",
+            "outputs": ["{options.outputFile}"],
+            "options": {
+                "lintFilePatterns": ["packages/redux/**/*.ts"]
+            }
         }
-      ]
     },
-    "publish": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node tools/scripts/publish.mjs redux {args.ver} {args.tag}"
-      },
-      "dependsOn": [
-        {
-          "projects": "self",
-          "target": "build"
-        }
-      ]
-    },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["packages/redux/**/*.ts"]
-      }
-    },
-    "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/packages/redux"],
-      "options": {
-        "jestConfig": "packages/redux/jest.config.ts",
-        "passWithNoTests": true
-      }
-    },
-    "version": {
-      "executor": "@jscutlery/semver:version",
-      "options": {
-        "preset": "conventional"
-      }
-    },
-    "deploy": {
-      "executor": "ngx-deploy-npm:deploy",
-      "options": {
-        "access": "public"
-      }
-    }
-  },
-  "tags": [],
-  "name": "redux"
+    "tags": []
 }

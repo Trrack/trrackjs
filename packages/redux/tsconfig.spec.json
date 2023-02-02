@@ -1,14 +1,19 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
-    "types": ["vitest/globals", "node"]
-  },
-  "include": [
-    "jest.config.ts",
-    "tests/**/*.test.ts",
-    "tests/**/*.spec.ts",
-    "**/*.d.ts"
-  ]
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "../../dist/out-tsc",
+        "types": ["vitest/globals", "node"]
+    },
+    "include": [
+        "vite.config.ts",
+        "tests/**/*.test.ts",
+        "tests**/*.spec.ts",
+        "tests/**/*.test.tsx",
+        "tests/**/*.spec.tsx",
+        "tests/**/*.test.js",
+        "tests/**/*.spec.js",
+        "tests/**/*.test.jsx",
+        "tests/**/*.spec.jsx",
+        "tests/**/*.d.ts"
+    ]
 }

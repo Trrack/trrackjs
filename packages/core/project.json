@@ -7,8 +7,17 @@
         "build": {
             "executor": "@nrwl/vite:build",
             "outputs": ["{options.outputPath}"],
+            "defaultConfiguration": "production",
             "options": {
                 "outputPath": "dist/packages/core"
+            },
+            "configurations": {
+                "development": {
+                    "mode": "development"
+                },
+                "production": {
+                    "mode": "production"
+                }
             }
         },
         "publish": {
