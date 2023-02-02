@@ -1,30 +1,31 @@
 {
+    "name": "core",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "packages/core/src",
     "projectType": "library",
     "targets": {
         "build": {
-            "executor": "@nrwl/js:swc",
+            "executor": "@nrwl/vite:build",
             "outputs": ["{options.outputPath}"],
+            "defaultConfiguration": "production",
             "options": {
-                "outputPath": "dist/packages/core",
-                "main": "packages/core/src/index.ts",
-                "tsConfig": "packages/core/tsconfig.lib.json",
-                "assets": ["packages/core/*.md"]
+                "outputPath": "dist/packages/core"
+            },
+            "configurations": {
+                "development": {
+                    "mode": "development"
+                },
+                "production": {
+                    "mode": "production"
+                }
             }
         },
-        "build-web": {
-            "executor": "@nrwl/web:rollup",
-            "outputs": ["{options.outputPath}"],
+        "release": {
+            "executor": "nx:run-commands",
+            "outputs": [],
             "options": {
-                "project": "package.json",
-                "entryFile": "packages/core/src/index.ts",
-                "outputPath": "dist/packages/core",
-                "main": "packages/core/src/index.ts",
-                "tsConfig": "packages/core/tsconfig.lib.json",
-                "format": ["cjs"],
-                "externals": [],
-                "rollupConfig": "packages/core/rollup.test.config.js"
+                "command": "npx semantic-release-plus --extends ./packages/core/release.config.js",
+                "parallel": false
             }
         },
         "publish": {
@@ -32,12 +33,15 @@
             "options": {
                 "command": "node tools/scripts/publish.mjs core {args.ver} {args.tag}"
             },
-            "dependsOn": [
-                {
-                    "projects": "self",
-                    "target": "build"
-                }
-            ]
+            "dependsOn": ["build"]
+        },
+        "test": {
+            "executor": "@nrwl/vite:test",
+            "outputs": ["{workspaceRoot}/coverage/packages/core"],
+            "options": {
+                "passWithNoTests": true,
+                "reportsDirectory": "../../coverage/packages/core"
+            }
         },
         "lint": {
             "executor": "@nrwl/linter:eslint",
@@ -45,28 +49,7 @@
             "options": {
                 "lintFilePatterns": ["packages/core/**/*.ts"]
             }
-        },
-        "test": {
-            "executor": "@nrwl/jest:jest",
-            "outputs": ["{workspaceRoot}/coverage/packages/core"],
-            "options": {
-                "jestConfig": "packages/core/jest.config.ts",
-                "passWithNoTests": true
-            }
-        },
-        "version": {
-            "executor": "@jscutlery/semver:version",
-            "options": {
-                "preset": "conventional"
-            }
-        },
-        "deploy": {
-            "executor": "ngx-deploy-npm:deploy",
-            "options": {
-                "access": "public"
-            }
         }
     },
-    "tags": [],
-    "name": "core"
+    "tags": []
 }

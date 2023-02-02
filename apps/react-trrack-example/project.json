@@ -1,4 +1,5 @@
 {
+  "name": "react-trrack-example",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/react-trrack-example/src",
   "projectType": "application",
@@ -80,6 +81,5 @@
       }
     }
   },
-  "tags": [],
-  "name": "react-trrack-example"
+  "tags": []
 }

@@ -16,8 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@trrack/core": ["packages/core/src/index.ts"],
-      "@trrack/redux": ["packages/redux/src/index.ts"]
+      "@trrack/*": ["dist/packages/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

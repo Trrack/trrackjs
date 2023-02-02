@@ -1,5 +1,26 @@
 {
     "name": "@trrack/core",
-    "version": "0.0.6",
-    "type": "commonjs"
+    "version": "0.0.0-semantic-release",
+    "main": "./index.js",
+    "types": "./index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Trrack/trrackjs.git"
+    },
+    "dependencies": {
+        "fast-json-patch": "^3.1.1",
+        "uuid": "^9.0.0",
+        "@reduxjs/toolkit": "^1.9.1"
+    },
+    "peerDependencies": {
+        "fast-json-patch": "^3.1.1",
+        "uuid": "^9.0.0",
+        "@reduxjs/toolkit": "^1.9.1"
+    },
+    "exports": {
+        ".": {
+            "import": "./index.mjs",
+            "require": "./index.js"
+        }
+    }
 }
