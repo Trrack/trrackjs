@@ -3,6 +3,7 @@
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "packages/redux/src",
     "projectType": "library",
+    "implicitDependencies": ["core"],
     "targets": {
         "build": {
             "executor": "@nrwl/vite:build",
