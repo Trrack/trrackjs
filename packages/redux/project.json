@@ -30,7 +30,7 @@
         },
         "test": {
             "executor": "@nrwl/vite:test",
-            "outputs": ["coverage/packages/redux"],
+            "outputs": ["{workspaceRoot}/coverage/packages/redux"],
             "options": {
                 "passWithNoTests": true,
                 "reportsDirectory": "../../coverage/packages/redux"

@@ -8,6 +8,11 @@
       }
     }
   },
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
+  },
   "extends": "nx/presets/npm.json",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "trrack",
@@ -19,7 +24,6 @@
     "libsDir": "packages"
   },
   "cli": {
-    "defaultCollection": "@nrwl/react",
     "packageManager": "yarn"
   },
   "generators": {
@@ -56,11 +60,6 @@
     }
   },
   "defaultProject": "core",
-  "pluginsConfig": {
-    "@nrwl/js": {
-      "analyzeSourceFiles": true
-    }
-  },
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "sharedGlobals": ["{workspaceRoot}/babel.config.json"],
