@@ -1,4 +1,5 @@
 {
+  "name": "dummy-testing-library",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/dummy-testing-library/src",
   "projectType": "application",
@@ -71,6 +72,5 @@
       }
     }
   },
-  "tags": [],
-  "name": "dummy-testing-library"
+  "tags": []
 }

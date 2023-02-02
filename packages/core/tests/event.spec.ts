@@ -19,7 +19,7 @@ describe('Event Manager', () => {
 
         let count = 0;
 
-        const handler = jest.fn(() => {
+        const handler = vi.fn(() => {
             count = count + 1;
         });
 
@@ -47,7 +47,7 @@ describe('Event Manager', () => {
         const ARG1 = 'Test 1';
         const ARG2 = 'Test 2';
 
-        const handler = jest.fn((toAdd: string) => {
+        const handler = vi.fn((toAdd: string) => {
             arr.push(toAdd);
         });
 

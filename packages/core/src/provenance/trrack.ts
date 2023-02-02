@@ -16,7 +16,10 @@ import {
     StateNode,
 } from '../graph';
 import { ProvenanceGraph } from '../graph/graph-slice';
-import { ProduceWrappedStateChangeFunction, TrrackActionFunction } from '../registry';
+import {
+    ProduceWrappedStateChangeFunction,
+    TrrackActionFunction,
+} from '../registry';
 import { ConfigureTrrackOptions } from './trrack-config-opts';
 import { TrrackEvents } from './trrack-events';
 

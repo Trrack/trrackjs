@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script
+      src="https://unpkg.com/@reduxjs/toolkit@1.9.2/dist/redux-toolkit.umd.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="/dist/packages/core/index.umd.js"
+      type="text/javascript"
+    ></script>
+    <script>
+      const reg = Trrack.Registry.create();
+
+      const addTask = reg.register('add-task', (state, task) => {
+        state.tasks.push(task);
+      });
+
+      const actions = {
+        addTask,
+      };
+
+      const t = Trrack.initializeTrrack({
+        registry: reg,
+        initialState: {
+          tasks: [],
+        },
+      });
+
+      t.apply(
+        'Add task',
+        actions.addTask({
+          id: Math.floor(Math.random() * 10000).toString(),
+          complete: false,
+        })
+      );
+
+      t.apply(
+        'Add task',
+        actions.addTask({
+          id: Math.floor(Math.random() * 10000).toString(),
+          complete: false,
+        })
+      );
+
+      t.apply(
+        'Add task',
+        actions.addTask({
+          id: Math.floor(Math.random() * 10000).toString(),
+          complete: false,
+        })
+      );
+
+      t.undo();
+
+      t.apply(
+        'Add task',
+        actions.addTask({
+          id: Math.floor(Math.random() * 10000).toString(),
+          complete: false,
+        })
+      );
+
+      window.t = t;
+    </script>
+  </body>
+</html>

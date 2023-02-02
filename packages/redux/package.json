@@ -1,5 +1,22 @@
 {
-  "name": "@trrack/redux",
-  "version": "0.0.6",
-  "type": "commonjs"
+    "name": "@trrack/redux",
+    "version": "0.0.0-semantic-release",
+    "main": "./index.js",
+    "types": "./index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Trrack/trrackjs.git"
+    },
+    "dependencies": {
+        "@reduxjs/toolkit": "^1.9.1"
+    },
+    "peerDependencies": {
+        "@reduxjs/toolkit": "^1.9.1"
+    },
+    "exports": {
+        ".": {
+            "import": "./index.mjs",
+            "require": "./index.js"
+        }
+    }
 }

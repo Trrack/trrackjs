@@ -92,7 +92,9 @@ function trrackColumnEvents(
   ranking: Ranking,
   trrack: Trrack,
   registry: Registry<any>
-) {}
+) {
+  // TODO: Add column events
+}
 
 function trrackRanking(
   lineupId: string,
@@ -238,7 +240,9 @@ function setupBuffer(instance: LineUp) {
 
   return {
     clearBuffer,
-    addToBuffer() {},
+    addToBuffer() {
+      // TODO: Add to buffer
+    },
     isDialogOpen: () => dialog.isOpen,
   };
 }

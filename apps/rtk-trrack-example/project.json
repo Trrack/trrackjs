@@ -1,4 +1,5 @@
 {
+  "name": "rtk-trrack-example",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/rtk-trrack-example/src",
   "projectType": "application",
@@ -80,6 +81,5 @@
       }
     }
   },
-  "tags": [],
-  "name": "rtk-trrack-example"
+  "tags": []
 }
