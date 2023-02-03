@@ -1,3 +1,10 @@
+# [1.0.0-alpha.4](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.0.0-alpha.3...@trrack/core@1.0.0-alpha.4) (2023-02-03)
+
+
+### Bug Fixes
+
+* publishing push ([f56124e](https://github.com/Trrack/trrackjs/commit/f56124e4524bace0adff6f90eca44a0590740c83))
+
 # [1.0.0-alpha.3](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.0.0-alpha.2...@trrack/core@1.0.0-alpha.3) (2023-02-03)
 
 
