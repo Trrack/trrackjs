@@ -1,3 +1,10 @@
+# [1.0.0-alpha.2](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.0.0-alpha.1...@trrack/core@1.0.0-alpha.2) (2023-02-03)
+
+
+### Bug Fixes
+
+* testing release ([912de2e](https://github.com/Trrack/trrackjs/commit/912de2ed66ce8d65651bc9da6d1a3e54a7ae31e0))
+
 # 1.0.0-alpha.1 (2023-02-02)
 
 
