@@ -1,3 +1,10 @@
+# [1.0.0-alpha.3](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.0.0-alpha.2...@trrack/core@1.0.0-alpha.3) (2023-02-03)
+
+
+### Bug Fixes
+
+* removed comments ([7a1d601](https://github.com/Trrack/trrackjs/commit/7a1d6011178f7887fff5b53316a07c09e27b7a40))
+
 # [1.0.0-alpha.2](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.0.0-alpha.1...@trrack/core@1.0.0-alpha.2) (2023-02-03)
 
 
