@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [main, alpha, beta]
+    branches: [alpha, beta, main]
 
 env:
   HUSKY: 0
@@ -20,6 +20,13 @@ jobs:
 
       - name: Track main
         run: git branch --track main origin/main || echo "Already done"
+
+      - name: 'Derive appropriate SHAs for base and head for `nx affected` commands'
+        uses: nrwl/nx-set-shas@v3
+
+      - run: |
+          echo "BASE: ${{ env.NX_BASE }}"
+          echo "HEAD: ${{ env.NX_HEAD }}"
 
       - name: Setup LTS Node
         uses: actions/setup-node@v3
