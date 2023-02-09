@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PayloadAction } from '@reduxjs/toolkit';
-import { applyPatch, compare, Operation } from 'fast-json-patch';
+import { applyPatch, compare, deepClone, Operation } from 'fast-json-patch';
 
 import { initEventManager } from '../event';
 import {
@@ -49,7 +49,14 @@ function getState<State, Event extends string>(
 
     const checkpointState = getState(checkpointNode, nodes);
 
-    return applyPatch(checkpointState, patches, true, false).newDocument;
+    const results = applyPatch(
+        checkpointState,
+        deepClone(patches),
+        true,
+        false
+    );
+
+    return results.newDocument;
 }
 
 function determineSaveStrategy<T>(
