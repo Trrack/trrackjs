@@ -1,3 +1,10 @@
+## [1.0.1-beta.1](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.0.0...@trrack/core@1.0.1-beta.1) (2023-02-09)
+
+
+### Bug Fixes
+
+* **core:** fixed readonly bug during patch apply ([209df6a](https://github.com/Trrack/trrackjs/commit/209df6a823da8d208af6e0c9a02b873280f42b6d))
+
 ## [1.0.1-alpha.1](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.0.0...@trrack/core@1.0.1-alpha.1) (2023-02-09)
 
 
