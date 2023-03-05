@@ -15,5 +15,20 @@ jobs:
           check-name: 'Test'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
-      - name: 'Name'
-        run: echo "Running Build"
+
+      - name: Setup
+        uses: ./github/actions/base_setup
+
+      - name: Build
+        run: |
+          RUN=CI yarn run build-affected-libs
+
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: build_files
+          path: dist
+
+      - name: Display structure of uploaded files
+        run: ls -R
+        working-directory: dist
