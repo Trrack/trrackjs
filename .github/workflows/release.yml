@@ -8,8 +8,8 @@ on:
       - alpha
       - beta
       - '*.x*'
-    types:
-      - 'closed'
+    # types:
+    #   - 'closed'
 
 env:
   HUSKY: 0
