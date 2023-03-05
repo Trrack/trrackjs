@@ -17,7 +17,7 @@ jobs:
           wait-interval: 10
 
       - name: Setup
-        uses: ./github/actions/base_setup
+        uses: ./.github/actions/base_setup
 
       - name: Download build
         uses: actions/download-artifact@v3
