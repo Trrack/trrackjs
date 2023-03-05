@@ -1,8 +1,13 @@
 name: Release
 
 on:
-  pull_request:
+  workflow_run:
+    workflows:
+      - 'Test and Build'
+    types:
+      - completed
     branches:
+      - '*'
       - main
       - next
       - alpha
@@ -20,7 +25,6 @@ env:
 
 jobs:
   release:
-    name: Release
     runs-on: ubuntu-latest
 
     steps:
