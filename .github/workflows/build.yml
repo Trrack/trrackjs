@@ -1,15 +1,18 @@
 name: Build
 
-on:
-  workflow_run:
-    workflows: [Test]
-    types:
-      - completed
+on: push
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Wait for tests to succeed
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'Test'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
       - name: 'Name'
         run: echo "Running Build"
