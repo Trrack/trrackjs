@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Wait for tests to succeed
+      - name: Wait for builds to succeed
         uses: lewagon/wait-on-check-action@v1.3.1
         with:
           ref: ${{ github.ref }}
@@ -38,7 +38,6 @@ jobs:
           cache: 'yarn'
 
       - name: Install yarn
-        shell: base
         run: npm install -g yarn
 
       - name: Get yarn cache directory path
