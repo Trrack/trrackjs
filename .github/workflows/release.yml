@@ -1,6 +1,11 @@
 name: Release
 
-on: push
+on:
+  workflow_run:
+    workflows:
+      - 'Build'
+    types:
+      - completed
 
 jobs:
   release:
