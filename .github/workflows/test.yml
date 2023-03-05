@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup
-        uses: ./.github/actions/base_setup
+        uses: ./.github/workflows/base.yml
       - name: Test
         run: |
           RUN=CI yarn run test-affected-libs
