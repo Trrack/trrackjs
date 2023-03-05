@@ -62,13 +62,3 @@ jobs:
       - name: Build
         run: |
           RUN=CI yarn run build-affected-libs
-
-      - name: Upload build
-        uses: actions/upload-artifact@v3
-        with:
-          name: build_files
-          path: dist
-
-      - name: Display structure of uploaded files
-        run: ls -R
-        working-directory: dist

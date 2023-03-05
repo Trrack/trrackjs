@@ -59,12 +59,14 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
-      - name: Download build
-        uses: actions/download-artifact@v3
-        with:
-          name: build_files
-          path: dist
+      - name: Build
+        run: |
+          RUN=CI yarn run build-affected-libs
 
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: dist
+      - name: Release
+        if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.TRRACK_GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          RUN=CI yarn run release
