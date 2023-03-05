@@ -1,4 +1,4 @@
-name: Build
+name: Test & Build
 
 on:
   push:
@@ -17,19 +17,11 @@ on:
       - '*.x*'
 
 jobs:
-  build:
-    name: Build
+  test:
+    name: 'Test & Build'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Wait for tests to succeed
-        uses: lewagon/wait-on-check-action@v1.3.1
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'Test'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -72,6 +64,10 @@ jobs:
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
+
+      - name: Test
+        run: |
+          RUN=CI yarn run test-affected-libs
 
       - name: Build
         run: |
