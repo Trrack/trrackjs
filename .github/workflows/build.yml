@@ -1,9 +1,9 @@
-name: Release
+name: Build
 
 on:
   workflow_run:
     workflows:
-      - 'Build'
+      - 'Test'
     types:
       - completed
 
@@ -13,4 +13,4 @@ jobs:
 
     steps:
       - name: 'Name'
-        run: echo "Running Release"
+        run: echo "Running Build"

@@ -17,7 +17,9 @@ env:
   GIT_COMMITTER_EMAIL: kirangadhave2@gmail.com
 
 jobs:
-  test-build:
+  test:
+    name: Test affected libraries
+
     runs-on: ubuntu-latest
 
     steps:
@@ -64,16 +66,25 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
-      - name: Build
-        run: |
-          RUN=CI yarn run build-affected-libs
+  build:
+    needs: test
+    name: Build affected libraries
+    runs-on: ubuntu-latest
 
-      - name: Upload build
-        uses: actions/upload-artifact@v3
-        with:
-          name: my-artifact
-          path: dist
+  release:
+    needs: build
+    name: Release affected libraries
+    runs-on: ubuntu-latest
+  # - name: Build
+  #   run: |
+  #     RUN=CI yarn run build-affected-libs
 
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: dist
+  # - name: Upload build
+  #   uses: actions/upload-artifact@v3
+  #   with:
+  #     name: my-artifact
+  #     path: dist
+
+  # - name: Display structure of downloaded files
+  #   run: ls -R
+  #   working-directory: dist
