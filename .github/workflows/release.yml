@@ -1,14 +1,10 @@
-name: Release
+name: Release affected libraries
 
-on:
-  workflow_run:
-    workflows:
-      - 'Build'
-    types:
-      - completed
+on: push
 
 jobs:
   release:
+    name: Release
     runs-on: ubuntu-latest
 
     steps:
