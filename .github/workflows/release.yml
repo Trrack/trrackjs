@@ -1,21 +1,30 @@
-name: Release affected libraries
+name: Release
 
-on: push
+on:
+  pull_request:
+    branches:
+      - main
+      - next
+      - alpha
+      - beta
+      - '*.x*'
+    types:
+      - closed
+
+env:
+  HUSKY: 0
+  GIT_AUTHOR_NAME: kirangadhave
+  GIT_AUTHOR_EMAIL: kirangadhave2@gmail.com
+  GIT_COMMITTER_NAME: kirangadhave
+  GIT_COMMITTER_EMAIL: kirangadhave2@gmail.com
 
 jobs:
   release:
     name: Release
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
-      - name: Wait for builds to succeed
-        uses: lewagon/wait-on-check-action@v1.3.1
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'Build'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
