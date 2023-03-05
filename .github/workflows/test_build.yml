@@ -1,25 +1,24 @@
-name: Test and Build
+name: Test -> Build
 
 on:
   push:
     branches-ignore:
-      - 'main'
-      - 'next'
-      - 'alpha'
-      - 'beta'
+      - main
+      - next
+      - alpha
+      - beta
       - '*.x*'
-
-env:
-  HUSKY: 0
-  GIT_AUTHOR_NAME: kirangadhave
-  GIT_AUTHOR_EMAIL: kirangadhave2@gmail.com
-  GIT_COMMITTER_NAME: kirangadhave
-  GIT_COMMITTER_EMAIL: kirangadhave2@gmail.com
+  pull_request:
+    branches:
+      - main
+      - next
+      - alpha
+      - beta
+      - '*.x*'
 
 jobs:
   test:
-    name: Test affected libraries
-
+    name: Test -> Build
     runs-on: ubuntu-latest
 
     steps:
@@ -66,25 +65,10 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
-  build:
-    needs: test
-    name: Build affected libraries
-    runs-on: ubuntu-latest
+      - name: Test
+        run: |
+          RUN=CI yarn run test-affected-libs
 
-  release:
-    needs: build
-    name: Release affected libraries
-    runs-on: ubuntu-latest
-  # - name: Build
-  #   run: |
-  #     RUN=CI yarn run build-affected-libs
-
-  # - name: Upload build
-  #   uses: actions/upload-artifact@v3
-  #   with:
-  #     name: my-artifact
-  #     path: dist
-
-  # - name: Display structure of downloaded files
-  #   run: ls -R
-  #   working-directory: dist
+      - name: Build
+        run: |
+          RUN=CI yarn run build-affected-libs
