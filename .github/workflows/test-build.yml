@@ -10,7 +10,7 @@ env:
   GIT_COMMITTER_EMAIL: kirangadhave2@gmail.com
 
 jobs:
-  release:
+  test-build:
     name: Release
     runs-on: ubuntu-latest
 
