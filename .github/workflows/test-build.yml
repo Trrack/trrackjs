@@ -1,6 +1,20 @@
 name: Test and Build
 
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore:
+      - 'main'
+      - 'next'
+      - 'alpha'
+      - 'beta'
+      - '*.x*'
+  pull_request:
+    branches:
+      - main
+      - next
+      - alpha
+      - beta
+      - '*.x*'
 
 env:
   HUSKY: 0
