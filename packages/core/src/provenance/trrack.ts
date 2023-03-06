@@ -6,6 +6,7 @@ import { initEventManager } from '../event';
 import {
     BaseArtifactType,
     createStateNode,
+    CurrentChangeHandler,
     initializeProvenanceGraph,
     isStateNode,
     NodeId,
@@ -14,6 +15,7 @@ import {
     SideEffects,
     StateLike,
     StateNode,
+    UnsubscribeCurrentChangeListener,
 } from '../graph';
 import { ProvenanceGraph } from '../graph/graph-slice';
 import {
@@ -256,7 +258,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
                 return Promise.resolve(console.warn('Already at root!'));
             }
         },
-        redo(to?: 'latest' | 'oldest') {
+        redo(to: 'latest' | 'oldest' = 'latest') {
             const { current } = graph;
             if (current.children.length > 0) {
                 return this.to(
@@ -270,8 +272,13 @@ export function initializeTrrack<State = any, Event extends string = string>({
                 );
             }
         },
-        currentChange(listener: any) {
-            return graph.currentChange(listener);
+        currentChange(
+            listener: CurrentChangeHandler,
+            skipOnNew = false
+        ): UnsubscribeCurrentChangeListener {
+            return graph.currentChange(listener, {
+                skipOnNew,
+            });
         },
         done() {
             console.log('Setup later for URL sharing.');
