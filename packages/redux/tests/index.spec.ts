@@ -6,7 +6,7 @@ describe('it', () => {
     it('should work', () => {
         const getPostById = createAsyncThunk(
             'test/getpostById',
-            async (postId: number, api) => {
+            async (postId: number, _api) => {
                 const response = await fetch(
                     ` https://jsonplaceholder.typicode.com/posts/${postId} `
                 );
