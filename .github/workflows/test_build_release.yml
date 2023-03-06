@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.TRRACK_GITHUB_TOKEN }}
 
       - name: Track main
         run: git branch --track main origin/main || echo "Already done"
