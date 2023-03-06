@@ -11,7 +11,8 @@
         "@reduxjs/toolkit": "^1.9.1"
     },
     "peerDependencies": {
-        "@reduxjs/toolkit": "^1.9.1"
+        "@reduxjs/toolkit": "^1.9.1",
+        "@trrack/core": "^1.0.0"
     },
     "exports": {
         ".": {
