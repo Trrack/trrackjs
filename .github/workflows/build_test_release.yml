@@ -1,14 +1,7 @@
-name: Test -> Build
+name: Build -> Test -> Release
 
 on:
   push:
-    branches-ignore:
-      - main
-      - next
-      - alpha
-      - beta
-      - '*.x*'
-  pull_request:
     branches:
       - main
       - next
@@ -16,9 +9,16 @@ on:
       - beta
       - '*.x*'
 
+env:
+  HUSKY: 0
+  GIT_AUTHOR_NAME: kirangadhave
+  GIT_AUTHOR_EMAIL: kirangadhave2@gmail.com
+  GIT_COMMITTER_NAME: kirangadhave
+  GIT_COMMITTER_EMAIL: kirangadhave2@gmail.com
+
 jobs:
-  test:
-    name: Test -> Build
+  release:
+    name: Build -> Test -> Release
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.TRRACK_GITHUB_TOKEN }}
 
       - name: Track main
         run: git branch --track main origin/main || echo "Already done"
@@ -65,10 +66,18 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
+      - name: Build
+        run: |
+          RUN=CI yarn run build-affected-libs
+
       - name: Test
         run: |
           RUN=CI yarn run test-affected-libs
 
-      - name: Build
+      - name: Release
+        if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.TRRACK_GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          RUN=CI yarn run build-affected-libs
+          RUN=CI yarn run release
