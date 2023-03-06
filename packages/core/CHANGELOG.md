@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.0.1...@trrack/core@1.1.0) (2023-03-06)
+
+
+### Features
+
+* **core:** currentChange cbs get trigger arg ([#25](https://github.com/Trrack/trrackjs/issues/25)) ([1f0752f](https://github.com/Trrack/trrackjs/commit/1f0752f544e1e49a45f1339921a52a2df34de530))
+
 # [1.1.0-beta.1](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.0.1...@trrack/core@1.1.0-beta.1) (2023-03-06)
 
 
