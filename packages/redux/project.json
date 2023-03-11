@@ -42,6 +42,12 @@
             "options": {
                 "passWithNoTests": true,
                 "reportsDirectory": "../../coverage/packages/redux"
+            },
+            "configurations": {
+                "dev": {
+                    "watch": true,
+                    "ui": true
+                }
             }
         },
         "lint": {

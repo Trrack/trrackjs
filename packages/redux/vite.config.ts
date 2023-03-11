@@ -65,5 +65,6 @@ export default defineConfig({
         },
         environment: 'jsdom',
         include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        reporters: ['default', 'html'],
     },
 });
