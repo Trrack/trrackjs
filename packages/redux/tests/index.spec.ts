@@ -54,7 +54,9 @@ describe('it', () => {
             reducer: {
                 test: testSlice.reducer,
             },
-            slices: [testSlice],
+            sliceMap: {
+                test: testSlice,
+            },
         });
 
         // store.dispatch(sayHello('Mars'));

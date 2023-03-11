@@ -17,6 +17,7 @@
   "dependencies": {
     "@mantine/core": "^4.2.12",
     "@mantine/hooks": "^4.2.12",
+    "@mswjs/data": "^0.11.2",
     "@nrwl/next": "15.8.6",
     "@reduxjs/toolkit": "^1.9.1",
     "@swc/helpers": "^0.4.0",
@@ -24,6 +25,7 @@
     "clsx": "^1.2.1",
     "core-js": "^3.6.5",
     "fast-json-patch": "^3.1.1",
+    "msw": "^1.1.0",
     "next": "13.1.1",
     "nextra": "^2.0.1",
     "nextra-theme-docs": "^2.0.1",
