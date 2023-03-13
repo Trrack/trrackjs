@@ -41,6 +41,12 @@
             "options": {
                 "passWithNoTests": true,
                 "reportsDirectory": "../../coverage/packages/core"
+            },
+            "configurations": {
+                "dev": {
+                    "watch": true,
+                    "ui": true
+                }
             }
         },
         "lint": {
