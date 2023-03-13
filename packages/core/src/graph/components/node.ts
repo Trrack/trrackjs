@@ -28,18 +28,20 @@ export type StateLike<State> = Checkpoint<State> | Patches;
  */
 export type ArtifactId = FlavoredId<string, 'Artifact'>;
 
-export type NodeArtifact = Array<{
+export type Artifact = {
     id: ArtifactId;
     createdOn: number;
     val: unknown;
-}>;
+};
+
+export type NodeArtifact = Array<Artifact>;
 
 /**
  * Node Metadata Type
  */
 export type MetadataId = FlavoredId<string, 'Metadata'>;
 
-type MetadataShape<T> = {
+export type Metadata<T = unknown> = {
     id: MetadataId;
     type: string;
     createdOn: number;
@@ -47,9 +49,9 @@ type MetadataShape<T> = {
 };
 
 type NodeMetadata = {
-    annotation: Array<MetadataShape<string>>;
-    bookmark: Array<MetadataShape<boolean>>;
-    [key: string]: Array<MetadataShape<unknown>>;
+    annotation: Array<Metadata<string>>;
+    bookmark: Array<Metadata<boolean>>;
+    [key: string]: Array<Metadata<unknown>>;
 };
 
 /**

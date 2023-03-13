@@ -1,7 +1,9 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { NodeId } from '@trrack/core';
 import {
+    Artifact,
     CurrentChangeHandler,
+    Metadata,
     ProvenanceGraphStore,
     ProvenanceNode,
     RootNode,
@@ -32,6 +34,36 @@ export interface Trrack<State, Event extends string> {
         act: PayloadAction<Payload, T>
     ): any;
     to(node: NodeId): Promise<void>;
+    metadata: {
+        add(metadata: Record<string, unknown>, node?: NodeId): void;
+        latestOfType<T = unknown>(
+            type: string,
+            node?: NodeId
+        ): Metadata<T> | undefined;
+        allOfType<T = unknown>(
+            type: string,
+            node?: NodeId
+        ): Metadata<T>[] | undefined;
+        latest(node?: NodeId): Record<string, Metadata> | undefined;
+        all(node?: NodeId): Record<string, Metadata[]> | undefined;
+        types(node?: NodeId): string[];
+    };
+    artifact: {
+        add<A>(artifact: A, node?: NodeId): void;
+        latest(node?: NodeId): Artifact | undefined;
+        all(node?: NodeId): Artifact[] | undefined;
+    };
+    annotations: {
+        add(annotation: string, node?: NodeId): void;
+        latest(node?: NodeId): string | undefined;
+        all(node?: NodeId): string[] | undefined;
+    };
+    bookmarks: {
+        add(node?: NodeId): void;
+        remove(node?: NodeId): void;
+        is(node?: NodeId): boolean;
+        toggle(node?: NodeId): void;
+    };
     undo(): Promise<void>;
     redo(to?: 'latest' | 'oldest'): Promise<void>;
     currentChange(

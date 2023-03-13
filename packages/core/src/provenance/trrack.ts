@@ -9,6 +9,7 @@ import {
     CurrentChangeHandler,
     initializeProvenanceGraph,
     isStateNode,
+    Metadata,
     NodeId,
     Nodes,
     ProvenanceNode,
@@ -88,6 +89,100 @@ export function initializeTrrack<State = any, Event extends string = string>({
     eventManager.listen(TrrackEvents.TRAVERSAL_END, () => {
         isTraversing = false;
     });
+
+    const metadata = {
+        add(
+            metadata: Record<string, unknown>,
+            node: NodeId = graph.current.id
+        ) {
+            graph.update(
+                graph.addMetadata({
+                    id: node,
+                    meta: metadata,
+                })
+            );
+        },
+        latestOfType<T = unknown>(
+            type: string,
+            node: NodeId = graph.current.id
+        ) {
+            return graph.backend.nodes[node].meta[type]?.at(-1) as
+                | Metadata<T>
+                | undefined;
+        },
+        allOfType<T = unknown>(type: string, node: NodeId = graph.current.id) {
+            return graph.backend.nodes[node].meta[type] as
+                | Metadata<T>[]
+                | undefined;
+        },
+        latest(node: NodeId = graph.current.id) {
+            const metas = graph.backend.nodes[node].meta;
+
+            const latest = Object.keys(metas).reduce(
+                (acc: Record<string, Metadata>, key: string) => {
+                    const data = metas[key].at(-1);
+                    if (data) acc[key] = data;
+                    return acc;
+                },
+                {}
+            );
+
+            return Object.keys(latest).length > 0 ? latest : undefined;
+        },
+        all(node: NodeId = graph.current.id) {
+            return graph.backend.nodes[node].meta;
+        },
+        types(node: NodeId = graph.current.id) {
+            return Object.keys(graph.backend.nodes[node].meta);
+        },
+    };
+
+    const artifact = {
+        add(artifact: unknown, node: NodeId = graph.current.id) {
+            graph.update(
+                graph.addArtifact({
+                    id: node,
+                    artifact,
+                })
+            );
+        },
+        latest(node: NodeId = graph.current.id) {
+            return graph.backend.nodes[node].artifacts.at(-1);
+        },
+        all(node: NodeId = graph.current.id) {
+            return graph.backend.nodes[node].artifacts;
+        },
+    };
+    const annotations = {
+        add(annotation: string, node: NodeId = graph.current.id) {
+            metadata.add({ annotation }, node);
+        },
+        latest(node: NodeId = graph.current.id) {
+            return metadata.latestOfType<string>('annotation', node)?.val;
+        },
+        all(node: NodeId = graph.current.id) {
+            return metadata
+                .allOfType<string>('annotation', node)
+                ?.map((a) => a.val) as string[] | undefined;
+        },
+    };
+    const bookmarks = {
+        add(node: NodeId = graph.current.id) {
+            metadata.add({ bookmark: true }, node);
+        },
+        remove(node: NodeId = graph.current.id) {
+            metadata.add({ bookmark: false }, node);
+        },
+        is(node: NodeId = graph.current.id) {
+            return Boolean(
+                metadata.latestOfType<boolean>('bookmark', node)?.val
+            );
+        },
+        toggle(node: NodeId = graph.current.id) {
+            if (bookmarks.is(node)) bookmarks.remove(node);
+            else bookmarks.add(node);
+        },
+    };
 
     return {
         registry,
@@ -291,6 +386,10 @@ export function initializeTrrack<State = any, Event extends string = string>({
             graph.update(graph.load(g));
             this.to(current);
         },
+        metadata,
+        artifact,
+        annotations,
+        bookmarks,
     };
 }
 
