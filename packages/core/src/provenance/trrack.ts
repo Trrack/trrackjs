@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PayloadAction } from '@reduxjs/toolkit';
 import { applyPatch, compare, deepClone, Operation } from 'fast-json-patch';
+import { RecordActionArgs, Trrack } from './types';
 
 import { initEventManager } from '../event';
 import {
-    BaseArtifactType,
     createStateNode,
     CurrentChangeHandler,
     initializeProvenanceGraph,
@@ -12,7 +12,6 @@ import {
     NodeId,
     Nodes,
     ProvenanceNode,
-    SideEffects,
     StateLike,
     StateNode,
     UnsubscribeCurrentChangeListener,
@@ -25,17 +24,9 @@ import {
 import { ConfigureTrrackOptions } from './trrack-config-opts';
 import { TrrackEvents } from './trrack-events';
 
-type RecordActionArgs<State, Event extends string> = {
-    label: string;
-    state: State;
-    eventType: Event;
-    sideEffects: SideEffects;
-    onlySideEffects?: boolean;
-};
-
 function getState<State, Event extends string>(
-    node: ProvenanceNode<State, Event, any>,
-    nodes: Nodes<State, Event, any>
+    node: ProvenanceNode<State, Event>,
+    nodes: Nodes<State, Event>
 ): State {
     const stateLike = node.state;
     if (stateLike.type === 'checkpoint') return stateLike.val;
@@ -81,10 +72,10 @@ function determineSaveStrategy<T>(
 export function initializeTrrack<State = any, Event extends string = string>({
     registry,
     initialState,
-}: ConfigureTrrackOptions<State>) {
+}: ConfigureTrrackOptions<State, Event>): Trrack<State, Event> {
     let isTraversing = false;
     const eventManager = initEventManager();
-    const graph = initializeProvenanceGraph(initialState);
+    const graph = initializeProvenanceGraph<State, Event>(initialState);
 
     function getNode(id: NodeId) {
         return graph.backend.nodes[id];
@@ -103,7 +94,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
         get isTraversing() {
             return isTraversing;
         },
-        getState(node: ProvenanceNode<State, any, any> = graph.current) {
+        getState(node: ProvenanceNode<State, Event> = graph.current) {
             return getState(node, graph.backend.nodes);
         },
         graph,
@@ -117,10 +108,10 @@ export function initializeTrrack<State = any, Event extends string = string>({
             label,
             state,
             sideEffects,
-            eventType,
+            eventType: event,
             onlySideEffects = false,
         }: RecordActionArgs<State, Event>) {
-            let newStateNode: StateNode<State, any, any> | null = null;
+            let newStateNode: StateNode<State, Event> | null = null;
 
             let stateToSave: StateLike<State> | null = null;
 
@@ -171,7 +162,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
                 state: stateToSave,
                 parent: this.current,
                 sideEffects,
-                eventType,
+                event,
             });
 
             if (!newStateNode) throw new Error('State Node creation failed!');
@@ -293,11 +284,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
             return JSON.stringify(graph.backend);
         },
         import(graphString: string) {
-            const g: ProvenanceGraph<
-                State,
-                Event,
-                BaseArtifactType<any>
-            > = JSON.parse(graphString);
+            const g: ProvenanceGraph<State, Event> = JSON.parse(graphString);
 
             const current = g.current;
             g.current = g.root;
@@ -308,9 +295,9 @@ export function initializeTrrack<State = any, Event extends string = string>({
 }
 
 function LCA<S>(
-    current: ProvenanceNode<S, any, any>,
-    destination: ProvenanceNode<S, any, any>,
-    nodes: Nodes<S, any, any>
+    current: ProvenanceNode<S, any>,
+    destination: ProvenanceNode<S, any>,
+    nodes: Nodes<S, any>
 ): NodeId {
     let [source, target] = [current, destination];
 
@@ -336,15 +323,15 @@ function LCA<S>(
 }
 
 function getPath<S>(
-    current: ProvenanceNode<S, any, any>,
-    destination: ProvenanceNode<S, any, any>,
-    nodes: Nodes<S, any, any>
+    current: ProvenanceNode<S, any>,
+    destination: ProvenanceNode<S, any>,
+    nodes: Nodes<S, any>
 ): Array<NodeId> {
     const lcaId = LCA(current, destination, nodes);
     const lca = nodes[lcaId];
 
-    const pathFromSourceToLca: ProvenanceNode<S, any, any>[] = [];
-    const pathFromDestinationToLca: ProvenanceNode<S, any, any>[] = [];
+    const pathFromSourceToLca: ProvenanceNode<S, any>[] = [];
+    const pathFromDestinationToLca: ProvenanceNode<S, any>[] = [];
 
     let [source, target] = [current, destination];
 
@@ -366,8 +353,8 @@ function getPath<S>(
 }
 
 function isNextNodeUp(
-    source: ProvenanceNode<unknown, any, any>,
-    target: ProvenanceNode<unknown, any, any>
+    source: ProvenanceNode<unknown, any>,
+    target: ProvenanceNode<unknown, any>
 ): boolean {
     if (isStateNode(source) && source.parent === target.id) return true;
     if (isStateNode(target) && target.parent === source.id) return false;
@@ -377,14 +364,14 @@ function isNextNodeUp(
     );
 }
 
-type TreeNode = Omit<ProvenanceNode<any, any, any>, 'children' | 'name'> & {
+type TreeNode = Omit<ProvenanceNode<any, any>, 'children' | 'name'> & {
     name: string;
     children: TreeNode[];
 };
 
 function getTreeFromNode(
-    node: ProvenanceNode<any, any, any>,
-    nodes: Nodes<any, any, any>
+    node: ProvenanceNode<any, any>,
+    nodes: Nodes<any, any>
 ): TreeNode {
     return {
         ...node,
