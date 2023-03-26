@@ -1,3 +1,22 @@
+# [2.0.0](https://github.com/Trrack/trrackjs/compare/@trrack/redux@1.0.0...@trrack/redux@2.0.0) (2023-03-26)
+
+
+### Bug Fixes
+
+* **core + redux:** testing minor publish to next ([68c52e2](https://github.com/Trrack/trrackjs/commit/68c52e2be12d8723a6129fd765829220749ca067))
+* testing multiple publishing ([0883bfe](https://github.com/Trrack/trrackjs/commit/0883bfef89c9fb33abcd99f01d8d2d825f2cd563))
+
+
+### Features
+
+* **core + redux:** prepping for next major release ([161755b](https://github.com/Trrack/trrackjs/commit/161755b28ee7512c818ecd6d3aba2c3a0cb201be))
+
+
+### BREAKING CHANGES
+
+* **core + redux:** goal is to support plugin system and granular updates +
+an alternate API to hook into trrack for state management libraries
+
 # [2.0.0-alpha.2](https://github.com/Trrack/trrackjs/compare/@trrack/redux@2.0.0-alpha.1...@trrack/redux@2.0.0-alpha.2) (2023-03-26)
 
 
