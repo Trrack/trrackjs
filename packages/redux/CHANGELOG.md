@@ -1,3 +1,10 @@
+# [2.0.0-alpha.2](https://github.com/Trrack/trrackjs/compare/@trrack/redux@2.0.0-alpha.1...@trrack/redux@2.0.0-alpha.2) (2023-03-26)
+
+
+### Bug Fixes
+
+* testing multiple publishing ([0883bfe](https://github.com/Trrack/trrackjs/commit/0883bfef89c9fb33abcd99f01d8d2d825f2cd563))
+
 # [2.0.0-alpha.1](https://github.com/Trrack/trrackjs/compare/@trrack/redux@1.0.0...@trrack/redux@2.0.0-alpha.1) (2023-03-26)
 
 
