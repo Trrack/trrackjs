@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/Trrack/trrackjs/compare/@trrack/core@2.0.0...@trrack/core@2.0.1) (2023-03-26)
+
+
+### Bug Fixes
+
+* **core + redux:** testing minor publish to next ([68c52e2](https://github.com/Trrack/trrackjs/commit/68c52e2be12d8723a6129fd765829220749ca067))
+
 # [2.0.0](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.1.0...@trrack/core@2.0.0) (2023-03-26)
 
 
