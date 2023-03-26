@@ -11,6 +11,19 @@
 * **core + redux:** goal is to support plugin system and granular updates +
 an alternate API to hook into trrack for state management libraries
 
+# [2.0.0](https://github.com/Trrack/trrackjs/compare/@trrack/redux@1.0.0...@trrack/redux@2.0.0) (2023-03-26)
+
+
+### Features
+
+* **core + redux:** prepping for next major release ([161755b](https://github.com/Trrack/trrackjs/commit/161755b28ee7512c818ecd6d3aba2c3a0cb201be))
+
+
+### BREAKING CHANGES
+
+* **core + redux:** goal is to support plugin system and granular updates +
+an alternate API to hook into trrack for state management libraries
+
 # 1.0.0 (2023-03-26)
 
 
