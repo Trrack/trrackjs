@@ -1,3 +1,10 @@
+## [2.0.2-alpha.1](https://github.com/Trrack/trrackjs/compare/@trrack/core@2.0.1...@trrack/core@2.0.2-alpha.1) (2023-03-26)
+
+
+### Bug Fixes
+
+* testing multiple publishing ([0883bfe](https://github.com/Trrack/trrackjs/commit/0883bfef89c9fb33abcd99f01d8d2d825f2cd563))
+
 ## [2.0.1](https://github.com/Trrack/trrackjs/compare/@trrack/core@2.0.0...@trrack/core@2.0.1) (2023-03-26)
 
 
