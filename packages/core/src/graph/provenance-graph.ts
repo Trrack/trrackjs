@@ -17,7 +17,13 @@ export type CurrentChangeHandlerConfig = {
 };
 export type UnsubscribeCurrentChangeListener = () => boolean;
 
-export function initializeProvenanceGraph<S>(initialState: S) {
+export type ProvenanceGraphStore = ReturnType<typeof f>;
+
+const f = () => initializeProvenanceGraph<any, any>({});
+
+export function initializeProvenanceGraph<State, Event extends string>(
+    initialState: State
+) {
     const listeners: Map<
         string,
         {
@@ -27,8 +33,10 @@ export function initializeProvenanceGraph<S>(initialState: S) {
         }
     > = new Map();
 
-    const { reducer, actions, getInitialState } =
-        graphSliceCreator(initialState);
+    const { reducer, actions, getInitialState } = graphSliceCreator<
+        State,
+        Event
+    >(initialState);
 
     const listenerMiddleware = createListenerMiddleware();
 
@@ -62,7 +70,9 @@ export function initializeProvenanceGraph<S>(initialState: S) {
             return store.getState().nodes[store.getState().current];
         },
         get root() {
-            return store.getState().nodes[store.getState().root] as RootNode<S>;
+            return store.getState().nodes[
+                store.getState().root
+            ] as RootNode<State>;
         },
         currentChange(
             func: CurrentChangeHandler,
