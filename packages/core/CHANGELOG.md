@@ -1,3 +1,23 @@
+# [2.0.0](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.1.0...@trrack/core@2.0.0) (2023-03-26)
+
+
+### Bug Fixes
+
+* **core:** added comment ([115635b](https://github.com/Trrack/trrackjs/commit/115635bf9f009455a06d1619646985275ed6ab91))
+* **core:** refactored types to suppport metadata ([8d8d9ee](https://github.com/Trrack/trrackjs/commit/8d8d9eeea6f6807af6315adec571ac0640aaf36a))
+
+
+### Features
+
+* **core + redux:** prepping for next major release ([161755b](https://github.com/Trrack/trrackjs/commit/161755b28ee7512c818ecd6d3aba2c3a0cb201be))
+* **core:** full support for adding/remove metadata & artifacts ([212c57a](https://github.com/Trrack/trrackjs/commit/212c57a72074e4c064895b3edbdf0a17debd2d1a)), closes [#37](https://github.com/Trrack/trrackjs/issues/37) [#38](https://github.com/Trrack/trrackjs/issues/38)
+
+
+### BREAKING CHANGES
+
+* **core + redux:** goal is to support plugin system and granular updates +
+an alternate API to hook into trrack for state management libraries
+
 # [1.2.0](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.1.0...@trrack/core@1.2.0) (2023-03-26)
 
 
