@@ -43,3 +43,5 @@ Thumbs.db
 
 # Nx
 migrations.json
+
+out/
