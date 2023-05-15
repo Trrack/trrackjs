@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.1.0...@trrack/core@1.2.0) (2023-05-15)
+
+
+### Bug Fixes
+
+* **core:** refactored types to suppport metadata ([8d8d9ee](https://github.com/Trrack/trrackjs/commit/8d8d9eeea6f6807af6315adec571ac0640aaf36a))
+
+
+### Features
+
+* **core:** full support for adding/remove metadata & artifacts ([212c57a](https://github.com/Trrack/trrackjs/commit/212c57a72074e4c064895b3edbdf0a17debd2d1a)), closes [#37](https://github.com/Trrack/trrackjs/issues/37) [#38](https://github.com/Trrack/trrackjs/issues/38)
+
 # [1.2.0-beta.1](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.1.0...@trrack/core@1.2.0-beta.1) (2023-03-13)
 
 
