@@ -4554,11 +4554,15 @@
   dependencies:
     tinyspy "^1.0.2"
 
-"@vitest/ui@^0.25.8":
-  version "0.25.8"
-  resolved "https://registry.yarnpkg.com/@vitest/ui/-/ui-0.25.8.tgz#c97f25cd5ca8e9c0294326657420c9a047540297"
-  integrity sha512-wfuhghldD5QHLYpS46GK8Ru8P3XcMrWvFjRQD21KNzc9Y/qtJsqoC8KmT6xWVkMNw4oHYixpo3a4ZySRJdserw==
+"@vitest/ui@^0.29.2":
+  version "0.29.2"
+  resolved "https://registry.yarnpkg.com/@vitest/ui/-/ui-0.29.2.tgz#b5c9d6e7c98163a5136c91760a602cf61edc473b"
+  integrity sha512-GpCExCMptrS1z3Xf6kz35Xdvjc2eTBy9OIIwW3HjePVxw9Q++ZoEaIBVimRTTGzSe40XiAI/ZyR0H0Ya9brqLA==
   dependencies:
+    fast-glob "^3.2.12"
+    flatted "^3.2.7"
+    pathe "^1.1.0"
+    picocolors "^1.0.0"
     sirv "^2.0.2"
 
 "@vitest/utils@0.28.3":
@@ -8092,7 +8096,7 @@ flat@^5.0.2:
   resolved "https://registry.yarnpkg.com/flat/-/flat-5.0.2.tgz#8ca6fe332069ffa9d324c327198c598259ceb241"
   integrity sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==
 
-flatted@^3.1.0:
+flatted@^3.1.0, flatted@^3.2.7:
   version "3.2.7"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.7.tgz#609f39207cb614b89d0765b477cb2d437fbf9787"
   integrity sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==
