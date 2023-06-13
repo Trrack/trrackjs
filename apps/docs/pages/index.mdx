@@ -1,5 +1,4 @@
 import styles from './index.module.css';
-import { Callout } from 'nextra-theme-docs';
 import Link from 'next/link';
 
 <div className="content-container">
@@ -28,10 +27,6 @@ Trrack is a library to create and track provenance (history) in web-based apps. 
 
 ![Overview of applications implementing the trrack library, and the trrack provenance visualization](/assets/trrack_overview.png)
 
-{/* Trrack also allows for easy sharing of a visualization's current state through URL sharing. To share entire session history, Trrack allows for the import and exporting of provenance graphs, as well as has built in integration with firebase to store the graphs. */}
-
-{/* For full documentation, see http://vdl.sci.utah.edu/trrack/trrack-docs/index.html */}
-
 ## Features
 
 - Power you application to track user interactions or changes
@@ -45,12 +40,7 @@ Trrack is a library to create and track provenance (history) in web-based apps. 
 
 ## Companion Library
 
-<Callout type="warning" emoji="⚠️">
-  We are working on a new version of Trrack-Vis library. The version linked
-  below only works with legacy Trrack.
-</Callout>
-
-Trrack does back-end history management only. If you want to use the history/provenance visualization as well, check out the [trrack-vis library](https://github.com/visdesignlab/trrack/tree/master/packages/trrack-vis), which is designed to provide a customizable front-end for the Trrack library.
+Trrack does back-end history management only. If you want to use the history/provenance visualization as well, check out the [trrack-vis library](https://github.com/Trrack/trrackvis), which is designed to provide a customizable front-end for the Trrack library.
 
 ## Usage
 
@@ -60,19 +50,9 @@ To use Trrack, your application has to be explicit about state: any action that 
 
 Trrack v2 also supports action-based provenance tracking.
 
-{/* ### Sharing a State Through a URL Parameter */}
+## Funding
 
-{/* Trrack allows instant sharing of state via URL parameter. State sharing is turned on by default. Changing the state of your application will automatically update the URL parameter. Pasting the entire URL into a different web browser will import the state automatically. */}
-
-{/* ### Integrating with Trrack-VIS for provenance visualization */}
-
-{/* The graph which Trrack creates and utilizes may be visualized using [Trrack-Vis](https://github.com/visdesignlab/trrack/tree/master/packages/trrack-vis). Trrack-Vis has default icons associated with the event type object. TrrackVis exports a React component. To use Trrack-Vis in a javascript environment, you will need to import and use the ProvVisCreator function. See [this simple example](https://github.com/visdesignlab/trrack/blob/dev/packages/trrack-examples/simpleExample/src/provenanceSetup.ts) for how to set up Trrack-Vis with default functionality. For further documentation and a list of customizable parameters that can be passed to Trrack-Vis, see http://vdl.sci.utah.edu/trrack/trrack-vis-docs/interfaces/provvisconfig.html */}
-
-{/* ### Integrating with FireBase and Other Server */}
-
-{/* To integrate FireBase with Trrack, you first need to set up a [Firebase](https://firebase.google.com/docs/database) project. Once you've done so, navigate to Settings -> Project settings -> general, and you should find a "firebaseConfig" object on that page. That exact object will be passed into [initProvenance](http://vdl.sci.utah.edu/trrack/trrack-docs/globals.html#initprovenance). Once done, Trrack will automatically store all created nodes to your Firebase project. */}
-
-{/* To utilize Trrack with other servers, you will use `exportProvenanceGraph` to export the entire graph json and `importProvenanceGraph` to import the same json file. */}
+We gratefully acknowledge funding by the National Science Foundation (IIS 1751238).
 
 </div>
 
