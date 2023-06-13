@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Action,
+    ActionCreatorWithoutPayload,
     AnyAction,
     AsyncThunk,
     combineReducers,
@@ -132,7 +133,7 @@ function mergeReducers<State>(sliceMap: SliceMap<State>) {
     }, {} as { [K in keyof State]: SliceMap<State>[K]['reducer'] });
 }
 
-function mergeActionToSliceName(slices: Slice[]) {
+export function __mergeActionToSliceName(slices: Slice[]) {
     return slices.reduce((acc, slice) => {
         const scr: { [key: string]: string } = {};
 
@@ -142,6 +143,17 @@ function mergeActionToSliceName(slices: Slice[]) {
 
         return { ...acc, ...scr };
     }, {} as { [key: string]: string });
+}
+
+type SliceMap<State> = {
+    [K in keyof State]: Slice<State[K]> | TrrackableSlice<State[K]>;
+};
+
+function trrackActionCheckerCreator(
+    actions: Array<ActionCreatorWithoutPayload>
+) {
+    // Run the middleware if the action is trracked, trrack is not traversing and middleware is not paused.
+    return isAnyOf(actions[0], ...actions);
 }
 
 function trrackedState<State>(
@@ -157,14 +169,25 @@ function trrackedState<State>(
             delete state[k];
         }
     }
-    return state;
+    return state as any;
 }
 
-type SliceMap<State> = {
-    [K in keyof State]: Slice<State[K]> | TrrackableSlice<State[K]>;
-};
-
 export function configureTrrackableStore<State>(
+    opts: Omit<ConfigureStoreOptions<State, AnyAction>, 'reducer'> & {
+        sliceMap: SliceMap<State>;
+    }
+) {
+    const reducer = mergeReducers(opts.sliceMap);
+
+    const reduxStore = configureStore({
+        ...opts,
+        reducer,
+    });
+
+    return { store: reduxStore, trrack: {} as any, trrackStore: {} as any };
+}
+
+export function _configureTrrackableStore<State>(
     opts: ConfigureStoreOptions<State, AnyAction> & {
         sliceMap: SliceMap<State>;
     }
@@ -212,13 +235,12 @@ export function configureTrrackableStore<State>(
     const reducerEventTypes = mergeReducerEventTypes(slices);
     const asyncThunks = mergeAsyncThunks(slices);
     const trrackedActions = mergeTrrackedActions(slices);
+    const isTrrackedAction = trrackActionCheckerCreator(trrackedActions);
 
-    const newState = trrackedState(store.getState(), opts.sliceMap);
-
-    console.log(newState);
+    const onlyTrrackedState = trrackedState(store.getState(), opts.sliceMap);
 
     const trrack = initializeTrrack({
-        initialState: store.getState(),
+        initialState: onlyTrrackedState,
         registry: Registry.create(),
     });
 
@@ -248,7 +270,19 @@ export function configureTrrackableStore<State>(
 
     trrack.currentChange(() => {
         middlewareStatus = 'paused';
-        store.dispatch(trrackTraverseAction(trrack.getState()));
+
+        console.group(trrack.current.id);
+
+        console.log(trrack.current.label);
+        console.log('new', onlyTrrackedState);
+        console.log('store', store.getState());
+        console.log('trrack', trrack.getState());
+
+        console.groupEnd();
+
+        store.dispatch(
+            trrackTraverseAction({ ...store.getState(), ...trrack.getState() })
+        );
         trrackStore.dispatch(changeCurrent(trrack.current.id));
         middlewareStatus = 'active';
     });
@@ -264,11 +298,6 @@ export function configureTrrackableStore<State>(
                 return isFulfilled(action);
             }
 
-            // Run the middleware if the action is trracked, trrack is not traversing and middleware is not paused.
-            const isTrrackedAction = isAnyOf(
-                trrackedActions[0],
-                ...trrackedActions
-            );
             return isTrrackedAction(action);
         },
         effect(action, api) {
@@ -284,9 +313,14 @@ export function configureTrrackableStore<State>(
 
             const doUndoObject = doUndoActionCreators[type]({
                 action: action as PayloadAction,
-                currentState: api.getState(),
-                previousState: api.getOriginalState(),
+                currentState: trrackedState(api.getState(), opts.sliceMap),
+                previousState: trrackedState(
+                    api.getOriginalState(),
+                    opts.sliceMap
+                ),
             });
+
+            console.log({ doUndoObject });
 
             const hasSideEffects = !NO_OP_ACTION.match(doUndoObject.undo);
 
@@ -298,7 +332,7 @@ export function configureTrrackableStore<State>(
 
                 trrack.record({
                     label,
-                    state: api.getState(),
+                    state: trrackedState(api.getState(), opts.sliceMap),
                     eventType: reducerEventTypes[type],
                     sideEffects: {
                         do: [

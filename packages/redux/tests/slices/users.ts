@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { createTrrackableSlice } from '../../src';
 import { SliceWrapper } from './utils';
 
@@ -28,6 +28,12 @@ const trrackableUsersSlice = createTrrackableSlice({
         addUser(state, action: PayloadAction<SingleUser>) {
             state.push(action.payload);
         },
+    },
+    labels: {
+        addUser: 'custom-adder-label',
+    },
+    reducerEventTypes: {
+        addUser: 'add-user-event',
     },
 });
 

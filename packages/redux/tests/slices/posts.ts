@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { randomUUID } from 'crypto';
 import { createTrrackableSlice } from '../../src';
 import { SliceWrapper } from './utils';
@@ -15,7 +15,7 @@ export type Posts = SinglePost[];
 const initialState: Posts = [];
 
 const postsSlice = createSlice({
-    name: 'posts',
+    name: 'user',
     initialState,
     reducers: {
         postAdded: {
