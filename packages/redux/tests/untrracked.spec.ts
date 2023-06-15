@@ -50,6 +50,8 @@ describe('untrracked slice', () => {
         store.dispatch(actions.postAdded(post4));
         store.dispatch(actions.postAdded(post5));
 
+        // TODO: Possibly has a bug
+
         expect(store.getState().posts).toHaveLength(5);
         expect(store.getState().posts[0].content).toEqual(post1.content);
         expect(store.getState().posts[1].content).toEqual(post2.content);
@@ -58,16 +60,22 @@ describe('untrracked slice', () => {
         expect(store.getState().posts[4].content).toEqual(post5.content);
     });
 
-    it('undo should remove last added post', () => {
-        console.log('Hello');
+    it('undo should remove last added user, but not the post', () => {
         trrack.undo();
+
+        console.log(store.getState());
+
+        expect(store.getState().users).toHaveLength(2);
+        expect(store.getState().users[0]).toStrictEqual(user1);
+        expect(store.getState().users[1]).toStrictEqual(user2);
+        expect(store.getState().users[2]).toBeUndefined();
 
         expect(store.getState().posts).toHaveLength(5);
         expect(store.getState().posts[0].content).toEqual(post1.content);
         expect(store.getState().posts[1].content).toEqual(post2.content);
         expect(store.getState().posts[2].content).toEqual(post3.content);
         expect(store.getState().posts[3].content).toEqual(post4.content);
-        expect(store.getState().posts[4]).toBeUndefined();
+        expect(store.getState().posts[4].content).toEqual(post5.content);
 
         trrack.redo();
     });

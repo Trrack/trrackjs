@@ -15,7 +15,7 @@ export type Posts = SinglePost[];
 const initialState: Posts = [];
 
 const postsSlice = createSlice({
-    name: 'user',
+    name: 'posts',
     initialState,
     reducers: {
         postAdded: {
@@ -90,5 +90,5 @@ export const Post: SliceWrapper<
             user: args,
         };
     },
-    actions: trrackablePostsSlice.actions,
+    actions: trrackablePostsSlice.actions as any,
 };

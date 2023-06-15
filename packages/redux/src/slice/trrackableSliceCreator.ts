@@ -10,11 +10,11 @@ import {
 } from '@reduxjs/toolkit';
 
 import {
-    ACTION_NAME_TYPE_MAP,
     ActionNameToTypeMap,
+    ACTION_NAME_TYPE_MAP,
     ASYNC_THUNKS,
-    DO_UNDO_ACTION_CREATORS,
     DoUndoActionCreators,
+    DO_UNDO_ACTION_CREATORS,
     EVENTS,
     GeneratedDoUndoActionCreators,
     LabelGenerators,
@@ -224,6 +224,16 @@ function createDoUndoActionCreators<
     return duac;
 }
 
+/**
+ * @template State - type of the state handled by the slice
+ * @template CaseReducers extends SliceCaseReducers<State> - type for reducers
+ * @template Event extends string = string - type for events associated with the reducers
+ * @template Name extends string = string - name of the slice
+ *
+ * @param options - accepts the same arguments as `createSlice` from `redux-toolkit` along with optional config for trrackable slice
+ *
+ * @returns - a trrackable slice object
+ */
 export function createTrrackableSlice<
     State,
     CaseReducers extends SliceCaseReducers<State>,
