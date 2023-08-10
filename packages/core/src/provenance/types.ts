@@ -10,6 +10,7 @@ import {
     SideEffects,
     UnsubscribeCurrentChangeListener,
 } from '../graph';
+import { ProvenanceGraph } from '../graph/graph-slice';
 import { Registry } from '../registry';
 import { TrrackEvents } from './trrack-events';
 
@@ -74,5 +75,7 @@ export interface Trrack<State, Event extends string> {
     tree(): any;
     on(event: TrrackEvents, listener: (args?: any) => void): void;
     export(): string;
+    exportObject(): ProvenanceGraph<State, Event>;
     import(graphString: string): void;
+    importObject(graph: ProvenanceGraph<State, Event>): void;
 }
