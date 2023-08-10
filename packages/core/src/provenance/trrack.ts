@@ -378,9 +378,20 @@ export function initializeTrrack<State = any, Event extends string = string>({
         export() {
             return JSON.stringify(graph.backend);
         },
+        exportObject() {
+            return JSON.parse(
+                JSON.stringify(graph.backend)
+            ) as typeof graph.backend;
+        },
         import(graphString: string) {
             const g: ProvenanceGraph<State, Event> = JSON.parse(graphString);
 
+            const current = g.current;
+            g.current = g.root;
+            graph.update(graph.load(g));
+            this.to(current);
+        },
+        importObject(g: typeof graph.backend) {
             const current = g.current;
             g.current = g.root;
             graph.update(graph.load(g));
