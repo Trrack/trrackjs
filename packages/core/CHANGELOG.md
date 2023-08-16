@@ -1,3 +1,10 @@
+# [1.3.0-beta.1](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.2.0...@trrack/core@1.3.0-beta.1) (2023-08-10)
+
+
+### Features
+
+* **import-export:** added exportObject and importObject functions to api ([aeab9e9](https://github.com/Trrack/trrackjs/commit/aeab9e9cc3080ae1798eb5d5bf07e05532f0993c))
+
 # [1.2.0](https://github.com/Trrack/trrackjs/compare/@trrack/core@1.1.0...@trrack/core@1.2.0) (2023-05-15)
 
 
