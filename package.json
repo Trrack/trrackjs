@@ -29,13 +29,22 @@
     "@commitlint/config-conventional": "^17.7.0",
     "@commitlint/config-nx-scopes": "^17.6.4",
     "@commitlint/cz-commitlint": "^17.7.1",
+    "@nx/js": "16.8.1",
+    "@nx/vite": "^16.8.1",
+    "@vitejs/plugin-react": "~4.0.0",
+    "@vitest/ui": "~0.32.0",
     "commitizen": "^4.3.0",
     "commitlint": "^17.7.1",
     "eslint": "^8.49.0",
     "husky": "^8.0.3",
+    "jsdom": "~22.1.0",
     "nx": "16.8.1",
     "nx-cloud": "latest",
     "prettier": "^3.0.3",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vite": "~4.3.9",
+    "vite-plugin-dts": "^3.5.3",
+    "vite-tsconfig-paths": "^4.2.1",
+    "vitest": "~0.32.0"
   }
 }
