@@ -64,6 +64,8 @@ export default defineConfig({
             dir: '../../node_modules/.vitest',
         },
         environment: 'jsdom',
+
         include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        reporters: ['default', 'html'],
     },
 });
