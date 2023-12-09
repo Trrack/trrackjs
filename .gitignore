@@ -7,6 +7,7 @@ tmp
 
 # dependencies
 node_modules
+pnpm-lock.yaml
 
 # IDEs and editors
 /.idea
