@@ -1,0 +1,6 @@
+{
+  "vitest.enable": true,
+  "vitest.commandLine": "npx nx run-many -t test --testFile",
+  "vitest.changeBackgroundColor": true,
+  "vitest.showFailMessages": true
+}

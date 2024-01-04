@@ -1,4 +1,4 @@
-/// <reference types='vitest' />
+/// <reference types="vitest" />
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 import * as path from 'path';
@@ -44,7 +44,6 @@ export default defineConfig({
       external: [],
     },
   },
-
   test: {
     globals: true,
     cache: {
