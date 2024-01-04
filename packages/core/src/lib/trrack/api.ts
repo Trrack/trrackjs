@@ -1,4 +1,4 @@
-import { createActionRegistry } from '../action-registry/api';
+import { createActionRegistry } from '../actions/api';
 import { castImmutable, enablePatches } from 'immer';
 import { ConfigureTrrackOptions, Trrack } from './types';
 import { createProvenanceGraphManager } from '../graph/manager';

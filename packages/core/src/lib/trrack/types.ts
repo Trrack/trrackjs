@@ -1,5 +1,5 @@
 import { Immutable } from 'immer';
-import { ActionRegistry } from '../action-registry/types';
+import { ActionRegistry } from '../actions/types';
 import { ProvenanceGraph, ProvenanceNode } from '../graph/types';
 import { NodeId } from '../ids/types';
 

@@ -73,7 +73,10 @@ export type StateNode<State> = RootNode<State> & BaseNonRootNode;
 /**
  * Represents an action for an `ActionNode`
  */
-export type Action<DoArgs extends unknown[], UndoArgs extends unknown[]> = {
+export type ActionRecord<
+  DoArgs extends unknown[] = unknown[],
+  UndoArgs extends unknown[] = unknown[]
+> = {
   do: {
     id: ActionId;
     args: DoArgs;
@@ -90,7 +93,7 @@ export type Action<DoArgs extends unknown[], UndoArgs extends unknown[]> = {
  */
 export type ActionNode<State> = BaseNonRootNode &
   BaseStateNode<State> & {
-    action: Action;
+    actionRecord: ActionRecord;
   };
 
 /**

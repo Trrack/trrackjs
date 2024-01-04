@@ -1,5 +1,10 @@
 import { Immutable } from 'immer';
-import { NoImmutable } from './types';
+
+export type NoImmutable<T extends Immutable<unknown>> = T extends Immutable<
+  infer R
+>
+  ? R
+  : never;
 
 export function castNoImmutable<T extends Immutable<unknown>>(
   obj: T
