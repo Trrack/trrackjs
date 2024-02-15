@@ -1,5 +1,5 @@
-import { createProvenanceGraphManager } from './manager';
-import { createStateNode } from './nodes';
+import { createProvenanceGraphManager } from '../src/lib/graph/manager';
+import { createStateNode } from '../src/lib/graph/nodes';
 
 describe('createProvenanceGraphManager', () => {
   it('returns a ProvenanceGraphManager object', () => {

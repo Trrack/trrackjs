@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "BSD-3-Clause",
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test:dev": "npx vitest --ui --coverage"
   },
   "private": true,
   "type": "module",

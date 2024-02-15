@@ -1,6 +1,6 @@
-import { createRootNode, createStateNode } from './nodes';
 import { compare } from 'fast-json-patch';
-import { SPEC_VERSION } from '../trrack/version';
+import { createRootNode, createStateNode } from '../src/lib/graph/nodes';
+import { SPEC_VERSION } from '../src/lib/trrack/version';
 
 const DEFAULT_ROOT_LABEL = 'Root';
 
