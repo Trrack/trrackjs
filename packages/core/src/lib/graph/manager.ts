@@ -1,6 +1,6 @@
 import { castDraft, produce } from 'immer';
 import { createRootNode } from './nodes';
-import { ProvenanceGraph, ProvenanceGraphManager } from './types';
+import { ProvenanceGraph, ProvenanceGraphManager } from './node.types';
 
 /**
  * Creates a manager for a provenance graph.

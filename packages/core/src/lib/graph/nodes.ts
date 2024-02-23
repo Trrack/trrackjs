@@ -5,7 +5,7 @@ import {
   CreateStateNodeOptions,
   RootNode,
   StateNode,
-} from './types';
+} from './node.types';
 
 // Default label for the root node
 const DEFAULT_ROOT_LABEL = 'Root';

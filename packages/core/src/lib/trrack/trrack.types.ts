@@ -1,14 +1,14 @@
 import { Immutable } from 'immer';
-import { ActionRegistry } from '../actions/types';
-import { ProvenanceGraph, ProvenanceNode } from '../graph/types';
-import { NodeId } from '../ids/types';
+import { ActionRegistry } from '../actions/action.types';
+import { ProvenanceGraph, ProvenanceNode } from '../graph/node.types';
+import { NodeId } from '../ids/ids.types';
 
 export type RedoDirection = 'oldest' | 'latest';
 
 export type TrrackUnsafeOptions = Record<string, unknown>;
 
 export type TrrackBackend<State> = {
-  registry: ActionRegistry;
+  registry: ActionRegistry<State>;
   graph(): Immutable<ProvenanceGraph<State>>;
 };
 
@@ -26,5 +26,5 @@ export type Trrack<State> = {
 
 export type ConfigureTrrackOptions<State> = {
   initialState: State;
-  registry?: ActionRegistry;
+  registry?: ActionRegistry<State>;
 };

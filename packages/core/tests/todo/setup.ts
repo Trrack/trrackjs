@@ -1,9 +1,8 @@
 import {
-  ActionType,
-  SideEffectAction,
+  AnyActionType,
   SideEffectFunction,
   StateUpdateFunction,
-} from '../../src/lib/actions/types';
+} from '../../src/lib/actions/action.types';
 import { createActionRegistry } from '../../src/lib/actions/api';
 import { Nullable } from 'vitest';
 
@@ -106,7 +105,7 @@ export const addTodoAction: TestStateActionObject<State, Todo> = {
   },
 };
 
-type TestSideEffectActionObject<A extends ActionType, P> = {
+type TestSideEffectActionObject<A extends AnyActionType, P> = {
   id: A;
   fn: SideEffectFunction<P>;
 };

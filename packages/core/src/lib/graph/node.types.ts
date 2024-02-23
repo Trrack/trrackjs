@@ -1,4 +1,4 @@
-import { ActionId, AuthorId, NodeId } from '../ids/types';
+import { ActionId, AuthorId, NodeId } from '../ids/ids.types';
 import { Operation } from 'fast-json-patch';
 
 /**

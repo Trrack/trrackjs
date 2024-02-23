@@ -2,7 +2,7 @@ import { castImmutable, enablePatches, produceWithPatches } from 'immer';
 import { invariant } from '../utils/invariant';
 import {
   ActionRegistry,
-  ActionType,
+  AnyActionType,
   UpdateFunction,
   SideEffectFunction,
   StateUpdateFunction,
@@ -11,32 +11,34 @@ import {
   SideEffectAction,
   SideEffectActionCreator,
   UndoActionType,
-} from './types';
+} from './action.types';
 import { sideEffectFunctionSymbol, stateUpdateFunctionSymbol } from './symbols';
 import { isSideEffectFunction } from './guards';
 
 enablePatches();
 
-export function getUndoActionType<A extends ActionType>(
+export function getUndoActionType<A extends AnyActionType>(
   type: A
 ): UndoActionType<A> {
   return `undo/${type}`;
 }
 
-export function getStateActionCreator<A extends ActionType>(
+export function getStateActionCreator<A extends AnyActionType>(
   type: A
 ): StateUpdateActionCreator<A, void>;
-export function getStateActionCreator<A extends ActionType, P>(
+export function getStateActionCreator<A extends AnyActionType, P>(
   type: A
 ): StateUpdateActionCreator<A, P>;
-export function getStateActionCreator<A extends ActionType, P = void>(type: A) {
+export function getStateActionCreator<A extends AnyActionType, P = void>(
+  type: A
+) {
   return (payload?: P) => ({
     type,
     payload: payload as P,
   });
 }
 
-export function getSideEffectActionCreator<A extends ActionType, P, P2 = P>(
+export function getSideEffectActionCreator<A extends AnyActionType, P, P2 = P>(
   doType: A,
   undoType: UndoActionType<A>
 ): SideEffectActionCreator<A, P, P2> {
@@ -53,17 +55,17 @@ export function getSideEffectActionCreator<A extends ActionType, P, P2 = P>(
 }
 
 export function createActionRegistry<S>(): ActionRegistry<S> {
-  const __record: Map<ActionType, UpdateFunction<S, unknown>> = new Map();
+  const __record: Map<AnyActionType, UpdateFunction<S, unknown>> = new Map();
 
   return {
     __record,
     list(): string[] {
       return [...__record.keys()];
     },
-    has(type: ActionType) {
+    has(type: AnyActionType) {
       return __record.has(type);
     },
-    registerStateUpdateAction<P, A extends ActionType = ActionType>(
+    registerStateUpdateAction<P, A extends AnyActionType = AnyActionType>(
       action: A,
       fn: StateUpdateFunction<S, P>
     ) {
@@ -76,7 +78,7 @@ export function createActionRegistry<S>(): ActionRegistry<S> {
 
       return getStateActionCreator<A, P>(action);
     },
-    registerSideEffectAction<A extends ActionType, P, P2 = P>(
+    registerSideEffectAction<A extends AnyActionType, P, P2 = P>(
       action: A,
       doFn: SideEffectFunction<P>,
       undoFn?: SideEffectFunction<P2>
@@ -97,7 +99,7 @@ export function createActionRegistry<S>(): ActionRegistry<S> {
 
       return getSideEffectActionCreator<A, P, P2>(action, undoAction);
     },
-    async executeStateAction<A extends ActionType, P>(
+    async executeStateAction<A extends AnyActionType, P>(
       action: StateUpdateAction<A, P>,
       state: S
     ) {
@@ -120,7 +122,7 @@ export function createActionRegistry<S>(): ActionRegistry<S> {
         patches,
       };
     },
-    async executeSideEffectAction<A extends ActionType, P, P2 = P, R = void>(
+    async executeSideEffectAction<A extends AnyActionType, P, P2 = P, R = void>(
       createdAction: SideEffectAction<A, P, P2>,
       undo = false
     ) {
