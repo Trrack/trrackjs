@@ -1,4 +1,4 @@
-import { ValueLike, resolveValueLike } from './valueLike';
+import { ValueLike, getValue } from './valueLike';
 
 type ErrorMessage = string;
 type ErrorMessageLike = ValueLike<ErrorMessage>;
@@ -15,8 +15,8 @@ export function invariant(
   const isProduction = process.env['NODE_ENV'] === 'production';
 
   if (isProduction) {
-    throw new Error(resolveValueLike(productionError));
+    throw new Error(getValue(productionError));
   }
 
-  throw new Error(resolveValueLike(error));
+  throw new Error(getValue(error));
 }
