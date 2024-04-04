@@ -2,5 +2,14 @@
   "vitest.enable": true,
   "vitest.commandLine": "npx nx run-many -t test --testFile",
   "vitest.changeBackgroundColor": true,
-  "vitest.showFailMessages": true
+  "vitest.showFailMessages": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/index.ts": true
+  }
 }
