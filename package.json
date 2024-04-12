@@ -51,7 +51,6 @@
     "@nrwl/jest": "18.2.4",
     "@nrwl/js": "18.2.4",
     "@nrwl/linter": "18.2.4",
-    "@nrwl/nx-cloud": "18.0.0",
     "@nrwl/react": "18.2.4",
     "@nrwl/vite": "18.2.4",
     "@nrwl/web": "18.2.4",
@@ -110,7 +109,8 @@
     "vite-tsconfig-paths": "4.3.2",
     "vitest": "0.31.4",
     "webpack": "^5.75.0",
-    "webpack-merge": "^5.8.0"
+    "webpack-merge": "^5.8.0",
+    "nx-cloud": "18.0.0"
   },
   "config": {
     "commitizen": {
