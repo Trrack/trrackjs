@@ -47,7 +47,6 @@
     "@jscutlery/semver": "^2.25.2",
     "@mui/icons-material": "^5.8.0",
     "@mui/material": "^5.8.1",
-    "@nrwl/cli": "15.6.3",
     "@nrwl/eslint-plugin-nx": "18.2.4",
     "@nrwl/jest": "18.2.4",
     "@nrwl/js": "18.2.4",
@@ -119,4 +118,3 @@
     }
   }
 }
-
