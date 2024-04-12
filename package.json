@@ -54,7 +54,6 @@
     "@nrwl/react": "18.2.4",
     "@nrwl/vite": "18.2.4",
     "@nrwl/web": "18.2.4",
-    "@nrwl/workspace": "18.2.4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@svgr/webpack": "^6.1.2",
     "@swc/cli": "0.1.65",
@@ -110,7 +109,8 @@
     "vitest": "0.31.4",
     "webpack": "^5.75.0",
     "webpack-merge": "^5.8.0",
-    "nx-cloud": "18.0.0"
+    "nx-cloud": "18.0.0",
+    "@nx/workspace": "18.2.4"
   },
   "config": {
     "commitizen": {
