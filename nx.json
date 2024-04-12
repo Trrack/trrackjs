@@ -24,7 +24,7 @@
     "libsDir": "packages"
   },
   "cli": {
-    "packageManager": "yarn"
+    "packageManager": "pnpm"
   },
   "generators": {
     "@nrwl/react": {

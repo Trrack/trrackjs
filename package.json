@@ -113,10 +113,6 @@
     "webpack": "^5.75.0",
     "webpack-merge": "^5.8.0"
   },
-  "workspaces": [
-    "packages/**",
-    "apps/**"
-  ],
   "config": {
     "commitizen": {
       "path": "git-cz"
