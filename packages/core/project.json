@@ -3,9 +3,10 @@
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "packages/core/src",
     "projectType": "library",
+    "tags": [],
     "targets": {
         "build": {
-            "executor": "@nrwl/vite:build",
+            "executor": "@nx/vite:build",
             "outputs": ["{options.outputPath}"],
             "defaultConfiguration": "production",
             "options": {
@@ -56,6 +57,5 @@
                 "lintFilePatterns": ["packages/core/**/*.ts"]
             }
         }
-    },
-    "tags": []
+    }
 }
