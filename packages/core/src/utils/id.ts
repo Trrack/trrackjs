@@ -10,18 +10,22 @@ type Flavoring<TFlavor> = {
 //'https://spin.atomicobject.com/2018/01/15/typescript-flexible-nominal-typing/
 export type FlavoredId<TBaseId, TFlavor> = TBaseId & Flavoring<TFlavor>;
 
-export class ID {
-    private static ids: Map<string, boolean> = new Map();
+function IDFactory() {
+    const ids = new Map<string, boolean>();
 
-    static get() {
-        let id = uuid();
+    return {
+        get() {
+            let id = uuid();
 
-        while (this.ids.has(id)) {
-            id = uuid();
-        }
+            while (ids.has(id)) {
+                id = uuid();
+            }
 
-        this.ids.set(id, true);
+            ids.set(id, true);
 
-        return id;
-    }
+            return id;
+        },
+    };
 }
+
+export const ID = IDFactory();

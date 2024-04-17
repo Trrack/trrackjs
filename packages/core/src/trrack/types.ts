@@ -1,6 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { NodeId } from '@trrack/core';
 import {
+    NodeId,
     Artifact,
     CurrentChangeHandler,
     Metadata,
@@ -9,10 +9,10 @@ import {
     RootNode,
     SideEffects,
     UnsubscribeCurrentChangeListener,
-} from '../graph';
-import { ProvenanceGraph } from '../graph/graph-slice';
+} from '../trrackGraph';
+import { ProvenanceGraph } from '../trrackGraph/graph-slice';
 import { Registry } from '../registry';
-import { TrrackEvents } from './trrack-events';
+import { TrrackEvents } from './trrackEvents';
 
 export type RecordActionArgs<State, Event extends string> = {
     label: string;

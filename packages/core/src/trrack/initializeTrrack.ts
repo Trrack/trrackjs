@@ -16,14 +16,14 @@ import {
     StateLike,
     StateNode,
     UnsubscribeCurrentChangeListener,
-} from '../graph';
-import { ProvenanceGraph } from '../graph/graph-slice';
+} from '../trrackGraph';
+import { ProvenanceGraph } from '../trrackGraph/graph-slice';
 import {
     ProduceWrappedStateChangeFunction,
     TrrackActionFunction,
 } from '../registry';
-import { ConfigureTrrackOptions } from './trrack-config-opts';
-import { TrrackEvents } from './trrack-events';
+import { ConfigureTrrackOptions } from './trrackConfigOpts';
+import { TrrackEvents } from './trrackEvents';
 
 function getState<State, Event extends string>(
     node: ProvenanceNode<State, Event>,
@@ -271,7 +271,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
             const action = registry.get(act.type);
             const originalState = getState(
                 this.current,
-                this.graph.backend.nodes
+                this.graph.backend.nodes as Nodes<State, string>
             );
 
             if (action.config.hasSideEffects) {

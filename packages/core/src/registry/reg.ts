@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAction } from '@reduxjs/toolkit';
-import produce, { enablePatches } from 'immer';
+import { produce, enablePatches } from 'immer';
 
 import {
     Label,
@@ -13,14 +13,21 @@ import {
 
 enablePatches();
 
-
 type TrrackActionRegisteredObject = {
-    func: TrrackActionFunction<any, any, any, any> | ProduceWrappedStateChangeFunction<any>;
+    func:
+        | TrrackActionFunction<any, any, any, any>
+        | ProduceWrappedStateChangeFunction<any>;
     config: TrrackActionConfig<any, any>;
 };
 
-function prepareAction(action: TrrackActionFunction<any, any, any, any> | StateChangeFunction<any, any>) {
-    return action.length === 2 ? produce(action) as unknown as ProduceWrappedStateChangeFunction<any> : action as TrrackActionFunction<any, any, any, any>;
+function prepareAction(
+    action:
+        | TrrackActionFunction<any, any, any, any>
+        | StateChangeFunction<any, any>
+) {
+    return action.length === 2
+        ? (produce(action) as unknown as ProduceWrappedStateChangeFunction<any>)
+        : (action as TrrackActionFunction<any, any, any, any>);
 }
 
 export class Registry<Event extends string> {
@@ -46,25 +53,30 @@ export class Registry<Event extends string> {
         State = any
     >(
         type: DoActionType,
-        actionFunction: TrrackActionFunction<
-            DoActionType,
-            UndoActionType,
-            UndoActionPayload,
-            DoActionPayload
-        > | StateChangeFunction<State, DoActionPayload>,
+        actionFunction:
+            | TrrackActionFunction<
+                  DoActionType,
+                  UndoActionType,
+                  UndoActionPayload,
+                  DoActionPayload
+              >
+            | StateChangeFunction<State, DoActionPayload>,
         config?: {
             eventType: Event;
-            label: Label | LabelGenerator<DoActionPayload>
+            label: Label | LabelGenerator<DoActionPayload>;
         }
     ) {
         const isState = actionFunction.length === 2;
 
         if (actionFunction.length > 2)
-            throw new Error('Incorrect action function signature. Action function can only have two arguments at most!');
+            throw new Error(
+                'Incorrect action function signature. Action function can only have two arguments at most!'
+            );
 
         if (this.has(type)) throw new Error(`Already registered: ${type}`);
 
-        const { label = type, eventType = type as unknown as Event } = config || {};
+        const { label = type, eventType = type as unknown as Event } =
+            config || {};
 
         this.registry.set(type, {
             func: prepareAction(actionFunction),

@@ -7,19 +7,6 @@ import {
 import { ID } from '../utils';
 
 import { RootNode } from './components';
-import { graphSliceCreator } from './graph-slice';
-
-export type Trigger = 'traversal' | 'new';
-
-export type CurrentChangeHandler = (trigger?: Trigger) => void;
-export type CurrentChangeHandlerConfig = {
-    skipOnNew: boolean;
-};
-export type UnsubscribeCurrentChangeListener = () => boolean;
-
-export type ProvenanceGraphStore = ReturnType<typeof f>;
-
-const f = () => initializeProvenanceGraph<any, any>({});
 
 export function initializeProvenanceGraph<State, Event extends string>(
     initialState: State
