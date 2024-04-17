@@ -46,11 +46,13 @@ export function useTrrackTaskManager() {
       (add: number) => {
         setCounter((c) => c + add);
         return {
+          undo: {
           type: 'decrement-counter',
           payload: add,
           meta: {
             hasSideEffects: true,
           },
+        }
         };
       }
     );
@@ -60,11 +62,13 @@ export function useTrrackTaskManager() {
       (sub: number) => {
         setCounter((c) => c - sub);
         return {
+          undo: {
           type: 'increment-counter',
           payload: sub,
           meta: {
             hasSideEffects: true,
           },
+        }
         };
       }
     );
