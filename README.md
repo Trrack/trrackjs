@@ -15,6 +15,15 @@ This branch implements action based provenance tracking.
 Clone the repository and switch to `trrack-action` branch.
 This project was generated using [Nx](https://nx.dev). Please refer to [Nx](https://nx.dev) for more any questions about monorepo setup.
 
+### Basic
+Serve the react example by running the following:
+
+```bash
+npx nx react-trrack-example:serve
+```
+Any changes made to the `core` package will cause updates to the react example for easier testing
+
+### Advanced
 To get started with development run:
 
 ```bash
