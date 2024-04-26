@@ -1,9 +1,10 @@
-import { Box, Checkbox, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Box, Button, Checkbox, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import Tree, { useTreeState } from 'react-hyper-tree';
 import { TreeNode } from 'react-hyper-tree/dist/helpers/node';
 
 import { Navbar } from './components/Navbar';
 import { useTrrackTaskManager } from './store/trrack';
+import { downloadScreenshotOfElement } from '@trrack/core';
 
 function App() {
   const trrackManager = useTrrackTaskManager();
@@ -19,7 +20,7 @@ function App() {
   open(required.data, trrackManager.trrack.current.id);
 
   return (
-    <Box sx={{ height: '100vh', width: '100vw' }}>
+    <Box id='navbar' sx={{ height: '100vh', width: '100vw' }}>
       <Navbar t={trrackManager} />
       <Box
         sx={{
@@ -73,6 +74,9 @@ function App() {
           setSelected={(node) => trrackManager.trrack.to(node.id)}
         />
       </Box>
+      <Button onClick={() => {
+        downloadScreenshotOfElement(document.getElementById('screenshotted') ?? document.body, 'screenshot.png');
+      }}>Take screenshot</Button>
     </Box>
   );
 }
