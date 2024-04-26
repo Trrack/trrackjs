@@ -6,7 +6,7 @@ import html2canvas from 'html2canvas';
  * @param base64Data contents of the file in base64 format
  * @param fileName name of the file
  */
-function downloadBase64File(
+export function downloadBase64File(
     contentType: string,
     base64Data: string,
     fileName: string

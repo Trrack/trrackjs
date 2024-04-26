@@ -5,6 +5,7 @@ import { TreeNode } from 'react-hyper-tree/dist/helpers/node';
 import { Navbar } from './components/Navbar';
 import { useTrrackTaskManager } from './store/trrack';
 import { downloadScreenshotOfElement } from '@trrack/core';
+import { downloadNativeScreenshot } from '@trrack/core';
 
 function App() {
   const trrackManager = useTrrackTaskManager();
@@ -75,8 +76,13 @@ function App() {
         />
       </Box>
       <Button onClick={() => {
-        downloadScreenshotOfElement(document.getElementById('screenshotted') ?? document.body, 'screenshot.png');
-      }}>Take screenshot</Button>
+        downloadScreenshotOfElement(document.getElementById('screenshotted') ?? document.documentElement, 'screenshot.png');
+      }}>Take canvas screenshot</Button>
+      <Button onClick={() => {
+        downloadNativeScreenshot('screenshot.png');
+      }}>
+        Take native screenshot
+      </Button>
     </Box>
   );
 }

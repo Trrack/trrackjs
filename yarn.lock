@@ -4810,6 +4810,11 @@
     "@webassemblyjs/ast" "1.12.1"
     "@xtuc/long" "4.2.2"
 
+"@xata.io/screenshot@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@xata.io/screenshot/-/screenshot-1.0.0.tgz#6c2e038ac68a5648723c762ba618471f9627c839"
+  integrity sha512-d8uN4AbwCz/U5Kn37clAiW2j7UTXXBRsfAZp/KyxnnqG8OYfSc3wOH4TR8KJA83my7zVxMvKwhJUIOYh8q1WPg==
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"
