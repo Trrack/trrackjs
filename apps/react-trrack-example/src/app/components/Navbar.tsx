@@ -6,9 +6,9 @@ import { AppBar, Button, IconButton, Toolbar, Typography } from '@mui/material';
 
 import { Trrack } from '../store/trrack';
 import { Task } from '../store/types';
-import { ScreenshotStream} from '@trrack/core';
+import { ScreenshotStream } from '@trrack/core';
 
-export function Navbar({ t, ss }: { t: Trrack, ss: ScreenshotStream}) {
+export function Navbar({ t, ss }: { t: Trrack; ss: ScreenshotStream }) {
   const { trrack, isAtLatest, isAtRoot, actions, counter } = t;
 
   return (
