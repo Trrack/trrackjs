@@ -59,19 +59,6 @@ export class ScreenshotStream {
         this.video.style.top = '0';
         this.video.style.left = '0';
 
-        /*const displayMediaOptions: DisplayMediaStreamOptions = {
-      video: {
-        //cursor: "never",
-        displaySurface: "browser"
-      },
-      audio: false,
-      // Below are explicit defaults because the actual varies by browser
-      // monitorTypeSurfaces: "exclude", // Don't offer whole-screen capture options
-      // preferCurrentTab: true,
-      // selfBrowserSurface: true,
-      // surfaceSwitching: "exclude",
-    };*/
-
         try {
             await navigator.mediaDevices
                 .getDisplayMedia(/*displayMediaOptions*/)
