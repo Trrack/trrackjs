@@ -1,5 +1,5 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { NodeId } from '@trrack/core';
+import { NodeId } from '../graph/components/node';
 import {
     Artifact,
     CurrentChangeHandler,
