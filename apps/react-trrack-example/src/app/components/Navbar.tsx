@@ -21,7 +21,7 @@ export function Navbar({ t, ss }: { t: Trrack; ss: ScreenshotStream }) {
           <IconButton
             onClick={() => {
               trrack.apply('Increment counter', actions.incrementCounter(1));
-              ss.captureNextRepaint();
+              ss.delayCapture(100);
             }}
           >
             <AddIcon />
@@ -32,7 +32,7 @@ export function Navbar({ t, ss }: { t: Trrack; ss: ScreenshotStream }) {
           <IconButton
             onClick={() => {
               trrack.apply('Decrement counter', actions.decrementCounter(1));
-              ss.captureNextRepaint();
+              ss.delayCapture(100);
             }}
           >
             <RemoveIcon />

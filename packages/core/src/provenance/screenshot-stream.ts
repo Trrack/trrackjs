@@ -1,11 +1,11 @@
 /**
  * Captures and stores a sequence of screenshots of the current tab.
- * First, opens a MediaStream of the current tab, then captures screenshots
- * on repaints after captureNextRepaint() is called.
- * A screenshot can also be captured on-demand via capture().
+ * First, opens a MediaStream of the current tab, then can capture screenshots.
+ * A screenshot can also be captured on-demand via capture() or after a delay via delayCapture().
  * Requires browser permissions to capture screen.
  * Must be activated via start() and deactivated via stop(); failure to stop
  * will result in a memory leak.
+ * All functions are bound to the class, so they can be passed as callbacks.
  */
 export class ScreenshotStream {
     /**
@@ -19,12 +19,19 @@ export class ScreenshotStream {
     private screenshots: ImageData[] = [];
 
     /**
+     * ID of the timeout for delayCapture.
+     * Null if no timeout is active.
+     */
+    private timeout: NodeJS.Timeout | null = null;
+
+    /**
      * Optional callback to run after each screenshot is captured.
      */
     public newScreenshotCallback: ((frame: ImageData) => void) | null;
 
     /**
-     * Binds capture, stop, and captureNextRepaint to the class.
+     * Checks that the getDisplayMedia API is available
+     * and binds all functions to the class.
      * @throws Error if the getDisplayMedia API is not available.
      */
     constructor(newScreenshotCallback?: (frame: ImageData) => void) {
@@ -36,10 +43,14 @@ export class ScreenshotStream {
 
         this.newScreenshotCallback = newScreenshotCallback ?? null;
 
-        // We need to functions that can be used as callbacks to the class
         this.capture = this.capture.bind(this);
         this.stop = this.stop.bind(this);
-        this.captureNextRepaint = this.captureNextRepaint.bind(this);
+        this.delayCapture = this.delayCapture.bind(this);
+        this.push = this.push.bind(this);
+        this.getNth = this.getNth.bind(this);
+        this.count = this.count.bind(this);
+        this.getAll = this.getAll.bind(this);
+        this.start = this.start.bind(this);
     }
 
     /**
@@ -84,7 +95,6 @@ export class ScreenshotStream {
     /**
      * Captures a screenshot and stores it in the screenshots array.
      * Also pushes the screenshot to the newScreenshotCallback if available.
-     * Bound to the class in the constructor.
      * @throws Error if recording has not been started.
      * @throws Error if unable to get 2D rendering context.
      * @returns The captured screenshot.
@@ -116,22 +126,26 @@ export class ScreenshotStream {
     }
 
     /**
-     * Captures a screenshot after the next repaint and adds it to the screenshot array.
-     * Useful if you want to screenshot a state change that you've just processed.
-     * Bound to the class in the constructor.
+     * Captures a screenshot after a timeout delay.
+     * If one timeout is already active, a screenshot is taken immediately
+     * and the old timeout is cleared and replaced with the new delay.
+     * @param timeout The delay in milliseconds before capturing the screenshot.
      */
-    public captureNextRepaint(): void {
-        requestAnimationFrame(() => {
-            const mc = new MessageChannel();
-            mc.port1.onmessage = this.capture;
-            mc.port2.postMessage(undefined);
-        });
+    public delayCapture(timeout: number): void {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+            this.capture();
+        }
+        this.timeout = setTimeout(() => {
+            this.capture();
+            this.timeout = null;
+        }, timeout);
     }
 
     /**
      * Stops the media stream and removes the video element from the DOM.
      * Must be called to prevent memory leaks.
-     * Bound to the class in the constructor.
      */
     public stop(): void {
         if (this.video) {
