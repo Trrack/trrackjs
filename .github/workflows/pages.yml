@@ -16,9 +16,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-      
+
+      - name: Install yarn
+        run: npm install -g yarn
+        
       - name: Install Dependencies
-        run: npm install
+        run: yarn install
       
       - name: Build Project
         run: npx nx run react-trrack-example:build --prod
@@ -27,4 +30,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./apps/react-trrack-example  # Update the path to where Nx outputs the build files
+          publish_dir: ./apps/react-trrack-example
