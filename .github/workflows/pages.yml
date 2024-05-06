@@ -3,7 +3,7 @@ name: Deploy React Application to GitHub Pages
 on:
   push:
     branches:
-      - main  # Set this to your default branch
+      - main
 
 jobs:
   build-and-deploy:
@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14'  # Set this to the node version you use locally
+          node-version: '20'
       
       - name: Install Dependencies
         run: npm install
@@ -27,4 +27,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/apps/react-trrack-example  # Update the path to where Nx outputs the build files
+          publish_dir: ./apps/react-trrack-example  # Update the path to where Nx outputs the build files
