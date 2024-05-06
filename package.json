@@ -1,6 +1,7 @@
 {
   "name": "trrack",
   "version": "0.0.0",
+  "homepage": "https://natelanza.github.io/trrack",
   "license": "MIT",
   "scripts": {
     "dev:all": "nx run-many --target=serve --projects=react-trrack-example,rtk-trrack-example --output-style=stream",
