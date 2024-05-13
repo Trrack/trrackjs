@@ -22,6 +22,16 @@ export type RecordActionArgs<State, Event extends string> = {
     onlySideEffects?: boolean;
 };
 
+export interface ScreenshotStream {
+    start(): void;
+    capture(): void;
+    delayCapture(): void;
+    stop(): void;
+    getNth(n: number): ImageData;
+    count(): number;
+    getAll(): ImageData[];
+}
+
 export interface Trrack<State, Event extends string> {
     registry: Registry<Event>;
     isTraversing: boolean;
