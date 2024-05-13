@@ -47,14 +47,15 @@ export function useTrrackTaskManager() {
         setCounter((c) => c + add);
         return {
           undo: {
-          type: 'decrement-counter',
-          payload: add,
-          meta: {
-            hasSideEffects: true,
+            type: 'decrement-counter',
+            payload: add,
+            meta: {
+              hasSideEffects: true,
+            },
           },
-        }
         };
-      }
+      },
+      true
     );
 
     const decrementCounter = reg.register(
@@ -63,14 +64,15 @@ export function useTrrackTaskManager() {
         setCounter((c) => c - sub);
         return {
           undo: {
-          type: 'increment-counter',
-          payload: sub,
-          meta: {
-            hasSideEffects: true,
+            type: 'increment-counter',
+            payload: sub,
+            meta: {
+              hasSideEffects: true,
+            },
           },
-        }
         };
-      }
+      },
+      true
     );
 
     return {

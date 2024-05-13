@@ -13,8 +13,7 @@ import { TreeNode } from 'react-hyper-tree/dist/helpers/node';
 
 import { Navbar } from './components/Navbar';
 import { useTrrackTaskManager } from './store/trrack';
-import { useRef } from 'react';
-import { ScreenshotStream, downloadScreenshot } from '@trrack/core';
+import { downloadScreenshot } from '@trrack/core';
 
 function App() {
   const trrackManager = useTrrackTaskManager();
@@ -30,19 +29,17 @@ function App() {
   open(required.data, trrackManager.trrack.current.id);
 
   // Testing screenshot stream
-  const ss = useRef(new ScreenshotStream());
+  const ss = trrackManager.trrack.screenshots;
 
   return (
     <Box sx={{ height: '100vh', width: '100vw' }}>
-      <Navbar t={trrackManager} ss={ss.current} />
-      <Button
-        onClick={() => downloadScreenshot(ss.current.getNth(0), 'screenshot')}
-      >
+      <Navbar t={trrackManager} />
+      <Button onClick={() => downloadScreenshot(ss.getNth(0), 'screenshot')}>
         Download Latest Screenshot
       </Button>
       <Button
         onClick={() => {
-          ss.current.start();
+          ss.start();
         }}
       >
         Start recording

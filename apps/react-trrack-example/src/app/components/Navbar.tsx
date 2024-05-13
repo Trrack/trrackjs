@@ -8,7 +8,7 @@ import { Trrack } from '../store/trrack';
 import { Task } from '../store/types';
 import { ScreenshotStream } from '@trrack/core';
 
-export function Navbar({ t, ss }: { t: Trrack; ss: ScreenshotStream }) {
+export function Navbar({ t }: { t: Trrack }) {
   const { trrack, isAtLatest, isAtRoot, actions, counter } = t;
 
   return (
@@ -21,7 +21,6 @@ export function Navbar({ t, ss }: { t: Trrack; ss: ScreenshotStream }) {
           <IconButton
             onClick={() => {
               trrack.apply('Increment counter', actions.incrementCounter(1));
-              ss.delayCapture(100);
             }}
           >
             <AddIcon />
@@ -32,7 +31,6 @@ export function Navbar({ t, ss }: { t: Trrack; ss: ScreenshotStream }) {
           <IconButton
             onClick={() => {
               trrack.apply('Decrement counter', actions.decrementCounter(1));
-              ss.delayCapture(100);
             }}
           >
             <RemoveIcon />
