@@ -43,6 +43,18 @@ export function intitializeScreenshotStream(
 
     /// Methods
     /**
+     * Stops the media stream and removes the video element from the DOM.
+     * Must be called to prevent memory leaks.
+     */
+    function stop(): void {
+        if (video) {
+            video.srcObject = null;
+            video.remove();
+            video = null;
+        }
+    }
+
+    /**
      * Starts the media stream needed to capture screenshots on-demand.
      * Will prompt the user for permission to capture the screen.
      * @throws Error if unable to start the recording; usually due to the user denying permission.
@@ -68,6 +80,7 @@ export function intitializeScreenshotStream(
                 .then((stream) => {
                     // TS is not confident that video is not null (but I am), so we need to check
                     video ? (video.srcObject = stream) : null;
+                    stream.getVideoTracks()[0].onended = stop;
                 });
         } catch (e) {
             video = null;
@@ -148,18 +161,6 @@ export function intitializeScreenshotStream(
                 capture();
                 currentTimeout = null;
             }, timeout);
-        }
-    }
-
-    /**
-     * Stops the media stream and removes the video element from the DOM.
-     * Must be called to prevent memory leaks.
-     */
-    function stop(): void {
-        if (video) {
-            video.srcObject = null;
-            video.remove();
-            video = null;
         }
     }
 
