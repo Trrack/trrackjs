@@ -27,7 +27,7 @@ export interface ScreenshotStream {
     capture(): ImageData;
     delayCapture(timeout: number): void;
     stop(): void;
-    getNth(n: number): ImageData;
+    getNth(n: number): ImageData | null;
     count(): number;
     getAll(): ImageData[];
     isRecording(): boolean;

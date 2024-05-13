@@ -34,7 +34,11 @@ function App() {
   return (
     <Box sx={{ height: '100vh', width: '100vw' }}>
       <Navbar t={trrackManager} />
-      <Button onClick={() => downloadScreenshot(ss.getNth(0), 'screenshot')}>
+      <Button
+        onClick={() =>
+          ss.getNth(0) ? downloadScreenshot(ss.getNth(0)!, 'screenshot') : null
+        }
+      >
         Download Latest Screenshot
       </Button>
       <Button

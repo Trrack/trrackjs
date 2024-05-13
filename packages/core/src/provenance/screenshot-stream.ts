@@ -95,6 +95,9 @@ export function intitializeScreenshotStream(
             // I honestly don't know how we'd get here
             throw new Error('Unable to start recording; no stream available');
         }
+
+        // We should capture initial state
+        capture();
     }
 
     /**
@@ -169,7 +172,11 @@ export function intitializeScreenshotStream(
      * @param n - The index of the screenshot to retrieve. 0 is the most recent.
      * @returns The nth screenshot.
      */
-    function getNth(n: number): ImageData {
+    function getNth(n: number): ImageData | null {
+        if (screenshots.length === 0) {
+            return null;
+        }
+
         if (n < 0 || n >= screenshots.length) {
             throw new Error(`Screenshot index out of bounds: ${n}`);
         }
