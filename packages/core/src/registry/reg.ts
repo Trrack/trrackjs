@@ -14,13 +14,20 @@ import {
 enablePatches();
 
 /**
- * Represents a registered trrack action.
+ * @typedef {Object} TrrackActionRegisteredObject - Represents a registered trrack action.
+ * @property {TrrackActionFunction<DoActionType, UndoActionType, UndoActionPayload, DoActionPayload>
+ *  | ProduceWrappedStateChangeFunction<State>} func
+ *  - The action function or state change function associated with the action.
+ * @property {TrrackActionConfig<DoActionPayload, Event>} config - The configuration for the action.
+ * @property {number} transitionTime - The transition time for the action.
  */
 type TrrackActionRegisteredObject = {
     func:
         | TrrackActionFunction<any, any, any, any>
         | ProduceWrappedStateChangeFunction<any>;
     config: TrrackActionConfig<any, any>;
+    triggersScreenshot: boolean;
+    transitionTime: number;
 };
 
 /**
@@ -82,14 +89,21 @@ export class Registry<Event extends string> {
      *
      * @param {DoActionType} type - The type of the action.
      * @param {TrrackActionFunction<DoActionType, UndoActionType, UndoActionPayload, DoActionPayload>
-     *  | StateChangeFunction<State, DoActionPayload>} actionFunction
-     *  - The action function or state change function associated with the action.
+     *    | StateChangeFunction<State, DoActionPayload>} actionFunction
+     *    - The action function or state change function associated with the action.
+     * @param {number} [transitionTime=100] - The amount of time taken for the effect of the action to be reflected in the
+     *     browser display. When screenshotting is enabled, the screenshot will be taken after this delay.
+     *     If set to 0, a screenshot is taken immediately; this usually does not give the browser enough time to update
+     *     the display, so the screenshot may not reflect the changes.
+     * @param {boolean} [triggersScreenshot=false] - Indicates whether the action triggers a screenshot if screenshots
+     *     have been enabled for the current Trrack instance.
      * @param {Object} [config] - Optional configuration for the action.
      * @param {Event} [config.eventType] - The event type associated with the action.
      * @param {Label | LabelGenerator<DoActionPayload>} [config.label] - The label or label generator for the action.
      *
      * @throws {Error} If the action function has more than two arguments.
      * @throws {Error} If the action is already registered.
+     * @throws {Error} If the transition time is negative.
      *
      * @returns {Action<DoActionPayload>} The created action.
      */
@@ -109,6 +123,8 @@ export class Registry<Event extends string> {
                   DoActionPayload
               >
             | StateChangeFunction<State, DoActionPayload>,
+        triggersScreenshot = false,
+        transitionTime = 100,
         config?: {
             eventType: Event;
             label: Label | LabelGenerator<DoActionPayload>;
@@ -120,6 +136,8 @@ export class Registry<Event extends string> {
             throw new Error(
                 'Incorrect action function signature. Action function can only have two arguments at most!'
             );
+        if (transitionTime < 0)
+            throw new Error('Transition time cannot be negative');
 
         if (this.has(type)) throw new Error(`Already registered: ${type}`);
 
@@ -136,6 +154,8 @@ export class Registry<Event extends string> {
                         : label,
                 eventType,
             },
+            transitionTime,
+            triggersScreenshot,
         });
 
         return createAction<DoActionPayload>(type);

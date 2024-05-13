@@ -1,3 +1,5 @@
+import { ScreenshotStream } from './types';
+
 /**
  * Factory function to create an instance of ScreenshotStream.
  * Captures and stores a sequence of screenshots of the current tab.
@@ -10,7 +12,7 @@
  */
 export function intitializeScreenshotStream(
     newScreenshotCallbacks?: ((frame: ImageData) => void)[]
-) {
+): ScreenshotStream {
     /// Fields
     /**
      * Video element for capturing screenshots. Null if not started or stopped.
@@ -62,7 +64,7 @@ export function intitializeScreenshotStream(
                 // Need to cast because TS doesn't know about preferCurrentTab
                 .getDisplayMedia({
                     preferCurrentTab: true,
-                } as DisplayMediaStreamOptions)
+                } as MediaStreamConstraints)
                 .then((stream) => {
                     // TS is not confident that video is not null (but I am), so we need to check
                     video ? (video.srcObject = stream) : null;
@@ -132,17 +134,21 @@ export function intitializeScreenshotStream(
      * If one timeout is already active, a screenshot is taken immediately
      * and the old timeout is cleared and replaced with the new delay.
      * @param timeout The delay in milliseconds before capturing the screenshot.
+     *    If 0, the screenshot is captured immediately.
      */
     function delayCapture(timeout: number): void {
         if (currentTimeout) {
             clearTimeout(currentTimeout);
             currentTimeout = null;
             capture();
-        }
-        currentTimeout = setTimeout(() => {
+        } else if (timeout == 0) {
             capture();
-            currentTimeout = null;
-        }, timeout);
+        } else {
+            currentTimeout = setTimeout(() => {
+                capture();
+                currentTimeout = null;
+            }, timeout);
+        }
     }
 
     /**
@@ -159,8 +165,7 @@ export function intitializeScreenshotStream(
 
     /**
      * Returns the nth most recent screenshot in the array of stored screenshots.
-     * @param n - The index of the screenshot to retrieve.
-     * 1 is the most recent screenshot, 0 is the least recent.
+     * @param n - The index of the screenshot to retrieve. 0 is the most recent.
      * @returns The nth screenshot.
      */
     function getNth(n: number): ImageData {
@@ -186,6 +191,14 @@ export function intitializeScreenshotStream(
         return [...screenshots];
     }
 
+    /**
+     * Returns whether the screenshot stream is currently recording.
+     * @returns Whether the screenshot stream is currently recording.
+     */
+    function isRecording(): boolean {
+        return video !== null;
+    }
+
     return {
         start,
         capture,
@@ -194,6 +207,7 @@ export function intitializeScreenshotStream(
         getNth,
         count,
         getAll,
+        isRecording,
     };
 }
 

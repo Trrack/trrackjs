@@ -24,12 +24,13 @@ export type RecordActionArgs<State, Event extends string> = {
 
 export interface ScreenshotStream {
     start(): void;
-    capture(): void;
-    delayCapture(): void;
+    capture(): ImageData;
+    delayCapture(timeout: number): void;
     stop(): void;
     getNth(n: number): ImageData;
     count(): number;
     getAll(): ImageData[];
+    isRecording(): boolean;
 }
 
 export interface Trrack<State, Event extends string> {
@@ -88,4 +89,9 @@ export interface Trrack<State, Event extends string> {
     exportObject(): ProvenanceGraph<State, Event>;
     import(graphString: string): void;
     importObject(graph: ProvenanceGraph<State, Event>): void;
+    /**
+     * Interface for capturing screenshots. When activated,
+     * captures a screenshot after certain actions fire.
+     */
+    screenshots: ScreenshotStream;
 }
