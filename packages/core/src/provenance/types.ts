@@ -23,14 +23,51 @@ export type RecordActionArgs<State, Event extends string> = {
 };
 
 export interface ScreenshotStream {
+    /**
+     * Presents a dialog to the user to record the current tab, begins a video stream,
+     * and enables the capture of screenshots.
+     */
     start(): void;
+    /**
+     * Immediately captures a screenshot from the video stream.
+     * @returns The captured screenshot.
+     */
     capture(): ImageData;
+    /**
+     * Captures a screenshot after a delay.
+     * @param timeout - The amount of time to delay the capture in ms.
+     */
     delayCapture(timeout: number): void;
+    /**
+     * Stops the video stream and screenshot capture.
+     */
     stop(): void;
+    /**
+     * Returns the nth most recent screenshot in the array of stored screenshots.
+     * @param n - The index of the screenshot to retrieve. 0 is the most recent.
+     * @returns The nth screenshot.
+     */
     getNth(n: number): ImageData | null;
+    /**
+     * Returns the number of stored screenshots.
+     */
     count(): number;
+    /**
+     * Returns a copy of the array of stored screenshots.
+     */
     getAll(): ImageData[];
+    /**
+     * Returns whether the screenshot stream is currently recording.
+     */
     isRecording(): boolean;
+    /**
+     * Registers a listener to be called when a screenshot is captured.
+     * @param listener - The listener to register.
+     * @returns A function to unregister the listener.
+     */
+    registerScreenshotListener(
+        listener: (image: ImageData) => void
+    ): () => void;
 }
 
 export interface Trrack<State, Event extends string> {

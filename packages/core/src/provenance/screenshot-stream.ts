@@ -10,9 +10,7 @@ import { ScreenshotStream } from './types';
  * will result in a memory leak.
  * All functions are bound to the class, so they can be passed as callbacks.
  */
-export function intitializeScreenshotStream(
-    newScreenshotCallbacks?: ((frame: ImageData) => void)[]
-): ScreenshotStream {
+export function intitializeScreenshotStream(): ScreenshotStream {
     /// Fields
     /**
      * Video element for capturing screenshots. Null if not started or stopped.
@@ -33,8 +31,7 @@ export function intitializeScreenshotStream(
     /**
      * Optional callbacks to run after each screenshot is captured.
      */
-    const newScreenshotCallback: ((frame: ImageData) => void)[] | null =
-        newScreenshotCallbacks ?? null;
+    const newScreenshotCallbacks: ((frame: ImageData) => void)[] = [];
 
     /// Constructor
     if (!navigator.mediaDevices?.getDisplayMedia) {
@@ -57,6 +54,7 @@ export function intitializeScreenshotStream(
     /**
      * Starts the media stream needed to capture screenshots on-demand.
      * Will prompt the user for permission to capture the screen.
+     * Immediately captures a first screenshot.
      * @throws Error if unable to start the recording; usually due to the user denying permission.
      * @param callback Optional callback to run after the stream is started.
      */
@@ -107,7 +105,7 @@ export function intitializeScreenshotStream(
      */
     function push(frame: ImageData): void {
         screenshots.push(frame);
-        for (const callback of newScreenshotCallback ?? []) {
+        for (const callback of newScreenshotCallbacks ?? []) {
             callback(frame);
         }
     }
@@ -207,6 +205,23 @@ export function intitializeScreenshotStream(
         return video !== null;
     }
 
+    /**
+     * Registers a listener to be called when a new screenshot is captured.
+     * @param listener - The listener to be called when a new screenshot is captured.
+     * @returns A function to remove the listener.
+     */
+    function registerScreenshotListener(
+        listener: (image: ImageData) => void
+    ): () => void {
+        newScreenshotCallbacks.push(listener);
+        return () => {
+            const index = newScreenshotCallbacks.indexOf(listener);
+            if (index !== -1) {
+                newScreenshotCallbacks.splice(index, 1);
+            }
+        };
+    }
+
     return {
         start,
         capture,
@@ -216,6 +231,7 @@ export function intitializeScreenshotStream(
         count,
         getAll,
         isRecording,
+        registerScreenshotListener,
     };
 }
 
