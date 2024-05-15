@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 
+import { Footer } from './components/Footer';
 import styles from './pages/index.module.css';
 
 const theme = {
@@ -48,15 +49,7 @@ const theme = {
     ),
   },
   footer: {
-    text: (
-      <span>
-        BSD 3 {new Date().getFullYear()} ©{' '}
-        <a href="https://github.com/Trrack" target="_blank" rel="noreferrer">
-          The Trrack Team
-        </a>
-        .
-      </span>
-    ),
+    text: Footer,
   },
 };
 
