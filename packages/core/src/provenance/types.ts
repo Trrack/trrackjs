@@ -57,9 +57,9 @@ export interface ScreenshotStream {
      */
     getAll(): ImageData[];
     /**
-     * Returns whether the screenshot stream is currently recording.
+     * @returns whether capturing is allowed. Generally is false before start() is called and after stop() is called.
      */
-    isRecording(): boolean;
+    canCapture(): boolean;
     /**
      * Registers a listener to be called when a screenshot is captured.
      * @param listener - The listener to register.

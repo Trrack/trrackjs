@@ -111,6 +111,15 @@ export function intitializeScreenshotStream(): ScreenshotStream {
     }
 
     /**
+     * False if the MediaStream has not been initialized via start(), or has been stopped.
+     * True if we have a MediaStream and can capture screenshots.
+     * @returns Whether a screenshot can be captured.
+     */
+    function canCapture(): boolean {
+        return video !== null;
+    }
+
+    /**
      * Captures a screenshot and stores it in the screenshots array.
      * Also pushes the screenshot to the newScreenshotCallback if available.
      * @throws Error if recording has not been started.
@@ -118,7 +127,9 @@ export function intitializeScreenshotStream(): ScreenshotStream {
      * @returns The captured screenshot.
      */
     function capture(): ImageData {
-        if (!video) {
+        // We need the null check for ts, but canCapture() does that check already.
+        // We include canCapture() in case the implementation changes.
+        if (!canCapture() || !video) {
             throw new Error('Recording not started');
         }
 
@@ -198,14 +209,6 @@ export function intitializeScreenshotStream(): ScreenshotStream {
     }
 
     /**
-     * Returns whether the screenshot stream is currently recording.
-     * @returns Whether the screenshot stream is currently recording.
-     */
-    function isRecording(): boolean {
-        return video !== null;
-    }
-
-    /**
      * Registers a listener to be called when a new screenshot is captured.
      * @param listener - The listener to be called when a new screenshot is captured.
      * @returns A function to remove the listener.
@@ -230,7 +233,7 @@ export function intitializeScreenshotStream(): ScreenshotStream {
         getNth,
         count,
         getAll,
-        isRecording,
+        canCapture: canCapture,
         registerScreenshotListener,
     };
 }

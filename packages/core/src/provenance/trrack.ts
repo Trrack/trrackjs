@@ -307,7 +307,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
                 });
             }
 
-            if (screenshots.isRecording() && action.triggersScreenshot)
+            if (screenshots.canCapture() && action.triggersScreenshot)
                 screenshots.delayCapture(action.transitionTime);
         },
         async to(node: NodeId) {
@@ -327,7 +327,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
             for (let i = 0; i < path.length - 1; ++i) {
                 const currentNode = getNode(path[i]);
 
-                if (screenshots.isRecording()) {
+                if (screenshots.canCapture()) {
                     const action = registry.get(currentNode.event);
                     if (
                         action.triggersScreenshot &&
@@ -359,7 +359,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
 
             graph.update(graph.changeCurrent(node));
 
-            if (screenshots.isRecording() && maxTimer >= 0) {
+            if (screenshots.canCapture() && maxTimer >= 0) {
                 screenshots.delayCapture(maxTimer);
             }
 
@@ -396,7 +396,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
             });
         },
         done() {
-            if (screenshots.isRecording()) screenshots.stop();
+            if (screenshots.canCapture()) screenshots.stop();
             console.log('Setup later for URL sharing.');
         },
         tree() {
