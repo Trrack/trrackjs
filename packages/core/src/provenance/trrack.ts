@@ -24,6 +24,7 @@ import {
 } from '../registry';
 import { ConfigureTrrackOptions } from './trrack-config-opts';
 import { TrrackEvents } from './trrack-events';
+import { intitializeScreenshotStream } from './screenshot-stream';
 
 function getState<State, Event extends string>(
     node: ProvenanceNode<State, Event>,
@@ -78,6 +79,12 @@ export function initializeTrrack<State = any, Event extends string = string>({
     const eventManager = initEventManager();
     const graph = initializeProvenanceGraph<State, Event>(initialState);
 
+    /**
+     * Retrieves a node from the graph based on its ID.
+     *
+     * @param id - The ID of the node.
+     * @returns The node with the specified ID.
+     */
     function getNode(id: NodeId) {
         return graph.backend.nodes[id];
     }
@@ -89,6 +96,8 @@ export function initializeTrrack<State = any, Event extends string = string>({
     eventManager.listen(TrrackEvents.TRAVERSAL_END, () => {
         isTraversing = false;
     });
+
+    const screenshots = intitializeScreenshotStream();
 
     const metadata = {
         add(
@@ -297,6 +306,9 @@ export function initializeTrrack<State = any, Event extends string = string>({
                     eventType: action.config.eventType as Event,
                 });
             }
+
+            if (screenshots.canCapture() && action.triggersScreenshot)
+                screenshots.delayCapture(action.transitionTime);
         },
         async to(node: NodeId) {
             eventManager.fire(TrrackEvents.TRAVERSAL_START);
@@ -308,9 +320,22 @@ export function initializeTrrack<State = any, Event extends string = string>({
             );
 
             const sideEffectsToApply: Array<PayloadAction<any, any>> = [];
+            // Only take a screenshot if we find a node in the path that triggers one. Use
+            // the max transition timer encountered when screenshotting
+            let maxTimer = -1;
 
             for (let i = 0; i < path.length - 1; ++i) {
                 const currentNode = getNode(path[i]);
+
+                if (screenshots.canCapture()) {
+                    const action = registry.get(currentNode.event);
+                    if (
+                        action.triggersScreenshot &&
+                        action.transitionTime > maxTimer
+                    )
+                        maxTimer = action.transitionTime;
+                }
+
                 const nextNode = getNode(path[i + 1]);
 
                 const isUndo = isNextNodeUp(currentNode, nextNode);
@@ -333,6 +358,10 @@ export function initializeTrrack<State = any, Event extends string = string>({
             }
 
             graph.update(graph.changeCurrent(node));
+
+            if (screenshots.canCapture() && maxTimer >= 0) {
+                screenshots.delayCapture(maxTimer);
+            }
 
             eventManager.fire(TrrackEvents.TRAVERSAL_END);
         },
@@ -367,6 +396,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
             });
         },
         done() {
+            if (screenshots.canCapture()) screenshots.stop();
             console.log('Setup later for URL sharing.');
         },
         tree() {
@@ -401,6 +431,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
         artifact,
         annotations,
         bookmarks,
+        screenshots,
     };
 }
 

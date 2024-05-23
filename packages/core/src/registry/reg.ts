@@ -13,31 +13,100 @@ import {
 
 enablePatches();
 
-
+/**
+ * @typedef {Object} TrrackActionRegisteredObject - Represents a registered trrack action.
+ * @property {TrrackActionFunction<DoActionType, UndoActionType, UndoActionPayload, DoActionPayload>
+ *  | ProduceWrappedStateChangeFunction<State>} func
+ *  - The action function or state change function associated with the action.
+ * @property {TrrackActionConfig<DoActionPayload, Event>} config - The configuration for the action.
+ * @property {number} transitionTime - The transition time for the action.
+ */
 type TrrackActionRegisteredObject = {
-    func: TrrackActionFunction<any, any, any, any> | ProduceWrappedStateChangeFunction<any>;
+    func:
+        | TrrackActionFunction<any, any, any, any>
+        | ProduceWrappedStateChangeFunction<any>;
     config: TrrackActionConfig<any, any>;
+    triggersScreenshot: boolean;
+    transitionTime: number;
 };
 
-function prepareAction(action: TrrackActionFunction<any, any, any, any> | StateChangeFunction<any, any>) {
-    return action.length === 2 ? produce(action) as unknown as ProduceWrappedStateChangeFunction<any> : action as TrrackActionFunction<any, any, any, any>;
+/**
+ * Prepares an action function for registration by wrapping it with the `produce` function if it has two arguments.
+ * @param action - The action function to prepare.
+ * @returns The prepared action function.
+ */
+function prepareAction(
+    action:
+        | TrrackActionFunction<any, any, any, any>
+        | StateChangeFunction<any, any>
+) {
+    return action.length === 2
+        ? (produce(action) as unknown as ProduceWrappedStateChangeFunction<any>)
+        : (action as TrrackActionFunction<any, any, any, any>);
 }
 
+/**
+ * Represents a registry for managing trrack actions.
+ */
 export class Registry<Event extends string> {
+    /**
+     * Creates a new instance of the `Registry` class.
+     * @returns A new instance of the `Registry` class.
+     */
     static create<Event extends string>(): Registry<Event> {
         return new Registry<Event>();
     }
 
+    /**
+     * The registry for storing TrrackActionRegisteredObject objects.
+     */
     private registry: Map<string, TrrackActionRegisteredObject>;
 
+    /**
+     * Creates a new instance of the `Registry` class.
+     */
     private constructor() {
         this.registry = new Map();
     }
 
+    /**
+     * Checks if an action with the specified name is registered in the registry.
+     * @param name - The name of the action to check.
+     * @returns `true` if the action is registered, `false` otherwise.
+     */
     has(name: string) {
         return this.registry.has(name);
     }
 
+    /**
+     * Registers a new action in the registry.
+     *
+     * @template DoActionType - The type of the action to be registered.
+     * @template UndoActionType - The type of the undo action associated with the registered action.
+     * @template DoActionPayload - The payload type for the action.
+     * @template UndoActionPayload - The payload type for the undo action.
+     * @template State - The state type.
+     *
+     * @param {DoActionType} type - The type of the action.
+     * @param {TrrackActionFunction<DoActionType, UndoActionType, UndoActionPayload, DoActionPayload>
+     *    | StateChangeFunction<State, DoActionPayload>} actionFunction
+     *    - The action function or state change function associated with the action.
+     * @param {number} [transitionTime=100] - The amount of time taken for the effect of the action to be reflected in the
+     *     browser display. When screenshotting is enabled, the screenshot will be taken after this delay.
+     *     If set to 0, a screenshot is taken immediately; this usually does not give the browser enough time to update
+     *     the display, so the screenshot may not reflect the changes.
+     * @param {boolean} [triggersScreenshot=false] - Indicates whether the action triggers a screenshot if screenshots
+     *     have been enabled for the current Trrack instance.
+     * @param {Object} [config] - Optional configuration for the action.
+     * @param {Event} [config.eventType] - The event type associated with the action.
+     * @param {Label | LabelGenerator<DoActionPayload>} [config.label] - The label or label generator for the action.
+     *
+     * @throws {Error} If the action function has more than two arguments.
+     * @throws {Error} If the action is already registered.
+     * @throws {Error} If the transition time is negative.
+     *
+     * @returns {Action<DoActionPayload>} The created action.
+     */
     register<
         DoActionType extends string,
         UndoActionType extends string,
@@ -46,25 +115,34 @@ export class Registry<Event extends string> {
         State = any
     >(
         type: DoActionType,
-        actionFunction: TrrackActionFunction<
-            DoActionType,
-            UndoActionType,
-            UndoActionPayload,
-            DoActionPayload
-        > | StateChangeFunction<State, DoActionPayload>,
+        actionFunction:
+            | TrrackActionFunction<
+                  DoActionType,
+                  UndoActionType,
+                  UndoActionPayload,
+                  DoActionPayload
+              >
+            | StateChangeFunction<State, DoActionPayload>,
+        triggersScreenshot = false,
+        transitionTime = 100,
         config?: {
             eventType: Event;
-            label: Label | LabelGenerator<DoActionPayload>
+            label: Label | LabelGenerator<DoActionPayload>;
         }
     ) {
         const isState = actionFunction.length === 2;
 
         if (actionFunction.length > 2)
-            throw new Error('Incorrect action function signature. Action function can only have two arguments at most!');
+            throw new Error(
+                'Incorrect action function signature. Action function can only have two arguments at most!'
+            );
+        if (transitionTime < 0)
+            throw new Error('Transition time cannot be negative');
 
         if (this.has(type)) throw new Error(`Already registered: ${type}`);
 
-        const { label = type, eventType = type as unknown as Event } = config || {};
+        const { label = type, eventType = type as unknown as Event } =
+            config || {};
 
         this.registry.set(type, {
             func: prepareAction(actionFunction),
@@ -76,11 +154,19 @@ export class Registry<Event extends string> {
                         : label,
                 eventType,
             },
+            transitionTime,
+            triggersScreenshot,
         });
 
         return createAction<DoActionPayload>(type);
     }
 
+    /**
+     * Gets the registered action with the specified type.
+     * @param type - The type of the action to get.
+     * @returns The registered action.
+     * @throws An error if the action is not registered.
+     */
     get(type: string) {
         const action = this.registry.get(type);
 
