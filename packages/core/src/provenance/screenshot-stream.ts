@@ -52,13 +52,27 @@ export function intitializeScreenshotStream(): ScreenshotStream {
     }
 
     /**
+     * False if the MediaStream has not been initialized via start(), or has been stopped.
+     * True if we have a MediaStream and can capture screenshots.
+     * @returns Whether a screenshot can be captured.
+     */
+    function canCapture(): boolean {
+        return video !== null;
+    }
+
+    /**
      * Starts the media stream needed to capture screenshots on-demand.
      * Will prompt the user for permission to capture the screen.
      * Immediately captures a first screenshot.
+     * Does nothing if the stream is already started.
      * @throws Error if unable to start the recording; usually due to the user denying permission.
      * @param callback Optional callback to run after the stream is started.
      */
     async function start(callback?: () => void): Promise<void> {
+        if (canCapture()) {
+            return;
+        }
+
         video = document.createElement('video');
         video.autoplay = true;
         video.muted = true;
@@ -108,15 +122,6 @@ export function intitializeScreenshotStream(): ScreenshotStream {
         for (const callback of newScreenshotCallbacks ?? []) {
             callback(frame);
         }
-    }
-
-    /**
-     * False if the MediaStream has not been initialized via start(), or has been stopped.
-     * True if we have a MediaStream and can capture screenshots.
-     * @returns Whether a screenshot can be captured.
-     */
-    function canCapture(): boolean {
-        return video !== null;
     }
 
     /**
