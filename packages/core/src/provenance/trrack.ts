@@ -56,11 +56,12 @@ function getState<State, Event extends string>(
 
 function determineSaveStrategy<T>(
     trrackGraph: Nodes<T, any>,
-    node: ProvenanceNode<T, any>
+    node: ProvenanceNode<T, any>,
+    updatesBeforeCheckpoint: number
 ): 'checkpoint' | 'patch' {
     let saveAsCheckpoint = true;
     let currentNode = node;
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < updatesBeforeCheckpoint; i++) {
         if (
             currentNode.state.type === 'checkpoint' ||
             isRootNode(currentNode)
@@ -77,6 +78,7 @@ function determineSaveStrategy<T>(
 export function initializeTrrack<State = any, Event extends string = string>({
     registry,
     initialState,
+    options,
 }: ConfigureTrrackOptions<State, Event>): Trrack<State, Event> {
     let isTraversing = false;
     const eventManager = initEventManager();
@@ -208,6 +210,8 @@ export function initializeTrrack<State = any, Event extends string = string>({
             state,
             sideEffects,
             eventType: event,
+            isEphemeral,
+            makeCheckpoint,
             onlySideEffects = false,
         }: RecordActionArgs<State, Event>) {
             let newStateNode: StateNode<State, Event> | null = null;
@@ -222,10 +226,13 @@ export function initializeTrrack<State = any, Event extends string = string>({
             if (!onlySideEffects) {
                 const patches = compare(originalState as any, state as any);
 
-                const saveStrategy = determineSaveStrategy(
-                    this.graph.backend.nodes,
-                    this.current
-                );
+                const saveStrategy = makeCheckpoint
+                    ? 'checkpoint'
+                    : determineSaveStrategy(
+                          this.graph.backend.nodes,
+                          this.current,
+                          options?.updatesBeforeCheckpoint || 25
+                      );
 
                 if (saveStrategy === 'checkpoint') {
                     stateToSave = {
@@ -264,6 +271,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
                 state: stateToSave,
                 parent: this.current,
                 sideEffects,
+                isEphemeral,
                 event,
             });
 
@@ -273,8 +281,15 @@ export function initializeTrrack<State = any, Event extends string = string>({
         },
         async apply<T extends string, Payload = any>(
             label: string,
-            act: PayloadAction<Payload, T>
+            act: PayloadAction<Payload, T>,
+            options: {
+                isEphemeral?: boolean;
+                makeCheckpoint?: boolean;
+            }
         ) {
+            const isEphemeral = options?.isEphemeral || false;
+            const makeCheckpoint = options?.isEphemeral || false;
+
             const action = registry.get(act.type);
             const originalState = getState(
                 this.current,
@@ -289,6 +304,8 @@ export function initializeTrrack<State = any, Event extends string = string>({
                 this.record({
                     label,
                     state: originalState,
+                    isEphemeral,
+                    makeCheckpoint,
                     sideEffects: { do: [doAct], undo: [undo] },
                     eventType: action.config.eventType as Event,
                 });
@@ -300,6 +317,8 @@ export function initializeTrrack<State = any, Event extends string = string>({
                 this.record({
                     label,
                     state: newState,
+                    isEphemeral,
+                    makeCheckpoint,
                     sideEffects: { do: [], undo: [] },
                     eventType: action.config.eventType as Event,
                 });
@@ -345,8 +364,15 @@ export function initializeTrrack<State = any, Event extends string = string>({
         },
         undo() {
             const { current } = graph;
+
             if (isStateNode(current)) {
-                return this.to(current.parent);
+                let parent = graph.backend.nodes[current.parent];
+
+                while (isStateNode(parent) && parent.isEphemeral) {
+                    parent = graph.backend.nodes[parent.parent];
+                }
+
+                return this.to(parent.id);
             } else {
                 return Promise.resolve(console.warn('Already at root!'));
             }
@@ -354,10 +380,34 @@ export function initializeTrrack<State = any, Event extends string = string>({
         redo(to: 'latest' | 'oldest' = 'latest') {
             const { current } = graph;
             if (current.children.length > 0) {
-                return this.to(
-                    current.children[
-                        to === 'oldest' ? 0 : current.children.length - 1
-                    ]
+                let child =
+                    graph.backend.nodes[
+                        current.children[
+                            to === 'oldest' ? 0 : current.children.length - 1
+                        ]
+                    ];
+
+                while (
+                    isStateNode(child) &&
+                    child.isEphemeral &&
+                    child.children.length > 0
+                ) {
+                    child =
+                        graph.backend.nodes[
+                            child.children[
+                                to === 'oldest'
+                                    ? 0
+                                    : current.children.length - 1
+                            ]
+                        ];
+                }
+
+                if (child.children.length > 0) {
+                    return this.to(child.id);
+                }
+
+                return Promise.resolve(
+                    console.warn('Already at latest in this branch!')
                 );
             } else {
                 return Promise.resolve(
