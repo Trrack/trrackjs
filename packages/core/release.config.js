@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 
-import { name } from './package.json';
-import { name as libraryFolderName } from './project.json';
+import { name } from './package.json' assert { type: 'json' };
+import { name as libraryFolderName } from './project.json' assert { type: 'json' };
 
 const srcRoot = `packages/${libraryFolderName}`;
 
