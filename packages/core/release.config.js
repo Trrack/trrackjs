@@ -1,6 +1,8 @@
 /* eslint-disable no-template-curly-in-string */
-const name = import('./package.json').name;
-const libraryFolderName = import('./project.json').name;
+
+import { name } from './package.json';
+import { name as libraryFolderName } from './project.json';
+
 const srcRoot = `packages/${libraryFolderName}`;
 
 module.exports = {
