@@ -8,6 +8,7 @@ import {
     createStateNode,
     CurrentChangeHandler,
     initializeProvenanceGraph,
+    isRootNode,
     isStateNode,
     Metadata,
     NodeId,
@@ -54,20 +55,23 @@ function getState<State, Event extends string>(
 }
 
 function determineSaveStrategy<T>(
-    state: T,
-    patches: Array<Operation>
+    trrackGraph: Nodes<T, any>,
+    node: ProvenanceNode<T, any>
 ): 'checkpoint' | 'patch' {
-    const objectKeysLength = Object.keys(state as any).length;
+    let saveAsCheckpoint = true;
+    let currentNode = node;
+    for (let i = 0; i < 25; i++) {
+        if (
+            currentNode.state.type === 'checkpoint' ||
+            isRootNode(currentNode)
+        ) {
+            saveAsCheckpoint = false;
+            break;
+        }
+        currentNode = trrackGraph[currentNode.parent];
+    }
 
-    const uniquePatchesLength = new Set(
-        patches.map((patch) => {
-            return patch.path.split('/')[0];
-        })
-    ).size;
-
-    if (uniquePatchesLength < objectKeysLength / 2) return 'patch';
-
-    return 'checkpoint';
+    return saveAsCheckpoint ? 'checkpoint' : 'patch';
 }
 
 export function initializeTrrack<State = any, Event extends string = string>({
@@ -218,7 +222,10 @@ export function initializeTrrack<State = any, Event extends string = string>({
             if (!onlySideEffects) {
                 const patches = compare(originalState as any, state as any);
 
-                const saveStrategy = determineSaveStrategy(state, patches);
+                const saveStrategy = determineSaveStrategy(
+                    this.graph.backend.nodes,
+                    this.current
+                );
 
                 if (saveStrategy === 'checkpoint') {
                     stateToSave = {

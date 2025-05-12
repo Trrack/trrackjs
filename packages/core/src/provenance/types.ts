@@ -1,9 +1,9 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { NodeId } from '@trrack/core';
 import {
     Artifact,
     CurrentChangeHandler,
     Metadata,
+    NodeId,
     ProvenanceGraphStore,
     ProvenanceNode,
     RootNode,
