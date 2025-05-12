@@ -26,6 +26,8 @@ import {
 import { ConfigureTrrackOptions } from './trrack-config-opts';
 import { TrrackEvents } from './trrack-events';
 
+const DEFAULT_UPDATES_BEFORE_CHECKPOINT = 25;
+
 function getState<State, Event extends string>(
     node: ProvenanceNode<State, Event>,
     nodes: Nodes<State, Event>
@@ -231,7 +233,8 @@ export function initializeTrrack<State = any, Event extends string = string>({
                     : determineSaveStrategy(
                           this.graph.backend.nodes,
                           this.current,
-                          options?.updatesBeforeCheckpoint || 25
+                          options?.updatesBeforeCheckpoint ||
+                              DEFAULT_UPDATES_BEFORE_CHECKPOINT
                       );
 
                 if (saveStrategy === 'checkpoint') {
@@ -282,7 +285,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
         async apply<T extends string, Payload = any>(
             label: string,
             act: PayloadAction<Payload, T>,
-            options: {
+            options?: {
                 isEphemeral?: boolean;
                 makeCheckpoint?: boolean;
             }

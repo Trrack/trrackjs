@@ -79,7 +79,7 @@ export type StateNode<State, Event extends string> = BaseNode<State> & {
     event: Event;
     parent: NodeId;
     sideEffects: SideEffects;
-    isEphemeral: boolean;
+    isEphemeral?: boolean;
 };
 
 export type ProvenanceNode<State, Event extends string> =
@@ -167,7 +167,7 @@ export function createStateNode<State, Event extends string>({
         undo: [],
     },
     initialMetadata,
-    isEphemeral,
+    isEphemeral = false,
     initialArtifact,
     event,
 }: {
@@ -177,7 +177,7 @@ export function createStateNode<State, Event extends string>({
     initialArtifact?: unknown;
     label: string;
     sideEffects?: SideEffects;
-    isEphemeral: boolean;
+    isEphemeral?: boolean;
     event: Event;
 }): StateNode<State, Event> {
     const commonMetadata: NodeMetadata = {
