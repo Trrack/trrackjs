@@ -1,9 +1,9 @@
 import { PayloadAction } from '@reduxjs/toolkit';
-import { NodeId } from '@trrack/core';
 import {
     Artifact,
     CurrentChangeHandler,
     Metadata,
+    NodeId,
     ProvenanceGraphStore,
     ProvenanceNode,
     RootNode,
@@ -19,6 +19,8 @@ export type RecordActionArgs<State, Event extends string> = {
     state: State;
     eventType: Event;
     sideEffects: SideEffects;
+    isEphemeral: boolean;
+    makeCheckpoint: boolean;
     onlySideEffects?: boolean;
 };
 
@@ -32,7 +34,11 @@ export interface Trrack<State, Event extends string> {
     record(args: RecordActionArgs<State, Event>): void;
     apply<T extends string, Payload = any>(
         label: string,
-        act: PayloadAction<Payload, T>
+        act: PayloadAction<Payload, T>,
+        options?: {
+            makeCheckpoint?: boolean;
+            isEphemeral?: boolean;
+        }
     ): any;
     to(node: NodeId): Promise<void>;
     metadata: {
