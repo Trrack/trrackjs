@@ -58,6 +58,11 @@
     "@nrwl/web": "15.9.7",
     "@nrwl/workspace": "15.9.7",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.3",
     "@svgr/webpack": "^6.1.2",
     "@swc/cli": "~0.1.55",
     "@swc/core": "~1.2.143",
@@ -123,4 +128,3 @@
     }
   }
 }
-
