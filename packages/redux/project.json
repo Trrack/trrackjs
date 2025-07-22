@@ -25,7 +25,7 @@
             "executor": "nx:run-commands",
             "outputs": [],
             "options": {
-                "command": "npx semantic-release-plus --extends ./packages/redux/release.config.js",
+                "command": "npx semantic-release --extends /packages/redux/release.config.js",
                 "parallel": false
             }
         },

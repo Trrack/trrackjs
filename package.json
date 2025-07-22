@@ -129,13 +129,5 @@
     "commitizen": {
       "path": "git-cz"
     }
-  },
-  "overrides": {
-    "semantic-release": "19.0.5",
-    "@semantic-release/commit-analyzer": "^8.0.1",
-    "@semantic-release/release-notes-generator": "^10.0.3",
-    "@semantic-release/error": "^3.0.0",
-    "@semantic-release/github": "^8.0.0",
-    "@semantic-release/npm": "^9.0.0"
   }
 }

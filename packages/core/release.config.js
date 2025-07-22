@@ -6,7 +6,7 @@ const libraryFolderName = await import("./project.json", { with: { type: "json" 
 const srcRoot = `packages/${libraryFolderName}`;
 
 module.exports = {
-    extends: 'release.config.base.js',
+    extends: '../../release.config.base.js',
     branches: [
         'main',
         'next',
