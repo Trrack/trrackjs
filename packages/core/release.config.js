@@ -1,9 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 
-const name = await import("./package.json", { with: { type: "json" } }).name;
-const libraryFolderName = await import("./project.json", { with: { type: "json" } }).name;
-
-const srcRoot = `packages/${libraryFolderName}`;
+const srcRoot = `packages/core`;
 
 module.exports = {
     extends: '../../release.config.base.js',
@@ -15,7 +12,7 @@ module.exports = {
         '+([0-9])?(.{+([0-9]),x}).x',
     ],
     pkgRoot: `dist/${srcRoot}`,
-    tagFormat: name + '@${version}',
+    tagFormat: `@trrack/core` + '@${version}',
     commitPaths: [`${srcRoot}/*`],
     plugins: [
         '@semantic-release/commit-analyzer',
@@ -32,7 +29,7 @@ module.exports = {
             {
                 assets: [`${srcRoot}/package.json`, `${srcRoot}/CHANGELOG.md`],
                 message:
-                    `release(version): Release ${name} ` +
+                    `release(version): Release @trrack/core ` +
                     '${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
             },
         ],

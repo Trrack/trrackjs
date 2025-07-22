@@ -13,7 +13,6 @@
     "build-affected-libs": "nx affected:build --exclude $(nx print-affected --type=app --select=projects)",
     "release": "nx affected --target=release --exclude $(nx print-affected --type=app --select=projects) --parallel=1"
   },
-  "type": "module",
   "private": true,
   "dependencies": {
     "@mantine/core": "^4.2.12",
