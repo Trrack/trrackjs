@@ -3,6 +3,7 @@
     "version": "0.0.0-semantic-release",
     "main": "./index.js",
     "types": "./index.d.ts",
+    "type": "module",
     "repository": {
         "type": "git",
         "url": "https://github.com/Trrack/trrackjs.git"

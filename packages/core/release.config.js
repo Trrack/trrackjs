@@ -1,10 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 
-import packageJson from './package.json' with { type: 'json' };
-import projectJson from './project.json' with { type: 'json' };
-
-const name = packageJson.name;
-const libraryFolderName = projectJson.name;
+const name = await import("./package.json", { with: { type: "json" } }).name;
+const libraryFolderName = await import("./project.json", { with: { type: "json" } }).name;
 
 const srcRoot = `packages/${libraryFolderName}`;
 

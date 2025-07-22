@@ -13,6 +13,7 @@
     "build-affected-libs": "nx affected:build --exclude $(nx print-affected --type=app --select=projects)",
     "release": "nx affected --target=release --exclude $(nx print-affected --type=app --select=projects) --parallel=1"
   },
+  "type": "module",
   "private": true,
   "dependencies": {
     "@mantine/core": "^4.2.12",
@@ -59,10 +60,11 @@
     "@nrwl/workspace": "15.9.7",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/commit-analyzer": "^13.0.1",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/npm": "^12.0.1",
-    "@semantic-release/release-notes-generator": "^14.0.3",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/error": "^3.0.0",
+    "@semantic-release/github": "^8.0.0",
+    "@semantic-release/npm": "^9.0.0",
+    "@semantic-release/release-notes-generator": "^10.0.3",
     "@svgr/webpack": "^6.1.2",
     "@swc/cli": "~0.1.55",
     "@swc/core": "~1.2.143",
@@ -93,14 +95,15 @@
     "lineupjs": "^4.6.1",
     "lint-staged": "^13.1.0",
     "ngx-deploy-npm": "^4.1.3",
+    "node-fetch": "2.6.1",
     "nx": "15.9.7",
     "prettier": "2.7.1",
     "react-hyper-tree": "^0.3.12",
     "react-redux": "8.0.5",
     "react-refresh": "^0.10.0",
     "react-test-renderer": "18.2.0",
+    "semantic-release": "^24.2.3",
     "semantic-release-npm-github-publish": "^1.5.4",
-    "semantic-release-plus": "^20.0.0",
     "sharp": "^0.31.2",
     "style-loader": "^3.3.0",
     "stylus": "^0.55.0",
@@ -126,5 +129,13 @@
     "commitizen": {
       "path": "git-cz"
     }
+  },
+  "overrides": {
+    "semantic-release": "19.0.5",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/release-notes-generator": "^10.0.3",
+    "@semantic-release/error": "^3.0.0",
+    "@semantic-release/github": "^8.0.0",
+    "@semantic-release/npm": "^9.0.0"
   }
 }
