@@ -28,16 +28,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.TRRACK_GITHUB_TOKEN }}
 
-      - name: Track main
-        run: git branch --track main origin/main || echo "Already done"
-
-      - name: 'Derive appropriate SHAs for base and head for `nx affected` commands'
-        uses: nrwl/nx-set-shas@v3
-
-      - run: |
-          echo "BASE: ${{ env.NX_BASE }}"
-          echo "HEAD: ${{ env.NX_HEAD }}"
-
       - name: Setup LTS Node
         uses: actions/setup-node@v3
         with:
@@ -66,18 +56,15 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
-      - name: Build
-        run: |
-          RUN=CI yarn run build-affected-libs
+      - name: Build packages
+        run: yarn build:packages
 
       - name: Test
-        run: |
-          RUN=CI yarn run test-affected-libs
+        run: yarn test:all
 
       - name: Release
         if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
         env:
           GITHUB_TOKEN: ${{ secrets.TRRACK_GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          RUN=CI yarn run release
+        run: yarn release

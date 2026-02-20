@@ -1,13 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    }
-  ]
+  "compilerOptions": {
+    "types": ["vite/client", "vitest/globals"]
+  },
+  "include": ["src/**/*.ts", "vite.config.ts"]
 }

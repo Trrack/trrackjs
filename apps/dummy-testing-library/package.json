@@ -1,0 +1,13 @@
+{
+    "name": "dummy-testing-library",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "lint": "eslint src --ext .ts,.tsx"
+    }
+}

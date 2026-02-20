@@ -1,0 +1,14 @@
+{
+    "entryPoints": ["src/index.ts"],
+    "tsconfig": "tsconfig.typedoc.json",
+    "plugin": ["typedoc-plugin-markdown"],
+    "out": "../../apps/docs/pages/api-reference",
+    "readme": "none",
+    "excludePrivate": true,
+    "excludeInternal": true,
+    "entryDocument": "index.md",
+    "hideBreadcrumbs": false,
+    "hidePageTitle": false,
+    "hideInPageTOC": false,
+    "allReflectionsHaveOwnDocument": true
+}

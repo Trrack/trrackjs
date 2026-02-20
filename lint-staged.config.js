@@ -1,7 +1,13 @@
 module.exports = {
-  'packages/**/*.{js,jsx,ts,tsx,json,html,css,scss}': [
-    'nx affected:lint --uncommitted --fix=true',
-    // 'nx affected:test --uncommitted',
-    'nx format:write --uncommitted',
+  'packages/**/*.{js,jsx,ts,tsx}': [
+    'eslint --fix',
+    'prettier --write',
+  ],
+  'apps/**/*.{js,jsx,ts,tsx}': [
+    'eslint --fix',
+    'prettier --write',
+  ],
+  '**/*.{json,html,css,scss,md}': [
+    'prettier --write',
   ],
 };

@@ -16,8 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@trrack/core": ["./packages/core/src/index.ts"],
-      "react": ["node_modules/@types/react"]
+      "@trrack/core": ["./packages/core/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

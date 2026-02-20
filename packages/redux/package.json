@@ -3,6 +3,13 @@
     "version": "0.0.0-semantic-release",
     "main": "./index.js",
     "types": "./index.d.ts",
+    "scripts": {
+        "build": "vite build",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "lint": "eslint src --ext .ts",
+        "release": "npx semantic-release-plus --extends ./release.config.js"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/Trrack/trrackjs.git"
