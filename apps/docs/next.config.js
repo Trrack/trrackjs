@@ -22,7 +22,7 @@ const withNextra = require('nextra')({
 });
 
 module.exports = withNextra({
-  basePath: '/trrack',
+  basePath: '/trrackjs',
   images: {
     unoptimized: true, // required for `next export`
   },
