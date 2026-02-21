@@ -2,7 +2,45 @@ import { Tabs, Tab } from 'nextra-theme-docs';
 
 # Getting Started
 
-## Default installation
+## What is Trrack?
+
+Trrack is a state-based provenance tracking library for web applications. **Provenance** means a full record of how something came to be — in Trrack's case, a complete record of every state change your application has gone through.
+
+Instead of a flat undo stack, Trrack builds a **provenance graph**: a tree where each node represents a snapshot of your application's state at a particular moment. This lets users navigate history non-linearly — undoing down one branch and redoing down another — and makes it possible to jump to any past state by its ID.
+
+## How it works
+
+The core idea is:
+
+1. You describe your application state as a plain JavaScript object.
+2. You register named actions that describe how that state can change.
+3. Every time an action is applied, Trrack records the resulting state as a new node in the graph, linked to its parent.
+
+```
+initial state (root)
+      │
+      ▼
+  "Zoom in"        ← node 1
+      │
+      ▼
+  "Filter by year" ← node 2
+      │
+      ├──────────────────────┐
+      ▼                      ▼
+  "Sort ascending"    "Sort descending"  ← two branches from the same point
+```
+
+Trrack stores state efficiently: it saves a full **checkpoint** when many keys change, or just a **diff (patch)** when only a few do. You never manage this yourself.
+
+## What you can do with it
+
+- **Undo / redo** — step backwards and forwards through the graph
+- **Jump to any node** — save a node ID and return to that exact state at any time
+- **Non-linear history** — branches are preserved; undoing and taking a new action creates a new branch rather than destroying the old one
+- **Metadata and annotations** — attach arbitrary data to any node in the graph
+- **Serialise and restore** — export the entire graph to JSON and reload it later
+
+## Installation
 
 Run one of the following commands to add Trrack to your project:
 
