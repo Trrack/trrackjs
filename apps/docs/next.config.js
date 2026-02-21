@@ -23,6 +23,9 @@ const withNextra = require('nextra')({
 
 module.exports = withNextra({
   basePath: '/trrack',
+  images: {
+    unoptimized: true, // required for `next export`
+  },
 });
 
 // If you have other Next.js configurations, you can pass them as the parameter:
