@@ -40,7 +40,7 @@ const increment = registry.register(
   (state: State, by: number) => {
     state.count += by;       // mutate directly — Immer handles immutability
   },
-  { eventType: 'increment' } // matches the registry type parameter
+  { eventType: 'increment', label: 'Increment' }
 );
 
 const decrement = registry.register(
@@ -48,7 +48,7 @@ const decrement = registry.register(
   (state: State, by: number) => {
     state.count -= by;
   },
-  { eventType: 'decrement' }
+  { eventType: 'decrement', label: 'Decrement' }
 );
 ```
 
@@ -122,6 +122,75 @@ You can register multiple listeners; they are all called in registration order.
   perfect cleanup callback.
 </Callout>
 
+## 9. Inspect the full graph
+
+`trrack.graph.backend` exposes the raw provenance graph — useful for serialisation, debugging, or building a custom visualisation:
+
+```typescript
+const graph = trrack.graph.backend;
+
+// graph.nodes  — every node keyed by its NodeId
+// graph.root   — NodeId of the root node
+// graph.current — NodeId of the currently active node
+
+console.log(graph.nodes);   // { [nodeId]: ProvenanceNode, ... }
+console.log(graph.root);    // e.g. "a1b2c3..."
+console.log(graph.current); // e.g. "d4e5f6..."
+```
+
+Each node in `graph.nodes` has the shape:
+
+```typescript
+{
+  id: NodeId;        // unique string identifier
+  label: string;     // human-readable label passed to trrack.apply
+  event: string;     // event type (matches the registry event type)
+  children: NodeId[];// IDs of child nodes
+  createdOn: number; // Unix timestamp
+  // ...plus state, meta, artifacts
+}
+```
+
+The entire graph can be serialised to JSON and restored via `trrack.import` / `trrack.export`.
+
+## 10. Working with node IDs
+
+Every node has a stable `NodeId` (a plain string) that you can save and use later to jump directly to that point in history.
+
+The two most useful IDs are available directly on the trrack instance:
+
+```typescript
+const rootId    = trrack.root.id;    // the very first node
+const currentId = trrack.current.id; // wherever you are right now
+```
+
+Save a snapshot ID at any point, then jump back to it later:
+
+```typescript
+trrack.apply('Increment by 1', increment(1));
+trrack.apply('Increment by 5', increment(5));
+
+const checkpoint = trrack.current.id; // save this node
+
+trrack.apply('Decrement by 2', decrement(2));
+trrack.apply('Decrement by 2', decrement(2));
+
+trrack.to(checkpoint); // jump back to count: 6
+trrack.to(trrack.root.id); // jump all the way back to the initial state
+```
+
+You can also iterate all nodes and find IDs by label or event type:
+
+```typescript
+const { nodes } = trrack.graph.backend;
+
+const targetId = Object.values(nodes).find(
+  (node) => node.label === 'Increment by 5'
+)?.id;
+
+if (targetId) trrack.to(targetId);
+```
+
 ## Putting it all together
 
 ```typescript
@@ -135,13 +204,13 @@ const registry = Registry.create<'increment' | 'decrement'>();
 const increment = registry.register(
   'increment',
   (state: State, by: number) => { state.count += by; },
-  { eventType: 'increment' }
+  { eventType: 'increment', label: 'Increment' }
 );
 
 const decrement = registry.register(
   'decrement',
   (state: State, by: number) => { state.count -= by; },
-  { eventType: 'decrement' }
+  { eventType: 'decrement', label: 'Decrement' }
 );
 
 const trrack = initializeTrrack({ initialState, registry });
