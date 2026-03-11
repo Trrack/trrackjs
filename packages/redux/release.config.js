@@ -1,7 +1,9 @@
 /* eslint-disable no-template-curly-in-string */
+const path = require('path');
+
 const name = require('./package.json').name;
-const libraryFolderName = require('./project.json').name;
-const srcRoot = `packages/${libraryFolderName}`;
+const packageDirName = path.basename(__dirname);
+const repoPackagePath = `packages/${packageDirName}`;
 
 module.exports = {
     extends: 'release.config.base.js',
@@ -12,23 +14,23 @@ module.exports = {
         { name: 'alpha', prerelease: true },
         '+([0-9])?(.{+([0-9]),x}).x',
     ],
-    pkgRoot: `dist/${srcRoot}`,
+    pkgRoot: 'dist',
     tagFormat: name + '@${version}',
-    commitPaths: [`${srcRoot}/*`],
+    commitPaths: [`${repoPackagePath}/**/*`],
     plugins: [
         '@semantic-release/commit-analyzer',
         '@semantic-release/release-notes-generator',
         [
             '@semantic-release/changelog',
             {
-                changelogFile: `${srcRoot}/CHANGELOG.md`,
+                changelogFile: 'CHANGELOG.md',
             },
         ],
         '@semantic-release/npm',
         [
             '@semantic-release/git',
             {
-                assets: [`${srcRoot}/package.json`, `${srcRoot}/CHANGELOG.md`],
+                assets: ['CHANGELOG.md'],
                 message:
                     `release(version): Release ${name} ` +
                     '${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',

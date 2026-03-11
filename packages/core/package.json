@@ -9,7 +9,7 @@
         "test:watch": "vitest",
         "lint": "eslint src --ext .ts",
         "docs": "typedoc",
-        "release": "npx semantic-release-plus --extends ./release.config.js"
+        "release": "node ../../tools/scripts/prepare-release-package.mjs && npx semantic-release-plus --extends ./release.config.js"
     },
     "repository": {
         "type": "git",
