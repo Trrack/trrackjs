@@ -1,0 +1,47 @@
+{
+    "name": "@trrack/vis-react",
+    "version": "1.5.0",
+    "license": "BSD-3-Clause",
+    "main": "./index.js",
+    "types": "./index.d.ts",
+    "scripts": {
+        "build": "vite build",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "lint": "eslint src tests --ext .ts,.tsx"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Trrack/trrackjs.git"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.2.1",
+        "@fortawesome/free-solid-svg-icons": "^6.2.1",
+        "@fortawesome/react-fontawesome": "^0.2.0",
+        "@mantine/core": "^5.10.5",
+        "@mantine/hooks": "^5.10.5",
+        "@trrack/core": "^1.0.0",
+        "d3": "^7.8.0",
+        "react": "16.8 - 18",
+        "react-dom": "16.14 - 18",
+        "react-spring": "^9.6.1"
+    },
+    "peerDependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.2.1",
+        "@fortawesome/free-solid-svg-icons": "^6.2.1",
+        "@fortawesome/react-fontawesome": "^0.2.0",
+        "@mantine/core": "^5.10.5",
+        "@mantine/hooks": "^5.10.5",
+        "@trrack/core": "^1.0.0",
+        "d3": "^7.8.0",
+        "react": "16.8 - 18",
+        "react-dom": "16.14 - 18",
+        "react-spring": "^9.6.1"
+    },
+    "exports": {
+        ".": {
+            "import": "./index.mjs",
+            "require": "./index.js"
+        }
+    }
+}
