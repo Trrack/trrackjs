@@ -22,7 +22,6 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.TRRACK_GITHUB_TOKEN }}
 
       - name: Setup LTS Node
         uses: actions/setup-node@v6
