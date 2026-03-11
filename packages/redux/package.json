@@ -1,14 +1,14 @@
 {
     "name": "@trrack/redux",
-    "version": "0.0.0-semantic-release",
+    "version": "1.0.0",
+    "license": "BSD-3-Clause",
     "main": "./index.js",
     "types": "./index.d.ts",
     "scripts": {
         "build": "vite build",
         "test": "vitest run",
         "test:watch": "vitest",
-        "lint": "eslint src --ext .ts",
-        "release": "node ../../tools/scripts/prepare-release-package.mjs && npx semantic-release-plus --extends ./release.config.js"
+        "lint": "eslint src --ext .ts"
     },
     "repository": {
         "type": "git",

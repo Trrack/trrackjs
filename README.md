@@ -7,7 +7,18 @@ This branch implements action based provenance tracking.
 [![license](https://img.shields.io/github/license/trrack/trrackjs?style=plastic)](https://github.com/Trrack/trrackjs/blob/main/LICENSE)
 [![npm latest version](https://img.shields.io/npm/v/@trrack/core?style=plastic)](https://www.npmjs.com/package/@trrack/core)
 [![npm downloads](https://img.shields.io/npm/dt/@trrack/core?style=plastic)](https://www.npmjs.com/package/@trrack/core)
-[![Github Action](https://img.shields.io/github/actions/workflow/status/trrack/trrackjs/release.yml?branch=main)](https://github.com/Trrack/trrackjs/actions/workflows/release.yml?query=branch%3Amain)
+[![Github Action](https://img.shields.io/github/actions/workflow/status/trrack/trrackjs/build_test_release.yml)](https://github.com/Trrack/trrackjs/actions/workflows/build_test_release.yml)
+
+## Releases
+
+`@trrack/core` is published from a manually created GitHub Release.
+
+1. Create a GitHub Release from the branch or commit you want to publish.
+2. Use a tag in the format `v<version>`, for example `v2.0.3`.
+3. Mark the GitHub Release as a prerelease when publishing alpha, beta, or other prerelease versions.
+4. Publish the GitHub Release.
+
+The `build_test_release.yml` workflow checks out the release tag, builds and tests the repo, and publishes `@trrack/core` to npm.
 
 
 ## Development

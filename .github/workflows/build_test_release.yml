@@ -1,13 +1,9 @@
 name: Build -> Test -> Release
 
 on:
-  push:
-    branches:
-      - main
-      - next
-      - alpha
-      - beta
-      - '*.x*'
+  release:
+    types:
+      - published
 
 env:
   HUSKY: 0
@@ -16,18 +12,23 @@ jobs:
   release:
     name: Build -> Test -> Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: ${{ github.event.release.tag_name }}
 
       - name: Setup LTS Node
         uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: yarn install
@@ -38,9 +39,70 @@ jobs:
       - name: Test
         run: yarn test:all
 
-      - name: Release
-        if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+      - name: Resolve release metadata
+        id: release_meta
         env:
-          GITHUB_TOKEN: ${{ secrets.TRRACK_GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: yarn workspace @trrack/core release
+          RELEASE_PRERELEASE: ${{ github.event.release.prerelease }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+
+          if [[ ! "${RELEASE_TAG}" =~ ^v([0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?)$ ]]; then
+            echo "Release tag must match v<semver> or v<semver>-<prerelease>: ${RELEASE_TAG}" >&2
+            exit 1
+          fi
+
+          VERSION="${BASH_REMATCH[1]}"
+
+          if [[ "${VERSION}" == *-* ]]; then
+            if [[ "${RELEASE_PRERELEASE}" != "true" ]]; then
+              echo "Prerelease tag ${RELEASE_TAG} requires the GitHub Release to be marked as a prerelease." >&2
+              exit 1
+            fi
+
+            CHANNEL="${VERSION#*-}"
+            CHANNEL="${CHANNEL%%.*}"
+            CHANNEL="$(printf '%s' "${CHANNEL}" | tr '[:upper:]' '[:lower:]')"
+
+            case "${CHANNEL}" in
+              alpha)
+                DIST_TAG="alpha"
+                ;;
+              beta)
+                DIST_TAG="beta"
+                ;;
+              *)
+                DIST_TAG="next"
+                ;;
+            esac
+          else
+            if [[ "${RELEASE_PRERELEASE}" == "true" ]]; then
+              echo "Stable tag ${RELEASE_TAG} cannot be published from a prerelease GitHub Release." >&2
+              exit 1
+            fi
+
+            DIST_TAG="latest"
+          fi
+
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "dist_tag=${DIST_TAG}" >> "${GITHUB_OUTPUT}"
+
+      - name: Prepare @trrack/core package
+        env:
+          RELEASE_VERSION: ${{ steps.release_meta.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          cp packages/core/package.json packages/core/dist/package.json
+          cp packages/core/README.md packages/core/dist/README.md
+          cp packages/core/CHANGELOG.md packages/core/dist/CHANGELOG.md
+          cp LICENSE packages/core/dist/LICENSE
+
+          npm pkg set version="${RELEASE_VERSION}" --prefix packages/core/dist
+          npm pkg delete scripts --prefix packages/core/dist
+
+      - name: Publish @trrack/core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance --tag "${{ steps.release_meta.outputs.dist_tag }}"
+        working-directory: packages/core/dist

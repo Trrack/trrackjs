@@ -1,7 +1,7 @@
 {
   "name": "trrack",
   "version": "0.0.0",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "scripts": {
     "dev:react": "yarn workspace react-trrack-example dev",
     "dev:rtk": "yarn workspace rtk-trrack-example dev",
@@ -13,7 +13,6 @@
     "test:all": "yarn workspace @trrack/core test && yarn workspace @trrack/redux test",
     "test:all:watch": "yarn workspace @trrack/core test:watch & yarn workspace @trrack/redux test:watch",
     "lint:packages": "yarn workspace @trrack/core lint && yarn workspace @trrack/redux lint",
-    "release": "yarn workspace @trrack/core release && yarn workspace @trrack/redux release",
     "docs:api": "yarn workspace @trrack/core docs && node scripts/generate-api-meta.mjs",
     "prepare": "husky install"
   },
@@ -69,8 +68,6 @@
     "react-hyper-tree": "^0.3.12",
     "react-redux": "8.0.5",
     "react-test-renderer": "18.2.0",
-    "semantic-release-npm-github-publish": "^1.5.4",
-    "semantic-release-plus": "^20.0.0",
     "sharp": "^0.31.2",
     "ts-node": "10.9.1",
     "typedoc": "^0.25.0",
