@@ -102,7 +102,5 @@ jobs:
           npm pkg delete scripts --prefix packages/core/dist
 
       - name: Publish @trrack/core
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public --provenance --tag "${{ steps.release_meta.outputs.dist_tag }}"
+        run: npm publish --access public --tag "${{ steps.release_meta.outputs.dist_tag }}"
         working-directory: packages/core/dist
