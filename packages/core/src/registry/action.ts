@@ -16,7 +16,7 @@ export type ProduceWrappedStateChangeFunction<T> = (state: T, args: any) => T
 export type StateChangeFunction<State, Payload> = (
     state: State,
     payload: Payload
-) => ReturnType<ProduceWrappedStateChangeFunction<State>>;
+) => State | void;
 
 
 export type Label = string;

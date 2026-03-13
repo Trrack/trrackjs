@@ -664,7 +664,7 @@ function $(e, t) {
 function dt(e, t) {
   const r = Object.keys(e).length;
   return new Set(
-    t.map((o) => o.path.split("/")[0])
+    t.map((o) => o.path.split("/")[1])
   ).size < r / 2 ? "patch" : "checkpoint";
 }
 function Dt({

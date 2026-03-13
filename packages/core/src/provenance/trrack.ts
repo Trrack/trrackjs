@@ -61,7 +61,7 @@ function determineSaveStrategy<T>(
 
     const uniquePatchesLength = new Set(
         patches.map((patch) => {
-            return patch.path.split('/')[0];
+            return patch.path.split('/')[1];
         })
     ).size;
 

@@ -4,7 +4,7 @@ export type TrrackActionFunction<DoActionType extends string, UndoActionType ext
     undo: PayloadAction<UndoActionPayload, UndoActionType>;
 };
 export type ProduceWrappedStateChangeFunction<T> = (state: T, args: any) => T;
-export type StateChangeFunction<State, Payload> = (state: State, payload: Payload) => ReturnType<ProduceWrappedStateChangeFunction<State>>;
+export type StateChangeFunction<State, Payload> = (state: State, payload: Payload) => State | void;
 export type Label = string;
 export type LabelGenerator<Args> = (args: Args) => Label;
 export type TrrackActionConfig<Args, Event> = {

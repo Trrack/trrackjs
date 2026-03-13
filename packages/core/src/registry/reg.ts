@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import produce, { enablePatches } from 'immer';
-import { createAction } from '../action';
+import { PayloadActionCreator, createAction } from '../action';
 
 import {
     Label,
@@ -38,6 +38,32 @@ export class Registry<Event extends string> {
         return this.registry.has(name);
     }
 
+    register<DoActionType extends string, DoActionPayload = any, State = any>(
+        type: DoActionType,
+        actionFunction: StateChangeFunction<State, DoActionPayload>,
+        config?: {
+            eventType?: Event;
+            label?: Label | LabelGenerator<DoActionPayload>;
+        }
+    ): PayloadActionCreator<DoActionPayload, DoActionType>;
+    register<
+        DoActionType extends string,
+        UndoActionType extends string,
+        DoActionPayload = any,
+        UndoActionPayload = any
+    >(
+        type: DoActionType,
+        actionFunction: TrrackActionFunction<
+            DoActionType,
+            UndoActionType,
+            UndoActionPayload,
+            DoActionPayload
+        >,
+        config?: {
+            eventType?: Event;
+            label?: Label | LabelGenerator<DoActionPayload>;
+        }
+    ): PayloadActionCreator<DoActionPayload, DoActionType>;
     register<
         DoActionType extends string,
         UndoActionType extends string,
@@ -53,8 +79,8 @@ export class Registry<Event extends string> {
             DoActionPayload
         > | StateChangeFunction<State, DoActionPayload>,
         config?: {
-            eventType: Event;
-            label: Label | LabelGenerator<DoActionPayload>
+            eventType?: Event;
+            label?: Label | LabelGenerator<DoActionPayload>;
         }
     ) {
         const isState = actionFunction.length === 2;
