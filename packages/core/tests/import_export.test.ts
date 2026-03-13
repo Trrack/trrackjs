@@ -72,6 +72,37 @@ describe('Export', () => {
         );
     });
 
+    it('keeps graph.initialState isolated from later updates', async () => {
+        const { trrack, add } = setup();
+        const initialGraph = trrack.graph.initialState;
+        const rootId = initialGraph.root;
+
+        await trrack.apply('Add', add(1));
+        trrack.metadata.add({ note: 'live backend only' });
+
+        expect(initialGraph.current).toBe(rootId);
+        expect(Object.keys(initialGraph.nodes)).toHaveLength(1);
+        expect(initialGraph.nodes[rootId].children).toEqual([]);
+        expect(initialGraph.nodes[rootId].meta.note).toBeUndefined();
+    });
+
+    it('does not mutate imported graph objects after importObject', async () => {
+        const { trrack, add } = setup();
+
+        await trrack.apply('Add', add(2));
+        const snapshot = trrack.exportObject();
+
+        const { trrack: imported } = setup();
+        imported.importObject(snapshot);
+
+        await imported.apply('Add', add(3));
+        imported.metadata.add({ note: 'imported only' });
+
+        expect(imported.graph.backend).not.toBe(snapshot);
+        expect(snapshot.current).not.toBe(imported.current.id);
+        expect(snapshot.nodes[snapshot.current].meta.note).toBeUndefined();
+    });
+
     it('round-trips branched graphs with metadata, artifacts, annotations, and bookmarks', async () => {
         const { trrack, add, sub } = setup();
 

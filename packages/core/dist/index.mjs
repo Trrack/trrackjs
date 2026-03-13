@@ -5,7 +5,7 @@ function U(e) {
   });
   return t.type = e, t.match = (r) => r.type === e, t.toString = () => e, t;
 }
-function Ke() {
+function Be() {
   const e = /* @__PURE__ */ new Map();
   return {
     listen(t, r) {
@@ -23,16 +23,16 @@ function Ke() {
   };
 }
 let B;
-const Be = new Uint8Array(16);
-function $e() {
+const $e = new Uint8Array(16);
+function We() {
   if (!B && (B = typeof crypto < "u" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto), !B))
     throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
-  return B(Be);
+  return B($e);
 }
 const w = [];
 for (let e = 0; e < 256; ++e)
   w.push((e + 256).toString(16).slice(1));
-function We(e, t = 0) {
+function Ge(e, t = 0) {
   return w[e[t + 0]] + w[e[t + 1]] + w[e[t + 2]] + w[e[t + 3]] + "-" + w[e[t + 4]] + w[e[t + 5]] + "-" + w[e[t + 6]] + w[e[t + 7]] + "-" + w[e[t + 8]] + w[e[t + 9]] + "-" + w[e[t + 10]] + w[e[t + 11]] + w[e[t + 12]] + w[e[t + 13]] + w[e[t + 14]] + w[e[t + 15]];
 }
 const Qe = typeof crypto < "u" && crypto.randomUUID && crypto.randomUUID.bind(crypto), Ne = {
@@ -42,14 +42,14 @@ function Pe(e, t, r) {
   if (Ne.randomUUID && !t && !e)
     return Ne.randomUUID();
   e = e || {};
-  const n = e.random || (e.rng || $e)();
+  const n = e.random || (e.rng || We)();
   if (n[6] = n[6] & 15 | 64, n[8] = n[8] & 63 | 128, t) {
     r = r || 0;
     for (let o = 0; o < 16; ++o)
       t[r + o] = n[o];
     return t;
   }
-  return We(n);
+  return Ge(n);
 }
 class P {
   static get() {
@@ -63,10 +63,10 @@ P.ids = /* @__PURE__ */ new Map();
 function N(e) {
   return "parent" in e;
 }
-function Rt(e) {
+function Dt(e) {
   return !N(e);
 }
-function Ge(e) {
+function Ye(e) {
   const { label: t = void 0, state: r, initialArtifact: n, initialMetadata: o } = e, a = {
     annotation: [],
     bookmark: []
@@ -100,7 +100,7 @@ function Ge(e) {
     }
   };
 }
-function Ye({
+function qe({
   parent: e,
   state: t,
   label: r,
@@ -144,12 +144,422 @@ function Ye({
     level: e.level + 1
   };
 }
-function qe(e, t = {}) {
+/*!
+ * https://github.com/Starcounter-Jack/JSON-Patch
+ * (c) 2017-2022 Joachim Wester
+ * MIT licensed
+ */
+var Xe = globalThis && globalThis.__extends || function() {
+  var e = function(t, r) {
+    return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(n, o) {
+      n.__proto__ = o;
+    } || function(n, o) {
+      for (var a in o)
+        o.hasOwnProperty(a) && (n[a] = o[a]);
+    }, e(t, r);
+  };
+  return function(t, r) {
+    e(t, r);
+    function n() {
+      this.constructor = t;
+    }
+    t.prototype = r === null ? Object.create(r) : (n.prototype = r.prototype, new n());
+  };
+}(), Ze = Object.prototype.hasOwnProperty;
+function ie(e, t) {
+  return Ze.call(e, t);
+}
+function ue(e) {
+  if (Array.isArray(e)) {
+    for (var t = new Array(e.length), r = 0; r < t.length; r++)
+      t[r] = "" + r;
+    return t;
+  }
+  if (Object.keys)
+    return Object.keys(e);
+  var n = [];
+  for (var o in e)
+    ie(e, o) && n.push(o);
+  return n;
+}
+function E(e) {
+  switch (typeof e) {
+    case "object":
+      return JSON.parse(JSON.stringify(e));
+    case "undefined":
+      return null;
+    default:
+      return e;
+  }
+}
+function ce(e) {
+  for (var t = 0, r = e.length, n; t < r; ) {
+    if (n = e.charCodeAt(t), n >= 48 && n <= 57) {
+      t++;
+      continue;
+    }
+    return !1;
+  }
+  return !0;
+}
+function I(e) {
+  return e.indexOf("/") === -1 && e.indexOf("~") === -1 ? e : e.replace(/~/g, "~0").replace(/\//g, "~1");
+}
+function Ce(e) {
+  return e.replace(/~1/g, "/").replace(/~0/g, "~");
+}
+function se(e) {
+  if (e === void 0)
+    return !0;
+  if (e) {
+    if (Array.isArray(e)) {
+      for (var t = 0, r = e.length; t < r; t++)
+        if (se(e[t]))
+          return !0;
+    } else if (typeof e == "object") {
+      for (var n = ue(e), o = n.length, a = 0; a < o; a++)
+        if (se(e[n[a]]))
+          return !0;
+    }
+  }
+  return !1;
+}
+function Te(e, t) {
+  var r = [e];
+  for (var n in t) {
+    var o = typeof t[n] == "object" ? JSON.stringify(t[n], null, 2) : t[n];
+    typeof o < "u" && r.push(n + ": " + o);
+  }
+  return r.join(`
+`);
+}
+var xe = (
+  /** @class */
+  function(e) {
+    Xe(t, e);
+    function t(r, n, o, a, u) {
+      var f = this.constructor, l = e.call(this, Te(r, { name: n, index: o, operation: a, tree: u })) || this;
+      return l.name = n, l.index = o, l.operation = a, l.tree = u, Object.setPrototypeOf(l, f.prototype), l.message = Te(r, { name: n, index: o, operation: a, tree: u }), l;
+    }
+    return t;
+  }(Error)
+), g = xe, Ve = E, C = {
+  add: function(e, t, r) {
+    return e[t] = this.value, { newDocument: r };
+  },
+  remove: function(e, t, r) {
+    var n = e[t];
+    return delete e[t], { newDocument: r, removed: n };
+  },
+  replace: function(e, t, r) {
+    var n = e[t];
+    return e[t] = this.value, { newDocument: r, removed: n };
+  },
+  move: function(e, t, r) {
+    var n = G(r, this.path);
+    n && (n = E(n));
+    var o = j(r, { op: "remove", path: this.from }).removed;
+    return j(r, { op: "add", path: this.path, value: o }), { newDocument: r, removed: n };
+  },
+  copy: function(e, t, r) {
+    var n = G(r, this.from);
+    return j(r, { op: "add", path: this.path, value: E(n) }), { newDocument: r };
+  },
+  test: function(e, t, r) {
+    return { newDocument: r, test: H(e[t], this.value) };
+  },
+  _get: function(e, t, r) {
+    return this.value = e[t], { newDocument: r };
+  }
+}, et = {
+  add: function(e, t, r) {
+    return ce(t) ? e.splice(t, 0, this.value) : e[t] = this.value, { newDocument: r, index: t };
+  },
+  remove: function(e, t, r) {
+    var n = e.splice(t, 1);
+    return { newDocument: r, removed: n[0] };
+  },
+  replace: function(e, t, r) {
+    var n = e[t];
+    return e[t] = this.value, { newDocument: r, removed: n };
+  },
+  move: C.move,
+  copy: C.copy,
+  test: C.test,
+  _get: C._get
+};
+function G(e, t) {
+  if (t == "")
+    return e;
+  var r = { op: "_get", path: t };
+  return j(e, r), r.value;
+}
+function j(e, t, r, n, o, a) {
+  if (r === void 0 && (r = !1), n === void 0 && (n = !0), o === void 0 && (o = !0), a === void 0 && (a = 0), r && (typeof r == "function" ? r(t, 0, e, t.path) : Q(t, 0)), t.path === "") {
+    var u = { newDocument: e };
+    if (t.op === "add")
+      return u.newDocument = t.value, u;
+    if (t.op === "replace")
+      return u.newDocument = t.value, u.removed = e, u;
+    if (t.op === "move" || t.op === "copy")
+      return u.newDocument = G(e, t.from), t.op === "move" && (u.removed = e), u;
+    if (t.op === "test") {
+      if (u.test = H(e, t.value), u.test === !1)
+        throw new g("Test operation failed", "TEST_OPERATION_FAILED", a, t, e);
+      return u.newDocument = e, u;
+    } else {
+      if (t.op === "remove")
+        return u.removed = e, u.newDocument = null, u;
+      if (t.op === "_get")
+        return t.value = e, u;
+      if (r)
+        throw new g("Operation `op` property is not one of operations defined in RFC-6902", "OPERATION_OP_INVALID", a, t, e);
+      return u;
+    }
+  } else {
+    n || (e = E(e));
+    var f = t.path || "", l = f.split("/"), s = e, i = 1, c = l.length, p = void 0, d = void 0, h = void 0;
+    for (typeof r == "function" ? h = r : h = Q; ; ) {
+      if (d = l[i], d && d.indexOf("~") != -1 && (d = Ce(d)), o && (d == "__proto__" || d == "prototype" && i > 0 && l[i - 1] == "constructor"))
+        throw new TypeError("JSON-Patch: modifying `__proto__` or `constructor/prototype` prop is banned for security reasons, if this was on purpose, please set `banPrototypeModifications` flag false and pass it to this function. More info in fast-json-patch README");
+      if (r && p === void 0 && (s[d] === void 0 ? p = l.slice(0, i).join("/") : i == c - 1 && (p = t.path), p !== void 0 && h(t, 0, e, p)), i++, Array.isArray(s)) {
+        if (d === "-")
+          d = s.length;
+        else {
+          if (r && !ce(d))
+            throw new g("Expected an unsigned base-10 integer value, making the new referenced value the array element with the zero-based index", "OPERATION_PATH_ILLEGAL_ARRAY_INDEX", a, t, e);
+          ce(d) && (d = ~~d);
+        }
+        if (i >= c) {
+          if (r && t.op === "add" && d > s.length)
+            throw new g("The specified index MUST NOT be greater than the number of elements in the array", "OPERATION_VALUE_OUT_OF_BOUNDS", a, t, e);
+          var u = et[t.op].call(t, s, d, e);
+          if (u.test === !1)
+            throw new g("Test operation failed", "TEST_OPERATION_FAILED", a, t, e);
+          return u;
+        }
+      } else if (i >= c) {
+        var u = C[t.op].call(t, s, d, e);
+        if (u.test === !1)
+          throw new g("Test operation failed", "TEST_OPERATION_FAILED", a, t, e);
+        return u;
+      }
+      if (s = s[d], r && i < c && (!s || typeof s != "object"))
+        throw new g("Cannot perform operation at the desired path", "OPERATION_PATH_UNRESOLVABLE", a, t, e);
+    }
+  }
+}
+function Z(e, t, r, n, o) {
+  if (n === void 0 && (n = !0), o === void 0 && (o = !0), r && !Array.isArray(t))
+    throw new g("Patch sequence must be an array", "SEQUENCE_NOT_AN_ARRAY");
+  n || (e = E(e));
+  for (var a = new Array(t.length), u = 0, f = t.length; u < f; u++)
+    a[u] = j(e, t[u], r, !0, o, u), e = a[u].newDocument;
+  return a.newDocument = e, a;
+}
+function tt(e, t, r) {
+  var n = j(e, t);
+  if (n.test === !1)
+    throw new g("Test operation failed", "TEST_OPERATION_FAILED", r, t, e);
+  return n.newDocument;
+}
+function Q(e, t, r, n) {
+  if (typeof e != "object" || e === null || Array.isArray(e))
+    throw new g("Operation is not an object", "OPERATION_NOT_AN_OBJECT", t, e, r);
+  if (C[e.op]) {
+    if (typeof e.path != "string")
+      throw new g("Operation `path` property is not a string", "OPERATION_PATH_INVALID", t, e, r);
+    if (e.path.indexOf("/") !== 0 && e.path.length > 0)
+      throw new g('Operation `path` property must start with "/"', "OPERATION_PATH_INVALID", t, e, r);
+    if ((e.op === "move" || e.op === "copy") && typeof e.from != "string")
+      throw new g("Operation `from` property is not present (applicable in `move` and `copy` operations)", "OPERATION_FROM_REQUIRED", t, e, r);
+    if ((e.op === "add" || e.op === "replace" || e.op === "test") && e.value === void 0)
+      throw new g("Operation `value` property is not present (applicable in `add`, `replace` and `test` operations)", "OPERATION_VALUE_REQUIRED", t, e, r);
+    if ((e.op === "add" || e.op === "replace" || e.op === "test") && se(e.value))
+      throw new g("Operation `value` property is not present (applicable in `add`, `replace` and `test` operations)", "OPERATION_VALUE_CANNOT_CONTAIN_UNDEFINED", t, e, r);
+    if (r) {
+      if (e.op == "add") {
+        var o = e.path.split("/").length, a = n.split("/").length;
+        if (o !== a + 1 && o !== a)
+          throw new g("Cannot perform an `add` operation at the desired path", "OPERATION_PATH_CANNOT_ADD", t, e, r);
+      } else if (e.op === "replace" || e.op === "remove" || e.op === "_get") {
+        if (e.path !== n)
+          throw new g("Cannot perform the operation at a path that does not exist", "OPERATION_PATH_UNRESOLVABLE", t, e, r);
+      } else if (e.op === "move" || e.op === "copy") {
+        var u = { op: "_get", path: e.from, value: void 0 }, f = Fe([u], r);
+        if (f && f.name === "OPERATION_PATH_UNRESOLVABLE")
+          throw new g("Cannot perform the operation from a path that does not exist", "OPERATION_FROM_UNRESOLVABLE", t, e, r);
+      }
+    }
+  } else
+    throw new g("Operation `op` property is not one of operations defined in RFC-6902", "OPERATION_OP_INVALID", t, e, r);
+}
+function Fe(e, t, r) {
+  try {
+    if (!Array.isArray(e))
+      throw new g("Patch sequence must be an array", "SEQUENCE_NOT_AN_ARRAY");
+    if (t)
+      Z(E(t), E(e), r || !0);
+    else {
+      r = r || Q;
+      for (var n = 0; n < e.length; n++)
+        r(e[n], n, t, void 0);
+    }
+  } catch (o) {
+    if (o instanceof g)
+      return o;
+    throw o;
+  }
+}
+function H(e, t) {
+  if (e === t)
+    return !0;
+  if (e && t && typeof e == "object" && typeof t == "object") {
+    var r = Array.isArray(e), n = Array.isArray(t), o, a, u;
+    if (r && n) {
+      if (a = e.length, a != t.length)
+        return !1;
+      for (o = a; o-- !== 0; )
+        if (!H(e[o], t[o]))
+          return !1;
+      return !0;
+    }
+    if (r != n)
+      return !1;
+    var f = Object.keys(e);
+    if (a = f.length, a !== Object.keys(t).length)
+      return !1;
+    for (o = a; o-- !== 0; )
+      if (!t.hasOwnProperty(f[o]))
+        return !1;
+    for (o = a; o-- !== 0; )
+      if (u = f[o], !H(e[u], t[u]))
+        return !1;
+    return !0;
+  }
+  return e !== e && t !== t;
+}
+const rt = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  JsonPatchError: g,
+  _areEquals: H,
+  applyOperation: j,
+  applyPatch: Z,
+  applyReducer: tt,
+  deepClone: Ve,
+  getValueByPointer: G,
+  validate: Fe,
+  validator: Q
+}, Symbol.toStringTag, { value: "Module" }));
+/*!
+ * https://github.com/Starcounter-Jack/JSON-Patch
+ * (c) 2017-2021 Joachim Wester
+ * MIT license
+ */
+var ye = /* @__PURE__ */ new WeakMap(), nt = (
+  /** @class */
+  function() {
+    function e(t) {
+      this.observers = /* @__PURE__ */ new Map(), this.obj = t;
+    }
+    return e;
+  }()
+), ot = (
+  /** @class */
+  function() {
+    function e(t, r) {
+      this.callback = t, this.observer = r;
+    }
+    return e;
+  }()
+);
+function at(e) {
+  return ye.get(e);
+}
+function it(e, t) {
+  return e.observers.get(t);
+}
+function ut(e, t) {
+  e.observers.delete(t.callback);
+}
+function ct(e, t) {
+  t.unobserve();
+}
+function st(e, t) {
+  var r = [], n, o = at(e);
+  if (!o)
+    o = new nt(e), ye.set(e, o);
+  else {
+    var a = it(o, t);
+    n = a && a.observer;
+  }
+  if (n)
+    return n;
+  if (n = {}, o.value = E(e), t) {
+    n.callback = t, n.next = null;
+    var u = function() {
+      fe(n);
+    }, f = function() {
+      clearTimeout(n.next), n.next = setTimeout(u);
+    };
+    typeof window < "u" && (window.addEventListener("mouseup", f), window.addEventListener("keyup", f), window.addEventListener("mousedown", f), window.addEventListener("keydown", f), window.addEventListener("change", f));
+  }
+  return n.patches = r, n.object = e, n.unobserve = function() {
+    fe(n), clearTimeout(n.next), ut(o, n), typeof window < "u" && (window.removeEventListener("mouseup", f), window.removeEventListener("keyup", f), window.removeEventListener("mousedown", f), window.removeEventListener("keydown", f), window.removeEventListener("change", f));
+  }, o.observers.set(t, new ot(t, n)), n;
+}
+function fe(e, t) {
+  t === void 0 && (t = !1);
+  var r = ye.get(e.object);
+  ge(r.value, e.object, e.patches, "", t), e.patches.length && Z(r.value, e.patches);
+  var n = e.patches;
+  return n.length > 0 && (e.patches = [], e.callback && e.callback(n)), n;
+}
+function ge(e, t, r, n, o) {
+  if (t !== e) {
+    typeof t.toJSON == "function" && (t = t.toJSON());
+    for (var a = ue(t), u = ue(e), f = !1, l = u.length - 1; l >= 0; l--) {
+      var s = u[l], i = e[s];
+      if (ie(t, s) && !(t[s] === void 0 && i !== void 0 && Array.isArray(t) === !1)) {
+        var c = t[s];
+        typeof i == "object" && i != null && typeof c == "object" && c != null && Array.isArray(i) === Array.isArray(c) ? ge(i, c, r, n + "/" + I(s), o) : i !== c && (o && r.push({ op: "test", path: n + "/" + I(s), value: E(i) }), r.push({ op: "replace", path: n + "/" + I(s), value: E(c) }));
+      } else
+        Array.isArray(e) === Array.isArray(t) ? (o && r.push({ op: "test", path: n + "/" + I(s), value: E(i) }), r.push({ op: "remove", path: n + "/" + I(s) }), f = !0) : (o && r.push({ op: "test", path: n, value: e }), r.push({ op: "replace", path: n, value: t }));
+    }
+    if (!(!f && a.length == u.length))
+      for (var l = 0; l < a.length; l++) {
+        var s = a[l];
+        !ie(e, s) && t[s] !== void 0 && r.push({ op: "add", path: n + "/" + I(s), value: E(t[s]) });
+      }
+  }
+}
+function ze(e, t, r) {
+  r === void 0 && (r = !1);
+  var n = [];
+  return ge(e, t, n, "", r), n;
+}
+const ft = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  compare: ze,
+  generate: fe,
+  observe: st,
+  unobserve: ct
+}, Symbol.toStringTag, { value: "Module" }));
+Object.assign({}, rt, ft, {
+  JsonPatchError: xe,
+  deepClone: E,
+  escapePathComponent: I,
+  unescapePathComponent: Ce
+});
+function Se(e) {
+  return E(e);
+}
+function lt(e, t = {}) {
   const {
     artifact: r = void 0,
     metadata: n = void 0,
     rootLabel: o = "Root"
-  } = t, a = Ge({
+  } = t, a = Ye({
     state: e,
     label: o,
     initialArtifact: r,
@@ -191,18 +601,18 @@ function qe(e, t = {}) {
       const { payload: c } = i;
       return s.nodes[c.id] = c, s.nodes[c.parent].children.push(c.id), s.current = c.id, s;
     }
-    return f.load.match(i) ? i.payload : s;
+    return f.load.match(i) ? Se(i.payload) : s;
   }
   return {
     actions: f,
     getInitialState() {
-      return u;
+      return Se(u);
     },
     reduce: l
   };
 }
-function Xe(e) {
-  const t = /* @__PURE__ */ new Map(), { reduce: r, actions: n, getInitialState: o } = qe(e);
+function dt(e) {
+  const t = /* @__PURE__ */ new Map(), { reduce: r, actions: n, getInitialState: o } = lt(e);
   let a = o();
   function u(l) {
     if (!n.changeCurrent.match(l) && !n.addNode.match(l))
@@ -239,419 +649,12 @@ function Xe(e) {
     ...n
   };
 }
-/*!
- * https://github.com/Starcounter-Jack/JSON-Patch
- * (c) 2017-2022 Joachim Wester
- * MIT licensed
- */
-var Ze = globalThis && globalThis.__extends || function() {
-  var e = function(t, r) {
-    return e = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(n, o) {
-      n.__proto__ = o;
-    } || function(n, o) {
-      for (var a in o)
-        o.hasOwnProperty(a) && (n[a] = o[a]);
-    }, e(t, r);
-  };
-  return function(t, r) {
-    e(t, r);
-    function n() {
-      this.constructor = t;
-    }
-    t.prototype = r === null ? Object.create(r) : (n.prototype = r.prototype, new n());
-  };
-}(), Ve = Object.prototype.hasOwnProperty;
-function ie(e, t) {
-  return Ve.call(e, t);
-}
-function ue(e) {
-  if (Array.isArray(e)) {
-    for (var t = new Array(e.length), r = 0; r < t.length; r++)
-      t[r] = "" + r;
-    return t;
-  }
-  if (Object.keys)
-    return Object.keys(e);
-  var n = [];
-  for (var o in e)
-    ie(e, o) && n.push(o);
-  return n;
-}
-function E(e) {
-  switch (typeof e) {
-    case "object":
-      return JSON.parse(JSON.stringify(e));
-    case "undefined":
-      return null;
-    default:
-      return e;
-  }
-}
-function ce(e) {
-  for (var t = 0, r = e.length, n; t < r; ) {
-    if (n = e.charCodeAt(t), n >= 48 && n <= 57) {
-      t++;
-      continue;
-    }
-    return !1;
-  }
-  return !0;
-}
-function I(e) {
-  return e.indexOf("/") === -1 && e.indexOf("~") === -1 ? e : e.replace(/~/g, "~0").replace(/\//g, "~1");
-}
-function Ue(e) {
-  return e.replace(/~1/g, "/").replace(/~0/g, "~");
-}
-function se(e) {
-  if (e === void 0)
-    return !0;
-  if (e) {
-    if (Array.isArray(e)) {
-      for (var t = 0, r = e.length; t < r; t++)
-        if (se(e[t]))
-          return !0;
-    } else if (typeof e == "object") {
-      for (var n = ue(e), o = n.length, a = 0; a < o; a++)
-        if (se(e[n[a]]))
-          return !0;
-    }
-  }
-  return !1;
-}
-function Te(e, t) {
-  var r = [e];
-  for (var n in t) {
-    var o = typeof t[n] == "object" ? JSON.stringify(t[n], null, 2) : t[n];
-    typeof o < "u" && r.push(n + ": " + o);
-  }
-  return r.join(`
-`);
-}
-var Ce = (
-  /** @class */
-  function(e) {
-    Ze(t, e);
-    function t(r, n, o, a, u) {
-      var f = this.constructor, l = e.call(this, Te(r, { name: n, index: o, operation: a, tree: u })) || this;
-      return l.name = n, l.index = o, l.operation = a, l.tree = u, Object.setPrototypeOf(l, f.prototype), l.message = Te(r, { name: n, index: o, operation: a, tree: u }), l;
-    }
-    return t;
-  }(Error)
-), g = Ce, et = E, C = {
-  add: function(e, t, r) {
-    return e[t] = this.value, { newDocument: r };
-  },
-  remove: function(e, t, r) {
-    var n = e[t];
-    return delete e[t], { newDocument: r, removed: n };
-  },
-  replace: function(e, t, r) {
-    var n = e[t];
-    return e[t] = this.value, { newDocument: r, removed: n };
-  },
-  move: function(e, t, r) {
-    var n = Q(r, this.path);
-    n && (n = E(n));
-    var o = j(r, { op: "remove", path: this.from }).removed;
-    return j(r, { op: "add", path: this.path, value: o }), { newDocument: r, removed: n };
-  },
-  copy: function(e, t, r) {
-    var n = Q(r, this.from);
-    return j(r, { op: "add", path: this.path, value: E(n) }), { newDocument: r };
-  },
-  test: function(e, t, r) {
-    return { newDocument: r, test: H(e[t], this.value) };
-  },
-  _get: function(e, t, r) {
-    return this.value = e[t], { newDocument: r };
-  }
-}, tt = {
-  add: function(e, t, r) {
-    return ce(t) ? e.splice(t, 0, this.value) : e[t] = this.value, { newDocument: r, index: t };
-  },
-  remove: function(e, t, r) {
-    var n = e.splice(t, 1);
-    return { newDocument: r, removed: n[0] };
-  },
-  replace: function(e, t, r) {
-    var n = e[t];
-    return e[t] = this.value, { newDocument: r, removed: n };
-  },
-  move: C.move,
-  copy: C.copy,
-  test: C.test,
-  _get: C._get
-};
-function Q(e, t) {
-  if (t == "")
-    return e;
-  var r = { op: "_get", path: t };
-  return j(e, r), r.value;
-}
-function j(e, t, r, n, o, a) {
-  if (r === void 0 && (r = !1), n === void 0 && (n = !0), o === void 0 && (o = !0), a === void 0 && (a = 0), r && (typeof r == "function" ? r(t, 0, e, t.path) : G(t, 0)), t.path === "") {
-    var u = { newDocument: e };
-    if (t.op === "add")
-      return u.newDocument = t.value, u;
-    if (t.op === "replace")
-      return u.newDocument = t.value, u.removed = e, u;
-    if (t.op === "move" || t.op === "copy")
-      return u.newDocument = Q(e, t.from), t.op === "move" && (u.removed = e), u;
-    if (t.op === "test") {
-      if (u.test = H(e, t.value), u.test === !1)
-        throw new g("Test operation failed", "TEST_OPERATION_FAILED", a, t, e);
-      return u.newDocument = e, u;
-    } else {
-      if (t.op === "remove")
-        return u.removed = e, u.newDocument = null, u;
-      if (t.op === "_get")
-        return t.value = e, u;
-      if (r)
-        throw new g("Operation `op` property is not one of operations defined in RFC-6902", "OPERATION_OP_INVALID", a, t, e);
-      return u;
-    }
-  } else {
-    n || (e = E(e));
-    var f = t.path || "", l = f.split("/"), s = e, i = 1, c = l.length, p = void 0, d = void 0, h = void 0;
-    for (typeof r == "function" ? h = r : h = G; ; ) {
-      if (d = l[i], d && d.indexOf("~") != -1 && (d = Ue(d)), o && (d == "__proto__" || d == "prototype" && i > 0 && l[i - 1] == "constructor"))
-        throw new TypeError("JSON-Patch: modifying `__proto__` or `constructor/prototype` prop is banned for security reasons, if this was on purpose, please set `banPrototypeModifications` flag false and pass it to this function. More info in fast-json-patch README");
-      if (r && p === void 0 && (s[d] === void 0 ? p = l.slice(0, i).join("/") : i == c - 1 && (p = t.path), p !== void 0 && h(t, 0, e, p)), i++, Array.isArray(s)) {
-        if (d === "-")
-          d = s.length;
-        else {
-          if (r && !ce(d))
-            throw new g("Expected an unsigned base-10 integer value, making the new referenced value the array element with the zero-based index", "OPERATION_PATH_ILLEGAL_ARRAY_INDEX", a, t, e);
-          ce(d) && (d = ~~d);
-        }
-        if (i >= c) {
-          if (r && t.op === "add" && d > s.length)
-            throw new g("The specified index MUST NOT be greater than the number of elements in the array", "OPERATION_VALUE_OUT_OF_BOUNDS", a, t, e);
-          var u = tt[t.op].call(t, s, d, e);
-          if (u.test === !1)
-            throw new g("Test operation failed", "TEST_OPERATION_FAILED", a, t, e);
-          return u;
-        }
-      } else if (i >= c) {
-        var u = C[t.op].call(t, s, d, e);
-        if (u.test === !1)
-          throw new g("Test operation failed", "TEST_OPERATION_FAILED", a, t, e);
-        return u;
-      }
-      if (s = s[d], r && i < c && (!s || typeof s != "object"))
-        throw new g("Cannot perform operation at the desired path", "OPERATION_PATH_UNRESOLVABLE", a, t, e);
-    }
-  }
-}
-function Z(e, t, r, n, o) {
-  if (n === void 0 && (n = !0), o === void 0 && (o = !0), r && !Array.isArray(t))
-    throw new g("Patch sequence must be an array", "SEQUENCE_NOT_AN_ARRAY");
-  n || (e = E(e));
-  for (var a = new Array(t.length), u = 0, f = t.length; u < f; u++)
-    a[u] = j(e, t[u], r, !0, o, u), e = a[u].newDocument;
-  return a.newDocument = e, a;
-}
-function rt(e, t, r) {
-  var n = j(e, t);
-  if (n.test === !1)
-    throw new g("Test operation failed", "TEST_OPERATION_FAILED", r, t, e);
-  return n.newDocument;
-}
-function G(e, t, r, n) {
-  if (typeof e != "object" || e === null || Array.isArray(e))
-    throw new g("Operation is not an object", "OPERATION_NOT_AN_OBJECT", t, e, r);
-  if (C[e.op]) {
-    if (typeof e.path != "string")
-      throw new g("Operation `path` property is not a string", "OPERATION_PATH_INVALID", t, e, r);
-    if (e.path.indexOf("/") !== 0 && e.path.length > 0)
-      throw new g('Operation `path` property must start with "/"', "OPERATION_PATH_INVALID", t, e, r);
-    if ((e.op === "move" || e.op === "copy") && typeof e.from != "string")
-      throw new g("Operation `from` property is not present (applicable in `move` and `copy` operations)", "OPERATION_FROM_REQUIRED", t, e, r);
-    if ((e.op === "add" || e.op === "replace" || e.op === "test") && e.value === void 0)
-      throw new g("Operation `value` property is not present (applicable in `add`, `replace` and `test` operations)", "OPERATION_VALUE_REQUIRED", t, e, r);
-    if ((e.op === "add" || e.op === "replace" || e.op === "test") && se(e.value))
-      throw new g("Operation `value` property is not present (applicable in `add`, `replace` and `test` operations)", "OPERATION_VALUE_CANNOT_CONTAIN_UNDEFINED", t, e, r);
-    if (r) {
-      if (e.op == "add") {
-        var o = e.path.split("/").length, a = n.split("/").length;
-        if (o !== a + 1 && o !== a)
-          throw new g("Cannot perform an `add` operation at the desired path", "OPERATION_PATH_CANNOT_ADD", t, e, r);
-      } else if (e.op === "replace" || e.op === "remove" || e.op === "_get") {
-        if (e.path !== n)
-          throw new g("Cannot perform the operation at a path that does not exist", "OPERATION_PATH_UNRESOLVABLE", t, e, r);
-      } else if (e.op === "move" || e.op === "copy") {
-        var u = { op: "_get", path: e.from, value: void 0 }, f = xe([u], r);
-        if (f && f.name === "OPERATION_PATH_UNRESOLVABLE")
-          throw new g("Cannot perform the operation from a path that does not exist", "OPERATION_FROM_UNRESOLVABLE", t, e, r);
-      }
-    }
-  } else
-    throw new g("Operation `op` property is not one of operations defined in RFC-6902", "OPERATION_OP_INVALID", t, e, r);
-}
-function xe(e, t, r) {
-  try {
-    if (!Array.isArray(e))
-      throw new g("Patch sequence must be an array", "SEQUENCE_NOT_AN_ARRAY");
-    if (t)
-      Z(E(t), E(e), r || !0);
-    else {
-      r = r || G;
-      for (var n = 0; n < e.length; n++)
-        r(e[n], n, t, void 0);
-    }
-  } catch (o) {
-    if (o instanceof g)
-      return o;
-    throw o;
-  }
-}
-function H(e, t) {
-  if (e === t)
-    return !0;
-  if (e && t && typeof e == "object" && typeof t == "object") {
-    var r = Array.isArray(e), n = Array.isArray(t), o, a, u;
-    if (r && n) {
-      if (a = e.length, a != t.length)
-        return !1;
-      for (o = a; o-- !== 0; )
-        if (!H(e[o], t[o]))
-          return !1;
-      return !0;
-    }
-    if (r != n)
-      return !1;
-    var f = Object.keys(e);
-    if (a = f.length, a !== Object.keys(t).length)
-      return !1;
-    for (o = a; o-- !== 0; )
-      if (!t.hasOwnProperty(f[o]))
-        return !1;
-    for (o = a; o-- !== 0; )
-      if (u = f[o], !H(e[u], t[u]))
-        return !1;
-    return !0;
-  }
-  return e !== e && t !== t;
-}
-const nt = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  JsonPatchError: g,
-  _areEquals: H,
-  applyOperation: j,
-  applyPatch: Z,
-  applyReducer: rt,
-  deepClone: et,
-  getValueByPointer: Q,
-  validate: xe,
-  validator: G
-}, Symbol.toStringTag, { value: "Module" }));
-/*!
- * https://github.com/Starcounter-Jack/JSON-Patch
- * (c) 2017-2021 Joachim Wester
- * MIT license
- */
-var ye = /* @__PURE__ */ new WeakMap(), ot = (
-  /** @class */
-  function() {
-    function e(t) {
-      this.observers = /* @__PURE__ */ new Map(), this.obj = t;
-    }
-    return e;
-  }()
-), at = (
-  /** @class */
-  function() {
-    function e(t, r) {
-      this.callback = t, this.observer = r;
-    }
-    return e;
-  }()
-);
-function it(e) {
-  return ye.get(e);
-}
-function ut(e, t) {
-  return e.observers.get(t);
-}
-function ct(e, t) {
-  e.observers.delete(t.callback);
-}
-function st(e, t) {
-  t.unobserve();
-}
-function ft(e, t) {
-  var r = [], n, o = it(e);
-  if (!o)
-    o = new ot(e), ye.set(e, o);
-  else {
-    var a = ut(o, t);
-    n = a && a.observer;
-  }
-  if (n)
-    return n;
-  if (n = {}, o.value = E(e), t) {
-    n.callback = t, n.next = null;
-    var u = function() {
-      fe(n);
-    }, f = function() {
-      clearTimeout(n.next), n.next = setTimeout(u);
-    };
-    typeof window < "u" && (window.addEventListener("mouseup", f), window.addEventListener("keyup", f), window.addEventListener("mousedown", f), window.addEventListener("keydown", f), window.addEventListener("change", f));
-  }
-  return n.patches = r, n.object = e, n.unobserve = function() {
-    fe(n), clearTimeout(n.next), ct(o, n), typeof window < "u" && (window.removeEventListener("mouseup", f), window.removeEventListener("keyup", f), window.removeEventListener("mousedown", f), window.removeEventListener("keydown", f), window.removeEventListener("change", f));
-  }, o.observers.set(t, new at(t, n)), n;
-}
-function fe(e, t) {
-  t === void 0 && (t = !1);
-  var r = ye.get(e.object);
-  ge(r.value, e.object, e.patches, "", t), e.patches.length && Z(r.value, e.patches);
-  var n = e.patches;
-  return n.length > 0 && (e.patches = [], e.callback && e.callback(n)), n;
-}
-function ge(e, t, r, n, o) {
-  if (t !== e) {
-    typeof t.toJSON == "function" && (t = t.toJSON());
-    for (var a = ue(t), u = ue(e), f = !1, l = u.length - 1; l >= 0; l--) {
-      var s = u[l], i = e[s];
-      if (ie(t, s) && !(t[s] === void 0 && i !== void 0 && Array.isArray(t) === !1)) {
-        var c = t[s];
-        typeof i == "object" && i != null && typeof c == "object" && c != null && Array.isArray(i) === Array.isArray(c) ? ge(i, c, r, n + "/" + I(s), o) : i !== c && (o && r.push({ op: "test", path: n + "/" + I(s), value: E(i) }), r.push({ op: "replace", path: n + "/" + I(s), value: E(c) }));
-      } else
-        Array.isArray(e) === Array.isArray(t) ? (o && r.push({ op: "test", path: n + "/" + I(s), value: E(i) }), r.push({ op: "remove", path: n + "/" + I(s) }), f = !0) : (o && r.push({ op: "test", path: n, value: e }), r.push({ op: "replace", path: n, value: t }));
-    }
-    if (!(!f && a.length == u.length))
-      for (var l = 0; l < a.length; l++) {
-        var s = a[l];
-        !ie(e, s) && t[s] !== void 0 && r.push({ op: "add", path: n + "/" + I(s), value: E(t[s]) });
-      }
-  }
-}
-function Fe(e, t, r) {
-  r === void 0 && (r = !1);
-  var n = [];
-  return ge(e, t, n, "", r), n;
-}
-const lt = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  compare: Fe,
-  generate: fe,
-  observe: ft,
-  unobserve: st
-}, Symbol.toStringTag, { value: "Module" }));
-Object.assign({}, nt, lt, {
-  JsonPatchError: Ce,
-  deepClone: E,
-  escapePathComponent: I,
-  unescapePathComponent: Ue
-});
 var z = /* @__PURE__ */ ((e) => (e.TRAVERSAL_START = "Traversal_Start", e.TRAVERSAL_END = "Traversal_End", e))(z || {});
 function $(e, t) {
   const r = e.state;
   if (r.type === "checkpoint")
     return r.val;
-  const { checkpointRef: n } = r, o = t[n], a = ze(o, e, t);
+  const { checkpointRef: n } = r, o = t[n], a = ke(o, e, t);
   a.shift();
   const u = a.map((s) => t[s]).map((s) => s.state.val).reduce((s, i) => [...s, ...i], []), f = $(o, t);
   return Z(
@@ -661,18 +664,18 @@ function $(e, t) {
     !1
   ).newDocument;
 }
-function dt(e, t) {
+function pt(e, t) {
   const r = Object.keys(e).length;
   return new Set(
     t.map((o) => o.path.split("/")[1])
   ).size < r / 2 ? "patch" : "checkpoint";
 }
-function Dt({
+function It({
   registry: e,
   initialState: t
 }) {
   let r = !1;
-  const n = Ke(), o = Xe(t);
+  const n = Be(), o = dt(t);
   function a(i) {
     return o.backend.nodes[i];
   }
@@ -788,8 +791,8 @@ function Dt({
           val: c
         };
       else {
-        const O = Fe(A, c);
-        if (dt(c, O) === "checkpoint")
+        const O = ze(A, c);
+        if (pt(c, O) === "checkpoint")
           y = {
             type: "checkpoint",
             val: c
@@ -811,7 +814,7 @@ function Dt({
             2
           )}`
         );
-      if (v = Ye({
+      if (v = qe({
         label: i,
         state: y,
         parent: this.current,
@@ -846,14 +849,14 @@ function Dt({
     },
     async to(i) {
       n.fire(z.TRAVERSAL_START);
-      const c = ze(
+      const c = ke(
         o.current,
         o.backend.nodes[i],
         o.backend.nodes
       ), p = [];
       for (let d = 0; d < c.length - 1; ++d) {
         const h = a(c[d]), v = a(c[d + 1]);
-        ht(h, v) ? N(h) && p.push(
+        vt(h, v) ? N(h) && p.push(
           ...h.sideEffects.undo
         ) : N(v) && p.push(...v.sideEffects.do);
       }
@@ -884,7 +887,7 @@ function Dt({
       console.log("Setup later for URL sharing.");
     },
     tree() {
-      return ke(o.root, o.backend.nodes);
+      return Je(o.root, o.backend.nodes);
     },
     on(i, c) {
       n.listen(i, c);
@@ -911,7 +914,7 @@ function Dt({
     bookmarks: s
   };
 }
-function pt(e, t, r) {
+function ht(e, t, r) {
   let [n, o] = [e, t];
   n.level > o.level && ([n, o] = [o, n]);
   let a = o.level - n.level;
@@ -923,8 +926,8 @@ function pt(e, t, r) {
     N(n) && (n = r[n.parent]), N(o) && (o = r[o.parent]);
   return n.id;
 }
-function ze(e, t, r) {
-  const n = pt(e, t, r), o = r[n], a = [], u = [];
+function ke(e, t, r) {
+  const n = ht(e, t, r), o = r[n], a = [], u = [];
   let [f, l] = [e, t];
   for (; f.id !== o.id; )
     a.push(f), N(f) && (f = r[f.parent]);
@@ -933,7 +936,7 @@ function ze(e, t, r) {
   const s = u.reverse();
   return [...a, ...s].map((i) => i.id);
 }
-function ht(e, t) {
+function vt(e, t) {
   if (N(e) && e.parent === t.id)
     return !0;
   if (N(t) && t.parent === e.id)
@@ -942,10 +945,10 @@ function ht(e, t) {
     "Incorrect use of function. Nodes are not connected to each other."
   );
 }
-function ke(e, t) {
+function Je(e, t) {
   return {
     ...e,
-    children: e.children.map((r) => ke(t[r], t)),
+    children: e.children.map((r) => Je(t[r], t)),
     name: `${e.label}`
   };
 }
@@ -953,7 +956,7 @@ function m(e) {
   for (var t = arguments.length, r = Array(t > 1 ? t - 1 : 0), n = 1; n < t; n++)
     r[n - 1] = arguments[n];
   if ({}.NODE_ENV !== "production") {
-    var o = _t[e], a = o ? typeof o == "function" ? o.apply(null, r) : o : "unknown error nr: " + e;
+    var o = bt[e], a = o ? typeof o == "function" ? o.apply(null, r) : o : "unknown error nr: " + e;
     throw Error("[Immer] " + a);
   }
   throw Error("[Immer] minified error nr: " + e + (r.length ? " " + r.map(function(u) {
@@ -972,7 +975,7 @@ function S(e) {
     if (n === null)
       return !0;
     var o = Object.hasOwnProperty.call(n, "constructor") && n.constructor;
-    return o === Object || typeof o == "function" && Function.toString.call(o) === bt;
+    return o === Object || typeof o == "function" && Function.toString.call(o) === Nt;
   }(e) || Array.isArray(e) || !!e[J] || !!(!((t = e.constructor) === null || t === void 0) && t[J]) || V(e) || ee(e));
 }
 function x(e, t, r) {
@@ -992,18 +995,18 @@ function K(e, t) {
 function W(e, t) {
   return R(e) === 2 ? e.get(t) : e[t];
 }
-function Je(e, t, r) {
+function He(e, t, r) {
   var n = R(e);
   n === 2 ? e.set(t, r) : n === 3 ? e.add(r) : e[t] = r;
 }
-function vt(e, t) {
+function yt(e, t) {
   return e === t ? e !== 0 || 1 / e == 1 / t : e != e && t != t;
 }
 function V(e) {
-  return At && e instanceof Map;
+  return Et && e instanceof Map;
 }
 function ee(e) {
-  return Et && e instanceof Set;
+  return _t && e instanceof Set;
 }
 function L(e) {
   return e.o || e.t;
@@ -1011,7 +1014,7 @@ function L(e) {
 function me(e) {
   if (Array.isArray(e))
     return Array.prototype.slice.call(e);
-  var t = Nt(e);
+  var t = Pt(e);
   delete t[_];
   for (var r = _e(t), n = 0; n < r.length; n++) {
     var o = r[n], a = t[o];
@@ -1020,11 +1023,11 @@ function me(e) {
   return Object.create(Object.getPrototypeOf(e), t);
 }
 function we(e, t) {
-  return t === void 0 && (t = !1), Oe(e) || M(e) || !S(e) || (R(e) > 1 && (e.set = e.add = e.clear = e.delete = yt), Object.freeze(e), t && x(e, function(r, n) {
+  return t === void 0 && (t = !1), Oe(e) || M(e) || !S(e) || (R(e) > 1 && (e.set = e.add = e.clear = e.delete = gt), Object.freeze(e), t && x(e, function(r, n) {
     return we(n, !0);
   }, !0)), e;
 }
-function yt() {
+function gt() {
   m(2);
 }
 function Oe(e) {
@@ -1034,25 +1037,25 @@ function T(e) {
   var t = he[e];
   return t || m(18, e), t;
 }
-function gt(e, t) {
+function mt(e, t) {
   he[e] || (he[e] = t);
 }
-function Se() {
+function Re() {
   return {}.NODE_ENV === "production" || F || m(0), F;
 }
 function re(e, t) {
   t && (T("Patches"), e.u = [], e.s = [], e.v = t);
 }
 function Y(e) {
-  le(e), e.p.forEach(mt), e.p = null;
+  le(e), e.p.forEach(wt), e.p = null;
 }
 function le(e) {
   e === F && (F = e.l);
 }
-function Re(e) {
+function De(e) {
   return F = { p: [], l: F, h: e, m: !0, _: 0 };
 }
-function mt(e) {
+function wt(e) {
   var t = e[_];
   t.i === 0 || t.i === 1 ? t.j() : t.g = !0;
 }
@@ -1067,7 +1070,7 @@ function q(e, t, r) {
   var n = t[_];
   if (!n)
     return x(t, function(f, l) {
-      return De(e, n, t, f, l, r);
+      return Ie(e, n, t, f, l, r);
     }, !0), t;
   if (n.A !== e)
     return t;
@@ -1077,15 +1080,15 @@ function q(e, t, r) {
     n.I = !0, n.A._--;
     var o = n.i === 4 || n.i === 5 ? n.o = me(n.k) : n.o, a = o, u = !1;
     n.i === 3 && (a = new Set(o), o.clear(), u = !0), x(a, function(f, l) {
-      return De(e, n, o, f, l, r, u);
+      return Ie(e, n, o, f, l, r, u);
     }), X(e, o, !1), r && e.u && T("Patches").N(n, r, e.u, e.s);
   }
   return n.o;
 }
-function De(e, t, r, n, o, a, u) {
+function Ie(e, t, r, n, o, a, u) {
   if ({}.NODE_ENV !== "production" && o === r && m(5), M(o)) {
     var f = q(e, o, a && t && t.i !== 3 && !K(t.R, n) ? a.concat(n) : void 0);
-    if (Je(r, n, f), !M(f))
+    if (He(r, n, f), !M(f))
       return;
     e.m = !1;
   } else
@@ -1103,7 +1106,7 @@ function oe(e, t) {
   var r = e[_];
   return (r ? L(r) : e)[t];
 }
-function Ie(e, t) {
+function Le(e, t) {
   if (t in e)
     for (var r = Object.getPrototypeOf(e); r; ) {
       var n = Object.getOwnPropertyDescriptor(r, t);
@@ -1120,14 +1123,14 @@ function ae(e) {
 }
 function pe(e, t, r) {
   var n = V(t) ? T("MapSet").F(t, r) : ee(t) ? T("MapSet").T(t, r) : e.O ? function(o, a) {
-    var u = Array.isArray(o), f = { i: u ? 1 : 0, A: a ? a.A : Se(), P: !1, I: !1, R: {}, l: a, t: o, k: null, o: null, j: null, C: !1 }, l = f, s = ve;
+    var u = Array.isArray(o), f = { i: u ? 1 : 0, A: a ? a.A : Re(), P: !1, I: !1, R: {}, l: a, t: o, k: null, o: null, j: null, C: !1 }, l = f, s = ve;
     u && (l = [f], s = k);
     var i = Proxy.revocable(l, s), c = i.revoke, p = i.proxy;
     return f.k = p, f.j = c, p;
   }(t, r) : T("ES5").J(t, r);
-  return (r ? r.A : Se()).p.push(n), n;
+  return (r ? r.A : Re()).p.push(n), n;
 }
-function wt(e) {
+function Ot(e) {
   return M(e) || m(22, e), function t(r) {
     if (!S(r))
       return r;
@@ -1135,15 +1138,15 @@ function wt(e) {
     if (o) {
       if (!o.P && (o.i < 4 || !T("ES5").K(o)))
         return o.t;
-      o.I = !0, n = Le(r, a), o.I = !1;
+      o.I = !0, n = je(r, a), o.I = !1;
     } else
-      n = Le(r, a);
+      n = je(r, a);
     return x(n, function(u, f) {
-      o && W(o.t, u) === f || Je(n, u, t(f));
+      o && W(o.t, u) === f || He(n, u, t(f));
     }), a === 3 ? new Set(n) : n;
   }(e);
 }
-function Le(e, t) {
+function je(e, t) {
   switch (t) {
     case 2:
       return new Map(e);
@@ -1152,7 +1155,7 @@ function Le(e, t) {
   }
   return me(e);
 }
-function Ot() {
+function At() {
   function e(n) {
     if (!S(n))
       return n;
@@ -1173,7 +1176,7 @@ function Ot() {
     return M(n) ? e(n) : n;
   }
   var r = "add";
-  gt("Patches", { $: function(n, o) {
+  mt("Patches", { $: function(n, o) {
     return o.forEach(function(a) {
       for (var u = a.path, f = a.op, l = n, s = 0; s < u.length - 1; s++) {
         var i = R(l), c = u[s];
@@ -1274,7 +1277,7 @@ function Ot() {
     a.push({ op: "replace", path: [], value: o === Ee ? void 0 : o }), u.push({ op: "replace", path: [], value: n });
   } });
 }
-var je, F, Ae = typeof Symbol < "u" && typeof Symbol("x") == "symbol", At = typeof Map < "u", Et = typeof Set < "u", Me = typeof Proxy < "u" && Proxy.revocable !== void 0 && typeof Reflect < "u", Ee = Ae ? Symbol.for("immer-nothing") : ((je = {})["immer-nothing"] = !0, je), J = Ae ? Symbol.for("immer-draftable") : "__$immer_draftable", _ = Ae ? Symbol.for("immer-state") : "__$immer_state", _t = { 0: "Illegal state", 1: "Immer drafts cannot have computed properties", 2: "This object has been frozen and should not be mutated", 3: function(e) {
+var Me, F, Ae = typeof Symbol < "u" && typeof Symbol("x") == "symbol", Et = typeof Map < "u", _t = typeof Set < "u", Ue = typeof Proxy < "u" && Proxy.revocable !== void 0 && typeof Reflect < "u", Ee = Ae ? Symbol.for("immer-nothing") : ((Me = {})["immer-nothing"] = !0, Me), J = Ae ? Symbol.for("immer-draftable") : "__$immer_draftable", _ = Ae ? Symbol.for("immer-state") : "__$immer_state", bt = { 0: "Illegal state", 1: "Immer drafts cannot have computed properties", 2: "This object has been frozen and should not be mutated", 3: function(e) {
   return "Cannot use a proxy that has been revoked. Did you pass an object from inside an immer function to an async process? " + e;
 }, 4: "An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft.", 5: "Immer forbids circular references", 6: "The first or second argument to `produce` must be a function", 7: "The third argument to `produce` must be a function or undefined", 8: "First argument to `createDraft` must be a plain object, an array, or an immerable object", 9: "First argument to `finishDraft` must be a draft returned by `createDraft`", 10: "The given draft is already finalized", 11: "Object.defineProperty() cannot be used on an Immer draft", 12: "Object.setPrototypeOf() cannot be used on an Immer draft", 13: "Immer only supports deleting array indices", 14: "Immer only supports setting array indices and the 'length' property", 15: function(e) {
   return "Cannot apply patch, path doesn't resolve: " + e;
@@ -1288,9 +1291,9 @@ var je, F, Ae = typeof Symbol < "u" && typeof Symbol("x") == "symbol", At = type
   return "'current' expects a draft, got: " + e;
 }, 23: function(e) {
   return "'original' expects a draft, got: " + e;
-}, 24: "Patching reserved attributes like __proto__, prototype and constructor is not allowed" }, bt = "" + Object.prototype.constructor, _e = typeof Reflect < "u" && Reflect.ownKeys ? Reflect.ownKeys : Object.getOwnPropertySymbols !== void 0 ? function(e) {
+}, 24: "Patching reserved attributes like __proto__, prototype and constructor is not allowed" }, Nt = "" + Object.prototype.constructor, _e = typeof Reflect < "u" && Reflect.ownKeys ? Reflect.ownKeys : Object.getOwnPropertySymbols !== void 0 ? function(e) {
   return Object.getOwnPropertyNames(e).concat(Object.getOwnPropertySymbols(e));
-} : Object.getOwnPropertyNames, Nt = Object.getOwnPropertyDescriptors || function(e) {
+} : Object.getOwnPropertyNames, Pt = Object.getOwnPropertyDescriptors || function(e) {
   var t = {};
   return _e(e).forEach(function(r) {
     t[r] = Object.getOwnPropertyDescriptor(e, r);
@@ -1301,7 +1304,7 @@ var je, F, Ae = typeof Symbol < "u" && typeof Symbol("x") == "symbol", At = type
   var r = L(e);
   if (!K(r, t))
     return function(o, a, u) {
-      var f, l = Ie(a, u);
+      var f, l = Le(a, u);
       return l ? "value" in l ? l.value : (f = l.get) === null || f === void 0 ? void 0 : f.call(o.k) : void 0;
     }(e, r, t);
   var n = r[t];
@@ -1311,14 +1314,14 @@ var je, F, Ae = typeof Symbol < "u" && typeof Symbol("x") == "symbol", At = type
 }, ownKeys: function(e) {
   return Reflect.ownKeys(L(e));
 }, set: function(e, t, r) {
-  var n = Ie(L(e), t);
+  var n = Le(L(e), t);
   if (n != null && n.set)
     return n.set.call(e.k, r), !0;
   if (!e.P) {
     var o = oe(L(e), t), a = o == null ? void 0 : o[_];
     if (a && a.t === r)
       return e.o[t] = r, e.R[t] = !1, !0;
-    if (vt(r, o) && (r !== void 0 || K(e.t, t)))
+    if (yt(r, o) && (r !== void 0 || K(e.t, t)))
       return !0;
     ae(e), de(e);
   }
@@ -1344,10 +1347,10 @@ x(ve, function(e, t) {
 }, k.set = function(e, t, r) {
   return {}.NODE_ENV !== "production" && t !== "length" && isNaN(parseInt(t)) && m(14), ve.set.call(this, e[0], t, r, e[0]);
 };
-var Pt = function() {
+var Tt = function() {
   function e(r) {
     var n = this;
-    this.O = Me, this.D = !0, this.produce = function(o, a, u) {
+    this.O = Ue, this.D = !0, this.produce = function(o, a, u) {
       if (typeof o == "function" && typeof a != "function") {
         var f = a;
         a = o;
@@ -1365,7 +1368,7 @@ var Pt = function() {
       }
       var s;
       if (typeof a != "function" && m(6), u !== void 0 && typeof u != "function" && m(7), S(o)) {
-        var i = Re(n), c = pe(n, o, void 0), p = !0;
+        var i = De(n), c = pe(n, o, void 0), p = !0;
         try {
           s = a(c), p = !1;
         } finally {
@@ -1404,8 +1407,8 @@ var Pt = function() {
   }
   var t = e.prototype;
   return t.createDraft = function(r) {
-    S(r) || m(8), M(r) && (r = wt(r));
-    var n = Re(this), o = pe(this, r, void 0);
+    S(r) || m(8), M(r) && (r = Ot(r));
+    var n = De(this), o = pe(this, r, void 0);
     return o[_].C = !0, le(n), o;
   }, t.finishDraft = function(r, n) {
     var o = r && r[_];
@@ -1415,7 +1418,7 @@ var Pt = function() {
   }, t.setAutoFreeze = function(r) {
     this.D = r;
   }, t.setUseProxies = function(r) {
-    r && !Me && m(20), this.O = r;
+    r && !Ue && m(20), this.O = r;
   }, t.applyPatches = function(r, n) {
     var o;
     for (o = n.length - 1; o >= 0; o--) {
@@ -1431,20 +1434,20 @@ var Pt = function() {
       return u(f, n);
     });
   }, e;
-}(), b = new Pt(), Tt = b.produce;
+}(), b = new Tt(), St = b.produce;
 b.produceWithPatches.bind(b);
 b.setAutoFreeze.bind(b);
 b.setUseProxies.bind(b);
 b.applyPatches.bind(b);
 b.createDraft.bind(b);
 b.finishDraft.bind(b);
-Ot();
-function St(e) {
-  return e.length === 2 ? Tt(e) : e;
+At();
+function Rt(e) {
+  return e.length === 2 ? St(e) : e;
 }
-class He {
+class Ke {
   static create() {
-    return new He();
+    return new Ke();
   }
   constructor() {
     this.registry = /* @__PURE__ */ new Map();
@@ -1460,7 +1463,7 @@ class He {
       throw new Error(`Already registered: ${t}`);
     const { label: a = t, eventType: u = t } = n || {};
     return this.registry.set(t, {
-      func: St(r),
+      func: Rt(r),
       config: {
         hasSideEffects: !o,
         label: typeof a == "string" ? () => a : a,
@@ -1477,15 +1480,15 @@ class He {
 }
 export {
   P as ID,
-  He as Registry,
+  Ke as Registry,
   z as TrrackEvents,
   U as createAction,
-  Ge as createRootNode,
-  Ye as createStateNode,
-  Ke as initEventManager,
-  Xe as initializeProvenanceGraph,
-  Dt as initializeTrrack,
-  Rt as isRootNode,
+  Ye as createRootNode,
+  qe as createStateNode,
+  Be as initEventManager,
+  dt as initializeProvenanceGraph,
+  It as initializeTrrack,
+  Dt as isRootNode,
   N as isStateNode
 };
 //# sourceMappingURL=index.mjs.map
