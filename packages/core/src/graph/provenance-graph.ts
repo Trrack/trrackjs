@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import produce from 'immer';
 import { ID } from '../utils';
 
 import { RootNode } from './components';
@@ -55,7 +56,13 @@ export function initializeProvenanceGraph<State, Event extends string>(
     }
 
     function update(action: ProvenanceGraphAction<State, Event>) {
-        backend = reduce(backend, action);
+        backend = produce(backend, (draft) => {
+            const result = reduce(draft as typeof backend, action);
+
+            if (result !== draft) {
+                return result;
+            }
+        });
         notifyCurrentChange(action);
         return action;
     }

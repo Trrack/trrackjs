@@ -60,4 +60,20 @@ describe('Current change listeners', () => {
         expect(listener).toHaveBeenCalledOnce();
         expect(unsubscribe()).toBe(false);
     });
+
+    it('returns a new backend reference for each graph update', async () => {
+        const { trrack, add } = setup();
+        const initialBackend = trrack.graph.backend;
+
+        await trrack.apply('Add', add(1));
+        const afterApply = trrack.graph.backend;
+        expect(afterApply).not.toBe(initialBackend);
+
+        trrack.metadata.add({ note: 'backend changed' });
+        const afterMetadata = trrack.graph.backend;
+        expect(afterMetadata).not.toBe(afterApply);
+
+        await trrack.undo();
+        expect(trrack.graph.backend).not.toBe(afterMetadata);
+    });
 });

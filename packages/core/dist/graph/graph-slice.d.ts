@@ -22,6 +22,7 @@ type GraphActionCreators<S, E extends string> = {
 };
 export type ProvenanceGraphActions<S, E extends string> = GraphActionCreators<S, E>;
 export type ProvenanceGraphAction<S, E extends string> = ReturnType<GraphActionCreators<S, E>['addMetadata']> | ReturnType<GraphActionCreators<S, E>['addArtifact']> | ReturnType<GraphActionCreators<S, E>['changeCurrent']> | ReturnType<GraphActionCreators<S, E>['addNode']> | ReturnType<GraphActionCreators<S, E>['load']>;
+export declare function cloneGraph<State, Event extends string>(graph: ProvenanceGraph<State, Event>): ProvenanceGraph<State, Event>;
 export declare function graphSliceCreator<State, Event extends string>(initialState: State, args?: {
     artifact?: unknown;
     metadata?: Record<string, unknown>;
