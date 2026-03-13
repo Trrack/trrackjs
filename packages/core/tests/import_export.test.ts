@@ -71,4 +71,60 @@ describe('Export', () => {
             Object.keys(trrack.graph.backend).length
         );
     });
+
+    it('round-trips branched graphs with metadata, artifacts, annotations, and bookmarks', async () => {
+        const { trrack, add, sub } = setup();
+
+        trrack.metadata.add({ rootTag: 'origin' });
+        trrack.artifact.add({ file: 'root.json' });
+
+        await trrack.apply('Add', add(2));
+        const firstBranchNode = trrack.current.id;
+        trrack.metadata.add({ branch: 'first' });
+        trrack.artifact.add({ file: 'first.json' });
+        trrack.annotations.add('first branch');
+        trrack.bookmarks.add();
+
+        await trrack.undo();
+        await trrack.apply('Sub', sub(1));
+        const secondBranchNode = trrack.current.id;
+        trrack.metadata.add({ branch: 'second' });
+        trrack.artifact.add({ file: 'second.json' });
+        trrack.annotations.add('second branch');
+
+        const snapshot = trrack.exportObject();
+        const exportStr = trrack.export();
+
+        const { trrack: importedFromString } = setup();
+        const { trrack: importedFromObject } = setup();
+
+        importedFromString.import(exportStr);
+        importedFromObject.importObject(JSON.parse(JSON.stringify(snapshot)));
+
+        expect(importedFromString.exportObject()).toStrictEqual(snapshot);
+        expect(importedFromObject.exportObject()).toStrictEqual(snapshot);
+        expect(importedFromString.current.id).toBe(secondBranchNode);
+        expect(importedFromString.root.id).toBe(snapshot.root);
+        expect(
+            importedFromString.graph.backend.nodes[firstBranchNode].meta['branch'][0]
+                .val
+        ).toBe('first');
+        expect(
+            importedFromString.graph.backend.nodes[firstBranchNode].artifacts[0]
+                .val
+        ).toEqual({ file: 'first.json' });
+        expect(
+            importedFromString.graph.backend.nodes[firstBranchNode].meta.annotation[0]
+                .val
+        ).toBe('first branch');
+        expect(
+            importedFromString.graph.backend.nodes[firstBranchNode].meta.bookmark[0]
+                .val
+        ).toBe(true);
+        expect(
+            importedFromString.graph.backend.nodes[secondBranchNode].meta['branch'][0]
+                .val
+        ).toBe('second');
+        expect(importedFromString.getState()).toEqual({ counter: -1 });
+    });
 });

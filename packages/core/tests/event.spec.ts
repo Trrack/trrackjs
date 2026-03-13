@@ -65,4 +65,18 @@ describe('Event Manager', () => {
         expect(arr.length).toBe(2);
         expect(arr).toContain(ARG2);
     });
+
+    it('should unsubscribe listeners', () => {
+        const eventManager = initEventManager();
+        const handler = vi.fn();
+
+        const unsubscribe = eventManager.listen('test', handler);
+
+        eventManager.fire('test');
+        expect(handler).toHaveBeenCalledTimes(1);
+
+        unsubscribe();
+        eventManager.fire('test');
+        expect(handler).toHaveBeenCalledTimes(1);
+    });
 });
