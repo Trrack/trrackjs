@@ -52,11 +52,9 @@ trrack-monorepo
 |
 |--- pacakges # trrack library is located in this folder
     |--- core # Core action-based tracking library
-    |--- redux # Redux toolkit wrapper for core
 |
 |--- apps # Trrack examples are located in this folder
     |--- react-trrack-example
-    |--- rtk-trrack-example
 ```
 
 Following the standards for Nx monorepos please install any dependency for the applications directly to root workspace. This ensures all the applications use same versions of any dependency. For the packages, install the dependency to appropriate package.
