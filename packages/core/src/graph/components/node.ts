@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PayloadAction } from '@reduxjs/toolkit';
 import { Operation } from 'fast-json-patch';
+import { PayloadAction } from '../../action';
 
 import { FlavoredId, ID } from '../../utils';
 

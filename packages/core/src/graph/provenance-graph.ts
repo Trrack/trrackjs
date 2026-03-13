@@ -1,13 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    configureStore,
-    createListenerMiddleware,
-    isAnyOf,
-} from '@reduxjs/toolkit';
 import { ID } from '../utils';
 
 import { RootNode } from './components';
-import { graphSliceCreator } from './graph-slice';
+import { graphSliceCreator, ProvenanceGraphAction } from './graph-slice';
 
 export type Trigger = 'traversal' | 'new';
 
@@ -33,46 +28,48 @@ export function initializeProvenanceGraph<State, Event extends string>(
         }
     > = new Map();
 
-    const { reducer, actions, getInitialState } = graphSliceCreator<
+    const { reduce, actions, getInitialState } = graphSliceCreator<
         State,
         Event
     >(initialState);
 
-    const listenerMiddleware = createListenerMiddleware();
+    let backend = getInitialState();
 
-    listenerMiddleware.startListening({
-        matcher: isAnyOf(actions.changeCurrent, actions.addNode),
-        effect: (action, listenerApi) => {
-            listenerApi.cancelActiveListeners();
-            listeners.forEach((listener) => {
-                const isNew = isAnyOf(actions.addNode)(action);
-                const { skipOnNew } = listener.config;
+    function notifyCurrentChange(action: ProvenanceGraphAction<State, Event>) {
+        if (
+            !actions.changeCurrent.match(action) &&
+            !actions.addNode.match(action)
+        ) {
+            return;
+        }
 
-                if (skipOnNew && isNew) return;
+        const isNew = actions.addNode.match(action);
 
-                listener.func(isNew ? 'new' : 'traversal');
-            });
-        },
-    });
+        listeners.forEach((listener) => {
+            const { skipOnNew } = listener.config;
 
-    const store = configureStore({
-        reducer: reducer,
-        middleware: (getDefaultMiddleware) =>
-            getDefaultMiddleware().prepend(listenerMiddleware.middleware),
-    });
+            if (skipOnNew && isNew) return;
+
+            listener.func(isNew ? 'new' : 'traversal');
+        });
+    }
+
+    function update(action: ProvenanceGraphAction<State, Event>) {
+        backend = reduce(backend, action);
+        notifyCurrentChange(action);
+        return action;
+    }
 
     return {
         initialState: getInitialState(),
         get backend() {
-            return store.getState();
+            return backend;
         },
         get current() {
-            return store.getState().nodes[store.getState().current];
+            return backend.nodes[backend.current];
         },
         get root() {
-            return store.getState().nodes[
-                store.getState().root
-            ] as RootNode<State>;
+            return backend.nodes[backend.root] as RootNode<State>;
         },
         currentChange(
             func: CurrentChangeHandler,
@@ -87,7 +84,7 @@ export function initializeProvenanceGraph<State, Event extends string>(
 
             return () => listeners.delete(listener.id);
         },
-        update: store.dispatch,
+        update,
         ...actions,
     };
 }

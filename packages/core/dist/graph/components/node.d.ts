@@ -1,5 +1,5 @@
-import { PayloadAction } from '@reduxjs/toolkit';
 import { Operation } from 'fast-json-patch';
+import { PayloadAction } from '../../action';
 import { FlavoredId } from '../../utils';
 export type NodeId = FlavoredId<string, 'Node'>;
 type Checkpoint<State> = {

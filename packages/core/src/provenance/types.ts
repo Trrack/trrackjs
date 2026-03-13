@@ -1,5 +1,4 @@
-import { PayloadAction } from '@reduxjs/toolkit';
-import { NodeId } from '@trrack/core';
+import { PayloadAction } from '../action';
 import {
     Artifact,
     CurrentChangeHandler,
@@ -9,6 +8,7 @@ import {
     RootNode,
     SideEffects,
     UnsubscribeCurrentChangeListener,
+    NodeId,
 } from '../graph';
 import { ProvenanceGraph } from '../graph/graph-slice';
 import { Registry } from '../registry';

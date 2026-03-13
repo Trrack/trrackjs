@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createAction } from '@reduxjs/toolkit';
 import produce, { enablePatches } from 'immer';
+import { createAction } from '../action';
 
 import {
     Label,

@@ -1,4 +1,4 @@
-import { PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction } from '../action';
 export type TrrackActionFunction<DoActionType extends string, UndoActionType extends string, UndoActionPayload, DoActionPayload> = (args: DoActionPayload) => {
     do?: PayloadAction<DoActionPayload, DoActionType>;
     undo: PayloadAction<UndoActionPayload, UndoActionType>;
