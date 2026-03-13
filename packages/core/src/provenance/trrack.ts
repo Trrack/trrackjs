@@ -210,7 +210,7 @@ export function initializeTrrack<State = any, Event extends string = string>({
 
             let stateToSave: StateLike<State> | null = null;
 
-            const originalState = getState(
+            const originalState: State = getState(
                 this.current,
                 this.graph.backend.nodes
             );
@@ -275,20 +275,26 @@ export function initializeTrrack<State = any, Event extends string = string>({
             );
 
             if (action.config.hasSideEffects) {
-                const { do: doAct = act, undo } = (
-                    action.func as TrrackActionFunction<any, any, any, any>
-                )(act.payload);
+                const actionRecord = (action.func as TrrackActionFunction<
+                    any,
+                    any,
+                    any,
+                    any
+                >)(act.payload);
 
                 this.record({
                     label,
                     state: originalState,
-                    sideEffects: { do: [doAct], undo: [undo] },
+                    sideEffects: {
+                        do: [actionRecord.do ?? act],
+                        undo: [actionRecord.undo],
+                    },
                     eventType: action.config.eventType as Event,
                 });
             } else {
                 const newState = (
                     action.func as ProduceWrappedStateChangeFunction<State>
-                )(originalState, act.payload);
+                )(originalState as State, act.payload);
 
                 this.record({
                     label,

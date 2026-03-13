@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { initEventManager } from '../src/event/index';
 describe('Event Manager', () => {
     it('should create an instance of EventManager', () => {

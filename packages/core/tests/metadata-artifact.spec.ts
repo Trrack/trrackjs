@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { initializeTrrack } from '../src/provenance/trrack';
 import { Registry } from '../src/registry';
 function setup() {

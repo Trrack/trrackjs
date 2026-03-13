@@ -1,15 +1,11 @@
-import { initializeTrrack, NodeId } from '@trrack/core';
-import ReactDOM from 'react-dom';
+import { NodeId, Trrack } from '@trrack/core';
 import { createRoot, Root } from 'react-dom/client';
 import { ProvVis, ProvVisConfig } from './ProvVis';
 
-type TrrackLike = ReturnType<typeof initializeTrrack>;
-
-export async function ProvVisCreator<TrrackInstance extends TrrackLike>(
+export async function ProvVisCreator<T, S extends string>(
     node: Element,
-    trrackInstance: TrrackInstance,
-    config: Partial<ProvVisConfig<unknown, string>> = {},
-    REACT_16 = false
+    trrackInstance: Trrack<T, S>,
+    config: Partial<ProvVisConfig<T, S>> = {}
 ) {
     let root: Root | null = null;
 
@@ -26,15 +22,11 @@ export async function ProvVisCreator<TrrackInstance extends TrrackLike>(
             />
         );
 
-        if (REACT_16) {
-            ReactDOM.render(vis, node);
-        } else {
-            if (!root) {
-                root = createRoot(node);
-            }
-
-            root.render(vis);
+        if (!root) {
+            root = createRoot(node);
         }
+
+        root.render(vis);
     }
 
     trrackInstance.currentChange(() => {

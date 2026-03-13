@@ -6,9 +6,6 @@
     "readme": "none",
     "excludePrivate": true,
     "excludeInternal": true,
-    "entryDocument": "index.md",
     "hideBreadcrumbs": false,
-    "hidePageTitle": false,
-    "hideInPageTOC": false,
-    "allReflectionsHaveOwnDocument": true
+    "hidePageTitle": false
 }

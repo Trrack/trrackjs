@@ -1,9 +1,13 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 
+import { StratifiedMap } from '../components/useComputeNodePosition';
 import { BundleMap } from './BundleMap';
 
-export default function findBackboneBundleNodes(nodeMap: any, bundleMap?: BundleMap): string[] {
+export default function findBackboneBundleNodes(
+  nodeMap: StratifiedMap<unknown, string>,
+  bundleMap?: BundleMap
+): string[] {
   const backboneBundleNodes = [];
 
   for (const bundle in bundleMap) {

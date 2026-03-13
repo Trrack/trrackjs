@@ -1,5 +1,4 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 import { join } from 'path';
 import dts from 'vite-plugin-dts';
@@ -36,33 +35,17 @@ export default defineConfig({
     build: {
         sourcemap: true,
         lib: {
-            // Could also be a dictionary or array of multiple entry points.
             entry: 'src/index.ts',
             fileName: 'index',
-
-            // UMD name
-            name: 'Trrack',
-            // Change this to the formats you want to support.
-            // Don't forgot to update your package.json as well.
-            formats: ['es', 'cjs', 'umd'],
+            formats: ['es', 'cjs'],
         },
         rollupOptions: {
-            // External packages that should not be bundled into your library.
-            external: ['@reduxjs/toolkit'],
-            output: {
-                globals: {
-                    '@reduxjs/toolkit': 'RTK',
-                },
-            },
+            external: ['@reduxjs/toolkit', 'fast-json-patch', 'uuid'],
         },
     },
 
     test: {
-        globals: true,
-        cache: {
-            dir: '../../node_modules/.vitest',
-        },
-        environment: 'jsdom',
+        environment: 'node',
         include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     },
 });

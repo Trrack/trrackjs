@@ -1,6 +1,6 @@
 import { ProvenanceNode } from '@trrack/core';
 import { ReactElement } from 'react';
-import * as d3 from 'd3';
+import { color as parseColor } from 'd3-color';
 
 type ReactChild = ReactElement | string | number;
 
@@ -39,7 +39,7 @@ export function defaultIcon<T, S extends string>(color: string): Config<T, S> {
 export function defaultDarkmodeIcon<T, S extends string>(
     color: string
 ): Config<T, S> {
-    const lighterColor = d3.color(color)?.brighter().toString();
+    const lighterColor = parseColor(color)?.brighter().toString();
 
     return {
         glyph: () => (

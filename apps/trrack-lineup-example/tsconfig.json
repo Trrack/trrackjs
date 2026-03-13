@@ -1,7 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["vite/client", "vitest/globals"]
+    "moduleResolution": "bundler",
+    "types": ["vite/client"]
   },
   "include": ["src/**/*.ts", "vite.config.ts"]
 }

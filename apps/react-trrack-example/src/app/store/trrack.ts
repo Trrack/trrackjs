@@ -9,7 +9,6 @@ const initialState = {
 
 type State = typeof initialState;
 
-// ! Add example for async action (e.g. data loading)
 export function useTrrackTaskManager() {
   const [counter, setCounter] = useState(0);
   const [state, setState] = useState(initialState);

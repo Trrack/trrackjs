@@ -36,8 +36,11 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Typecheck
+        run: yarn typecheck
+
       - name: Build packages
-        run: yarn build:packages
+        run: yarn build
 
       - name: Test
-        run: yarn test:all
+        run: yarn test:ci
