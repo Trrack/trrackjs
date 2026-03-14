@@ -356,8 +356,6 @@ export function Tree<T, S extends string>({
             >
                 {descriptions}
             </animated.div>
-
-            {/* <IconLegend colorMap={colorMap} nodes={nodes} config={config} /> */}
         </div>
     );
 }
