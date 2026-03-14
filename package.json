@@ -4,6 +4,7 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "dev:react": "yarn workspace react-trrack-example dev",
+    "dev:vis": "yarn workspace trrack-vis-example dev",
     "dev:lineup": "yarn workspace trrack-lineup-example dev",
     "dev:dummy": "yarn workspace dummy-testing-library dev",
     "dev:docs": "yarn workspace docs dev",

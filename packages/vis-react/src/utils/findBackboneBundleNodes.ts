@@ -1,27 +1,28 @@
 /* eslint-disable no-restricted-syntax */
-/* eslint-disable guard-for-in */
 
 import { BundleMap } from './BundleMap';
 
 export default function findBackboneBundleNodes(nodeMap: any, bundleMap?: BundleMap): string[] {
-  const backboneBundleNodes = [];
+  const backboneBundleNodes: string[] = [];
+  const bundles = bundleMap ?? {};
 
-  for (const bundle in bundleMap) {
+  for (const [bundle, bundleInfo] of Object.entries(bundles)) {
     let flag = true;
+    const bundleNode = nodeMap[bundle];
 
-    if (nodeMap[bundle].width !== 0) {
+    if (!bundleNode || bundleNode.width !== 0) {
       flag = false;
     }
 
-    for (const i of bundleMap[bundle].bunchedNodes) {
-      if (nodeMap[i].width !== 0) {
+    for (const i of bundleInfo.bunchedNodes) {
+      if (!nodeMap[i] || nodeMap[i].width !== 0) {
         flag = false;
       }
     }
 
     if (flag) {
       backboneBundleNodes.push(bundle);
-      for (const n of bundleMap[bundle].bunchedNodes) {
+      for (const n of bundleInfo.bunchedNodes) {
         backboneBundleNodes.push(n);
       }
     }
