@@ -1,16 +1,18 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useState } from 'react';
 
 export function useElementHeight<T extends HTMLElement>(): [
-    MutableRefObject<T | null>,
+    (node: T | null) => void,
     number,
 ] {
-    const ref = useRef<T>(null);
+    const [element, setElement] = useState<T | null>(null);
     const [height, setHeight] = useState(0);
+    const ref = useCallback((node: T | null) => {
+        setElement(node);
+    }, []);
 
-    useEffect(() => {
-        const element = ref.current;
-
+    useLayoutEffect(() => {
         if (!element) {
+            setHeight(0);
             return undefined;
         }
 
@@ -32,7 +34,7 @@ export function useElementHeight<T extends HTMLElement>(): [
         observer.observe(element);
 
         return () => observer.disconnect();
-    }, []);
+    }, [element]);
 
     return [ref, height];
 }

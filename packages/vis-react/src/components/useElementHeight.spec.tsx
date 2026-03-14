@@ -69,6 +69,24 @@ describe('useElementHeight', () => {
         });
     });
 
+    it('measures when the ref attaches after the first render', async () => {
+        vi.stubGlobal('ResizeObserver', undefined);
+        vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(
+            {
+                height: 36,
+            } as DOMRect
+        );
+        const view = render(<HeightHarness attachRef={false} />);
+
+        expect(view.getByTestId('height').textContent).toBe('0');
+
+        view.rerender(<HeightHarness attachRef />);
+
+        await waitFor(() => {
+            expect(view.getByTestId('height').textContent).toBe('36');
+        });
+    });
+
     it('updates height from ResizeObserver notifications and disconnects on unmount', async () => {
         vi.stubGlobal('ResizeObserver', ResizeObserverMock);
         vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(
