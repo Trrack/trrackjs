@@ -71,4 +71,137 @@ describe('Export', () => {
             Object.keys(trrack.graph.backend).length
         );
     });
+
+    it('keeps graph.initialState isolated from later updates', async () => {
+        const { trrack, add } = setup();
+        const initialGraph = trrack.graph.initialState;
+        const rootId = initialGraph.root;
+
+        await trrack.apply('Add', add(1));
+        trrack.metadata.add({ note: 'live backend only' });
+
+        expect(initialGraph.current).toBe(rootId);
+        expect(Object.keys(initialGraph.nodes)).toHaveLength(1);
+        expect(initialGraph.nodes[rootId].children).toEqual([]);
+        expect(initialGraph.nodes[rootId].meta.note).toBeUndefined();
+    });
+
+    it('preserves structured-cloneable state through graph snapshots and importObject', () => {
+        const when = new Date('2020-01-01T00:00:00.000Z');
+        const lookup = new Map([['a', 1]]);
+        const registry = Registry.create();
+        const trrack = initializeTrrack({
+            registry,
+            initialState: {
+                when,
+                lookup,
+            },
+        });
+
+        const initialGraph = trrack.graph.initialState;
+        const rootState = initialGraph.nodes[initialGraph.root].state;
+
+        expect(rootState.type).toBe('checkpoint');
+        if (rootState.type !== 'checkpoint') {
+            throw new Error('Expected checkpoint state');
+        }
+
+        expect(rootState.val.when).toBeInstanceOf(Date);
+        expect(rootState.val.when.toISOString()).toBe(when.toISOString());
+        expect(rootState.val.lookup).toBeInstanceOf(Map);
+        expect(rootState.val.lookup.get('a')).toBe(1);
+
+        const snapshot = trrack.graph.backend;
+        const imported = initializeTrrack({
+            registry: Registry.create(),
+            initialState: {
+                when: new Date('1999-01-01T00:00:00.000Z'),
+                lookup: new Map(),
+            },
+        });
+
+        imported.importObject(snapshot);
+
+        const importedState = imported.getState();
+        expect(importedState.when).toBeInstanceOf(Date);
+        expect(importedState.when.toISOString()).toBe(when.toISOString());
+        expect(importedState.lookup).toBeInstanceOf(Map);
+        expect(importedState.lookup.get('a')).toBe(1);
+    });
+
+    it('does not mutate imported graph objects after importObject', async () => {
+        const { trrack, add } = setup();
+
+        await trrack.apply('Add', add(2));
+        const snapshot = trrack.exportObject();
+        const snapshotCopy = structuredClone(snapshot);
+
+        const { trrack: imported } = setup();
+        imported.importObject(snapshot);
+        expect(snapshot).toStrictEqual(snapshotCopy);
+
+        await imported.apply('Add', add(3));
+        imported.metadata.add({ note: 'imported only' });
+
+        expect(imported.graph.backend).not.toBe(snapshot);
+        expect(snapshot.current).not.toBe(imported.current.id);
+        expect(snapshot.nodes[snapshot.current].meta.note).toBeUndefined();
+        expect(snapshot).toStrictEqual(snapshotCopy);
+    });
+
+    it('round-trips branched graphs with metadata, artifacts, annotations, and bookmarks', async () => {
+        const { trrack, add, sub } = setup();
+
+        trrack.metadata.add({ rootTag: 'origin' });
+        trrack.artifact.add({ file: 'root.json' });
+
+        await trrack.apply('Add', add(2));
+        const firstBranchNode = trrack.current.id;
+        trrack.metadata.add({ branch: 'first' });
+        trrack.artifact.add({ file: 'first.json' });
+        trrack.annotations.add('first branch');
+        trrack.bookmarks.add();
+
+        await trrack.undo();
+        await trrack.apply('Sub', sub(1));
+        const secondBranchNode = trrack.current.id;
+        trrack.metadata.add({ branch: 'second' });
+        trrack.artifact.add({ file: 'second.json' });
+        trrack.annotations.add('second branch');
+
+        const snapshot = trrack.exportObject();
+        const exportStr = trrack.export();
+
+        const { trrack: importedFromString } = setup();
+        const { trrack: importedFromObject } = setup();
+
+        importedFromString.import(exportStr);
+        importedFromObject.importObject(JSON.parse(JSON.stringify(snapshot)));
+
+        expect(importedFromString.exportObject()).toStrictEqual(snapshot);
+        expect(importedFromObject.exportObject()).toStrictEqual(snapshot);
+        expect(importedFromString.current.id).toBe(secondBranchNode);
+        expect(importedFromString.root.id).toBe(snapshot.root);
+        expect(
+            importedFromString.graph.backend.nodes[firstBranchNode].meta['branch'][0]
+                .val
+        ).toBe('first');
+        expect(
+            importedFromString.graph.backend.nodes[firstBranchNode].artifacts[0]
+                .val
+        ).toEqual({ file: 'first.json' });
+        expect(
+            importedFromString.graph.backend.nodes[firstBranchNode].meta.annotation[0]
+                .val
+        ).toBe('first branch');
+        expect(
+            importedFromString.graph.backend.nodes[firstBranchNode].meta.bookmark[0]
+                .val
+        ).toBe(true);
+        expect(
+            importedFromString.graph.backend.nodes[secondBranchNode].meta['branch'][0]
+                .val
+        ).toBe('second');
+        expect(importedFromString.getState()).toEqual({ counter: -1 });
+    });
 });

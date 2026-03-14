@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createSlice, PayloadAction, Slice } from '@reduxjs/toolkit';
-
-import { castDraft } from 'immer';
+import { PayloadActionCreator, createAction } from '../action';
 import { ID } from '../utils';
 import { createRootNode, NodeId, Nodes, StateNode } from './components';
 
@@ -21,14 +19,43 @@ export type ProvenanceGraph<State, Event extends string> = {
     root: NodeId;
 };
 
-type GraphSlice<S, E extends string> = Slice<ProvenanceGraph<S, E>>;
+type GraphActionCreators<S, E extends string> = {
+    addMetadata: PayloadActionCreator<
+        AddMetadataPayload,
+        'provenance-graph/addMetadata'
+    >;
+    addArtifact: PayloadActionCreator<
+        AddArtifactPayload,
+        'provenance-graph/addArtifact'
+    >;
+    changeCurrent: PayloadActionCreator<NodeId, 'provenance-graph/changeCurrent'>;
+    addNode: PayloadActionCreator<
+        StateNode<S, E>,
+        'provenance-graph/addNode'
+    >;
+    load: PayloadActionCreator<
+        ProvenanceGraph<S, E>,
+        'provenance-graph/load'
+    >;
+};
 
-export type ProvenanceGraphActions<S, E extends string> = GraphSlice<
+export type ProvenanceGraphActions<S, E extends string> = GraphActionCreators<
     S,
     E
->['actions'];
+>;
 
-// Maybe swithc to reduxtoolkit createEntityAdapter
+export type ProvenanceGraphAction<S, E extends string> =
+    | ReturnType<GraphActionCreators<S, E>['addMetadata']>
+    | ReturnType<GraphActionCreators<S, E>['addArtifact']>
+    | ReturnType<GraphActionCreators<S, E>['changeCurrent']>
+    | ReturnType<GraphActionCreators<S, E>['addNode']>
+    | ReturnType<GraphActionCreators<S, E>['load']>;
+
+export function cloneGraph<State, Event extends string>(
+    graph: ProvenanceGraph<State, Event>
+): ProvenanceGraph<State, Event> {
+    return structuredClone(graph);
+}
 
 export function graphSliceCreator<State, Event extends string>(
     initialState: State,
@@ -59,50 +86,88 @@ export function graphSliceCreator<State, Event extends string>(
         current: root.id,
     };
 
-    const slice = createSlice({
-        name: 'provenance-graph',
-        initialState: graph,
-        reducers: {
-            addMetadata(g, action: PayloadAction<AddMetadataPayload>) {
-                const { id, meta } = action.payload;
-                const existingMetadata = g.nodes[id].meta;
+    const actions: GraphActionCreators<State, Event> = {
+        addMetadata: createAction<
+            AddMetadataPayload,
+            'provenance-graph/addMetadata'
+        >('provenance-graph/addMetadata'),
+        addArtifact: createAction<
+            AddArtifactPayload,
+            'provenance-graph/addArtifact'
+        >('provenance-graph/addArtifact'),
+        changeCurrent: createAction<
+            NodeId,
+            'provenance-graph/changeCurrent'
+        >('provenance-graph/changeCurrent'),
+        addNode: createAction<StateNode<State, Event>, 'provenance-graph/addNode'>(
+            'provenance-graph/addNode'
+        ),
+        load: createAction<
+            ProvenanceGraph<State, Event>,
+            'provenance-graph/load'
+        >('provenance-graph/load'),
+    };
 
-                const metaData = Object.keys(meta).reduce((acc, key) => {
-                    if (!acc[key]) {
-                        acc[key] = [];
-                    }
-                    acc[key].push({
-                        type: key,
-                        id: ID.get(),
-                        val: meta[key],
-                        createdOn: Date.now(),
-                    });
+    function reduce(
+        g: ProvenanceGraph<State, Event>,
+        action: ProvenanceGraphAction<State, Event>
+    ): ProvenanceGraph<State, Event> {
+        if (actions.addMetadata.match(action)) {
+            const { id, meta } = action.payload;
+            const existingMetadata = g.nodes[id].meta;
 
-                    return acc;
-                }, existingMetadata);
-
-                g.nodes[action.payload.id].meta = metaData;
-            },
-            addArtifact(g, action: PayloadAction<AddArtifactPayload>) {
-                g.nodes[action.payload.id].artifacts.push({
+            const metaData = Object.keys(meta).reduce((acc, key) => {
+                if (!acc[key]) {
+                    acc[key] = [];
+                }
+                acc[key].push({
+                    type: key,
                     id: ID.get(),
+                    val: meta[key],
                     createdOn: Date.now(),
-                    val: castDraft(action.payload.artifact),
                 });
-            },
-            changeCurrent(g, action: PayloadAction<NodeId>) {
-                g.current = action.payload;
-            },
-            addNode(g, { payload }: PayloadAction<StateNode<State, Event>>) {
-                g.nodes[payload.id] = payload as any;
-                g.nodes[payload.parent].children.push(payload.id);
-                g.current = payload.id;
-            },
-            load(_, { payload }: PayloadAction<ProvenanceGraph<State, Event>>) {
-                return payload;
-            },
-        },
-    });
 
-    return slice;
+                return acc;
+            }, existingMetadata);
+
+            g.nodes[id].meta = metaData;
+            return g;
+        }
+
+        if (actions.addArtifact.match(action)) {
+            g.nodes[action.payload.id].artifacts.push({
+                id: ID.get(),
+                createdOn: Date.now(),
+                val: action.payload.artifact,
+            });
+            return g;
+        }
+
+        if (actions.changeCurrent.match(action)) {
+            g.current = action.payload;
+            return g;
+        }
+
+        if (actions.addNode.match(action)) {
+            const { payload } = action;
+            g.nodes[payload.id] = payload as any;
+            g.nodes[payload.parent].children.push(payload.id);
+            g.current = payload.id;
+            return g;
+        }
+
+        if (actions.load.match(action)) {
+            return cloneGraph(action.payload);
+        }
+
+        return g;
+    }
+
+    return {
+        actions,
+        getInitialState() {
+            return cloneGraph(graph);
+        },
+        reduce,
+    };
 }

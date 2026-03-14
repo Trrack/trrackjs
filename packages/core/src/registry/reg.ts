@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createAction } from '@reduxjs/toolkit';
 import produce, { enablePatches } from 'immer';
+import { PayloadActionCreator, createAction } from '../action';
 
 import {
     Label,
@@ -38,12 +38,19 @@ export class Registry<Event extends string> {
         return this.registry.has(name);
     }
 
+    register<DoActionType extends string, DoActionPayload = any, State = any>(
+        type: DoActionType,
+        actionFunction: StateChangeFunction<State, DoActionPayload>,
+        config?: {
+            eventType?: Event;
+            label?: Label | LabelGenerator<DoActionPayload>;
+        }
+    ): PayloadActionCreator<DoActionPayload, DoActionType>;
     register<
         DoActionType extends string,
         UndoActionType extends string,
         DoActionPayload = any,
-        UndoActionPayload = any,
-        State = any
+        UndoActionPayload = any
     >(
         type: DoActionType,
         actionFunction: TrrackActionFunction<
@@ -51,12 +58,22 @@ export class Registry<Event extends string> {
             UndoActionType,
             UndoActionPayload,
             DoActionPayload
-        > | StateChangeFunction<State, DoActionPayload>,
+        >,
         config?: {
-            eventType: Event;
-            label: Label | LabelGenerator<DoActionPayload>
+            eventType?: Event;
+            label?: Label | LabelGenerator<DoActionPayload>;
         }
-    ) {
+    ): PayloadActionCreator<DoActionPayload, DoActionType>;
+    register(
+        type: string,
+        actionFunction:
+            | TrrackActionFunction<any, any, any, any>
+            | StateChangeFunction<any, any>,
+        config?: {
+            eventType?: Event;
+            label?: Label | LabelGenerator<any>;
+        }
+    ): PayloadActionCreator<any, string> {
         const isState = actionFunction.length === 2;
 
         if (actionFunction.length > 2)
@@ -78,7 +95,7 @@ export class Registry<Event extends string> {
             },
         });
 
-        return createAction<DoActionPayload>(type);
+        return createAction(type) as PayloadActionCreator<any, string>;
     }
 
     get(type: string) {

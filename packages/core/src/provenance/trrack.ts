@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PayloadAction } from '@reduxjs/toolkit';
 import { applyPatch, compare, deepClone, Operation } from 'fast-json-patch';
 import { RecordActionArgs, Trrack } from './types';
 
+import { PayloadAction } from '../action';
 import { initEventManager } from '../event';
+import { cloneGraph, ProvenanceGraph } from '../graph/graph-slice';
 import {
     createStateNode,
     CurrentChangeHandler,
@@ -17,7 +18,6 @@ import {
     StateNode,
     UnsubscribeCurrentChangeListener,
 } from '../graph';
-import { ProvenanceGraph } from '../graph/graph-slice';
 import {
     ProduceWrappedStateChangeFunction,
     TrrackActionFunction,
@@ -61,7 +61,7 @@ function determineSaveStrategy<T>(
 
     const uniquePatchesLength = new Set(
         patches.map((patch) => {
-            return patch.path.split('/')[0];
+            return patch.path.split('/')[1];
         })
     ).size;
 
@@ -275,9 +275,10 @@ export function initializeTrrack<State = any, Event extends string = string>({
             );
 
             if (action.config.hasSideEffects) {
+                const payload = 'payload' in act ? act.payload : undefined;
                 const { do: doAct = act, undo } = (
                     action.func as TrrackActionFunction<any, any, any, any>
-                )(act.payload);
+                )(payload);
 
                 this.record({
                     label,
@@ -286,9 +287,10 @@ export function initializeTrrack<State = any, Event extends string = string>({
                     eventType: action.config.eventType as Event,
                 });
             } else {
+                const payload = 'payload' in act ? act.payload : undefined;
                 const newState = (
                     action.func as ProduceWrappedStateChangeFunction<State>
-                )(originalState, act.payload);
+                )(originalState, payload);
 
                 this.record({
                     label,
@@ -307,7 +309,9 @@ export function initializeTrrack<State = any, Event extends string = string>({
                 graph.backend.nodes
             );
 
-            const sideEffectsToApply: Array<PayloadAction<any, any>> = [];
+            const sideEffectsToApply: Array<
+                PayloadAction<any, any> | PayloadAction<void, any>
+            > = [];
 
             for (let i = 0; i < path.length - 1; ++i) {
                 const currentNode = getNode(path[i]);
@@ -329,7 +333,9 @@ export function initializeTrrack<State = any, Event extends string = string>({
             for (const sf of sideEffectsToApply) {
                 const actionFunction = registry.get(sf.type)
                     .func as TrrackActionFunction<any, any, any, any>;
-                await actionFunction(sf.payload);
+                await actionFunction(
+                    'payload' in sf ? sf.payload : undefined
+                );
             }
 
             graph.update(graph.changeCurrent(node));
@@ -384,7 +390,8 @@ export function initializeTrrack<State = any, Event extends string = string>({
             ) as typeof graph.backend;
         },
         import(graphString: string) {
-            const g: ProvenanceGraph<State, Event> = JSON.parse(graphString);
+            const parsed: ProvenanceGraph<State, Event> = JSON.parse(graphString);
+            const g = cloneGraph(parsed);
 
             const current = g.current;
             g.current = g.root;
@@ -392,9 +399,10 @@ export function initializeTrrack<State = any, Event extends string = string>({
             this.to(current);
         },
         importObject(g: typeof graph.backend) {
-            const current = g.current;
-            g.current = g.root;
-            graph.update(graph.load(g));
+            const graphCopy = cloneGraph(g);
+            const current = graphCopy.current;
+            graphCopy.current = graphCopy.root;
+            graph.update(graph.load(graphCopy));
             this.to(current);
         },
         metadata,

@@ -1,4 +1,4 @@
-import { PayloadAction, Slice } from '@reduxjs/toolkit';
+import { PayloadActionCreator } from '../action';
 import { NodeId, Nodes, StateNode } from './components';
 type AddMetadataPayload = {
     id: NodeId;
@@ -13,17 +13,23 @@ export type ProvenanceGraph<State, Event extends string> = {
     current: NodeId;
     root: NodeId;
 };
-type GraphSlice<S, E extends string> = Slice<ProvenanceGraph<S, E>>;
-export type ProvenanceGraphActions<S, E extends string> = GraphSlice<S, E>['actions'];
+type GraphActionCreators<S, E extends string> = {
+    addMetadata: PayloadActionCreator<AddMetadataPayload, 'provenance-graph/addMetadata'>;
+    addArtifact: PayloadActionCreator<AddArtifactPayload, 'provenance-graph/addArtifact'>;
+    changeCurrent: PayloadActionCreator<NodeId, 'provenance-graph/changeCurrent'>;
+    addNode: PayloadActionCreator<StateNode<S, E>, 'provenance-graph/addNode'>;
+    load: PayloadActionCreator<ProvenanceGraph<S, E>, 'provenance-graph/load'>;
+};
+export type ProvenanceGraphActions<S, E extends string> = GraphActionCreators<S, E>;
+export type ProvenanceGraphAction<S, E extends string> = ReturnType<GraphActionCreators<S, E>['addMetadata']> | ReturnType<GraphActionCreators<S, E>['addArtifact']> | ReturnType<GraphActionCreators<S, E>['changeCurrent']> | ReturnType<GraphActionCreators<S, E>['addNode']> | ReturnType<GraphActionCreators<S, E>['load']>;
+export declare function cloneGraph<State, Event extends string>(graph: ProvenanceGraph<State, Event>): ProvenanceGraph<State, Event>;
 export declare function graphSliceCreator<State, Event extends string>(initialState: State, args?: {
     artifact?: unknown;
     metadata?: Record<string, unknown>;
     rootLabel?: string;
-}): Slice<ProvenanceGraph<State, Event>, {
-    addMetadata(g: import("immer/dist/internal").WritableDraft<ProvenanceGraph<State, Event>>, action: PayloadAction<AddMetadataPayload>): void;
-    addArtifact(g: import("immer/dist/internal").WritableDraft<ProvenanceGraph<State, Event>>, action: PayloadAction<AddArtifactPayload>): void;
-    changeCurrent(g: import("immer/dist/internal").WritableDraft<ProvenanceGraph<State, Event>>, action: PayloadAction<NodeId>): void;
-    addNode(g: import("immer/dist/internal").WritableDraft<ProvenanceGraph<State, Event>>, { payload }: PayloadAction<StateNode<State, Event>>): void;
-    load(_: import("immer/dist/internal").WritableDraft<ProvenanceGraph<State, Event>>, { payload }: PayloadAction<ProvenanceGraph<State, Event>>): ProvenanceGraph<State, Event>;
-}, "provenance-graph">;
+}): {
+    actions: GraphActionCreators<State, Event>;
+    getInitialState(): ProvenanceGraph<State, Event>;
+    reduce: (g: ProvenanceGraph<State, Event>, action: ProvenanceGraphAction<State, Event>) => ProvenanceGraph<State, Event>;
+};
 export {};

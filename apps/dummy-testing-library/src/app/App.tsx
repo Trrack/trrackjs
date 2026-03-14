@@ -1,7 +1,7 @@
 import { Button } from '@mantine/core';
 import { useElementSize } from '@mantine/hooks';
-import { PayloadAction } from '@reduxjs/toolkit';
-import { IProvenanceGraph, ProvenanceGraph, Trrack } from '@trrack/core';
+import { ProvenanceGraph, Trrack } from '@trrack/core';
+import type { IProvenanceGraph, PayloadAction } from '@trrack/core';
 import test from 'node:test';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

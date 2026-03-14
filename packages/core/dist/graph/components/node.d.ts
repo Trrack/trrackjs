@@ -1,5 +1,5 @@
-import { PayloadAction } from '@reduxjs/toolkit';
 import { Operation } from 'fast-json-patch';
+import { PayloadAction } from '../../action';
 import { FlavoredId } from '../../utils';
 export type NodeId = FlavoredId<string, 'Node'>;
 type Checkpoint<State> = {
@@ -57,8 +57,8 @@ export type RootNode<State> = BaseNode<State> & {
     event: 'Root';
 };
 export type SideEffects = {
-    do: Array<PayloadAction<any, any>>;
-    undo: Array<PayloadAction<any, any>>;
+    do: Array<PayloadAction<any, any> | PayloadAction<void, any>>;
+    undo: Array<PayloadAction<any, any> | PayloadAction<void, any>>;
 };
 export type StateNode<State, Event extends string> = BaseNode<State> & {
     event: Event;
