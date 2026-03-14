@@ -3,7 +3,7 @@
   "compilerOptions": {
     "jsx": "preserve",
     "baseUrl": ".",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

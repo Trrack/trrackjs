@@ -2,6 +2,6 @@
   "extends": ["../../.eslintrc.json", "next", "next/core-web-vitals"],
   "ignorePatterns": [".next/**/*"],
   "rules": {
-    "@next/next/no-html-link-for-pages": ["error", "apps/docs/pages"]
+    "@next/next/no-html-link-for-pages": ["error", "pages"]
   }
 }
