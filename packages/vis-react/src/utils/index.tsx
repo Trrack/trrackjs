@@ -1,1 +1,1 @@
-export * from './IconConfig'
+export * from './IconConfig';

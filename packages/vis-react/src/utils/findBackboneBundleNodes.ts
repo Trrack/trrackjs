@@ -1,35 +1,37 @@
 /* eslint-disable no-restricted-syntax */
-/* eslint-disable guard-for-in */
 
-import { StratifiedMap } from '../components/useComputeNodePosition';
 import { BundleMap } from './BundleMap';
 
+type BundleNodeMap = Record<string, { width?: number }>;
+
 export default function findBackboneBundleNodes(
-  nodeMap: StratifiedMap<unknown, string>,
-  bundleMap?: BundleMap
+    nodeMap: BundleNodeMap,
+    bundleMap?: BundleMap
 ): string[] {
-  const backboneBundleNodes = [];
+    const backboneBundleNodes: string[] = [];
+    const bundles = bundleMap ?? {};
 
-  for (const bundle in bundleMap) {
-    let flag = true;
+    for (const [bundle, bundleInfo] of Object.entries(bundles)) {
+        let flag = true;
+        const bundleNode = nodeMap[bundle];
 
-    if (nodeMap[bundle].width !== 0) {
-      flag = false;
+        if (!bundleNode || bundleNode.width !== 0) {
+            flag = false;
+        }
+
+        for (const i of bundleInfo.bunchedNodes) {
+            if (!nodeMap[i] || nodeMap[i].width !== 0) {
+                flag = false;
+            }
+        }
+
+        if (flag) {
+            backboneBundleNodes.push(bundle);
+            for (const n of bundleInfo.bunchedNodes) {
+                backboneBundleNodes.push(n);
+            }
+        }
     }
 
-    for (const i of bundleMap[bundle].bunchedNodes) {
-      if (nodeMap[i].width !== 0) {
-        flag = false;
-      }
-    }
-
-    if (flag) {
-      backboneBundleNodes.push(bundle);
-      for (const n of bundleMap[bundle].bunchedNodes) {
-        backboneBundleNodes.push(n);
-      }
-    }
-  }
-
-  return backboneBundleNodes;
+    return backboneBundleNodes;
 }

@@ -25,6 +25,7 @@ export function Tree<T, S extends string>({
     const [xPan, setXPan] = useState<number>(0);
     const [extraHeight, setExtraHeight] = useState<number>(0);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const panLayerRef = useRef<SVGSVGElement>(null);
 
     useEffect(() => {
         setXPan(0);
@@ -239,9 +240,7 @@ export function Tree<T, S extends string>({
 
     // // apply zoom/panning
     useEffect(() => {
-        const panLayer = document.getElementById('panLayer') as
-            | SVGSVGElement
-            | null;
+        const panLayer = panLayerRef.current;
 
         if (!panLayer?.width?.baseVal || !panLayer?.height?.baseVal) {
             return;
@@ -268,8 +267,12 @@ export function Tree<T, S extends string>({
         });
 
         const svg = select<SVGSVGElement, unknown>(panLayer);
-        zoomBehavior.transform(svg, zoomIdentity);
         svg.call(zoomBehavior);
+        zoomBehavior.transform(svg, zoomIdentity);
+
+        return () => {
+            svg.on('.zoom', null);
+        };
     }, [maxWidth, config, currentNode]);
 
     const nodeCount = Object.keys(nodes).length;
@@ -319,7 +322,7 @@ export function Tree<T, S extends string>({
                 }}
             >
                 <svg
-                    id="panLayer"
+                    ref={panLayerRef}
                     style={{
                         overflow: 'hidden',
                         height: `${
