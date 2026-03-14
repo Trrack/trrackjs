@@ -8,6 +8,8 @@ React components for rendering a Trrack provenance graph.
 yarn add @trrack/core @trrack/vis-react
 ```
 
+`@trrack/vis-react` targets React 18 and newer.
+
 ## Usage
 
 ```tsx
