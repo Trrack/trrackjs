@@ -2,10 +2,23 @@ import type { Nodes } from '@trrack/core';
 import { describe, expect, it, vi } from 'vitest';
 
 const { computeSpy, latestTreeProps } = vi.hoisted(() => ({
-    computeSpy: vi.fn(() => ({
-        links: ['link'],
-        stratifiedMap: { root: { id: 'root' } },
-    })),
+    computeSpy: vi.fn<
+        (
+            nodeMap: unknown,
+            current: unknown,
+            root: unknown
+        ) => {
+            links: string[];
+            stratifiedMap: {
+                root: {
+                    id: string;
+                };
+            };
+        }
+    >(() => ({
+            links: ['link'],
+            stratifiedMap: { root: { id: 'root' } },
+        })),
     latestTreeProps: {
         current: undefined as unknown,
     },

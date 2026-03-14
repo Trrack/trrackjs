@@ -1,3 +1,4 @@
+import type { Trrack } from '@trrack/core';
 import { describe, expect, it, vi } from 'vitest';
 
 const { createRootSpy, provVisSpy } = vi.hoisted(() => ({
@@ -60,9 +61,13 @@ describe('ProvVisCreator', () => {
         };
 
         const element = document.createElement('div');
-        const cleanup = await ProvVisCreator(element, trrack, {
-            marginTop: 75,
-        });
+        const cleanup = await ProvVisCreator(
+            element,
+            trrack as unknown as Trrack<unknown, string>,
+            {
+                marginTop: 75,
+            }
+        );
 
         expect(createRootSpy).toHaveBeenCalledWith(element);
         expect(render).toHaveBeenCalledTimes(1);
