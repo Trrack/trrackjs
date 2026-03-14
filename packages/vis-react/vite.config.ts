@@ -41,7 +41,10 @@ export default defineConfig({
     },
     test: {
         environment: 'jsdom',
-        include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        include: [
+            'src/**/*.spec.{ts,tsx}',
+            'tests/**/*.spec.{ts,tsx}',
+        ],
         setupFiles: ['../../test/setup-dom.ts'],
         coverage: {
             all: true,
@@ -50,6 +53,6 @@ export default defineConfig({
             reportsDirectory: '../../coverage/vis-react',
             include: ['src/**/*.{ts,tsx}'],
             exclude: ['src/**/*.d.ts'],
-        },
+        } as any,
     },
 });

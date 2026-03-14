@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { createStateNode, NodeId } from '../src/graph/components';
 import { initializeTrrack } from '../src/provenance/trrack';
 import { Registry } from '../src/registry';
 
@@ -72,5 +73,32 @@ describe('Export', () => {
         expect(Object.keys(trrackObj.graph.backend).length).toEqual(
             Object.keys(trrack.graph.backend).length
         );
+    });
+
+    it('loads malformed imported graphs with extra unreachable nodes but rejects traversal to them', async () => {
+        const { trrack } = setup();
+        const exportObject = trrack.exportObject();
+        const orphan = createStateNode({
+            event: 'add',
+            label: 'Orphan',
+            parent: exportObject.nodes[exportObject.root] as never,
+            state: {
+                type: 'checkpoint',
+                val: {
+                    counter: 99,
+                },
+            },
+        });
+
+        orphan.parent = 'missing-parent' as NodeId;
+        exportObject.nodes[orphan.id] = orphan;
+
+        const { trrack: imported } = setup();
+        imported.importObject(exportObject);
+        await Promise.resolve();
+
+        expect(imported.root.id).toBe(exportObject.root);
+        expect(imported.current.id).toBe(exportObject.root);
+        await expect(imported.to(orphan.id)).rejects.toThrow();
     });
 });

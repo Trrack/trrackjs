@@ -57,7 +57,7 @@ function search<T, S extends string>(
 
     for (const child of children) {
         if (search(nodes, child, final, path)) {
-            path.push(child);
+            path.push(node);
             return true;
         }
     }
@@ -72,9 +72,9 @@ export function getPathTo<T, S extends string>(
 ): string[] {
     const path: string[] = [];
 
-    search(nodes, from, to, path);
+    const found = search(nodes, from, to, path);
 
-    return [from, ...path.reverse()];
+    return found ? path.reverse() : [from];
 }
 
 export function treeLayout<T, S extends string>(

@@ -14,7 +14,6 @@ import {
     Nodes,
     ProvenanceNode,
     StateLike,
-    StateNode,
     UnsubscribeCurrentChangeListener,
 } from '../graph';
 import { ProvenanceGraph } from '../graph/graph-slice';
@@ -61,7 +60,7 @@ function determineSaveStrategy<T>(
 
     const uniquePatchesLength = new Set(
         patches.map((patch) => {
-            return patch.path.split('/')[0];
+            return patch.path.split('/')[1] ?? '';
         })
     ).size;
 
@@ -206,61 +205,46 @@ export function initializeTrrack<State = any, Event extends string = string>({
             eventType: event,
             onlySideEffects = false,
         }: RecordActionArgs<State, Event>) {
-            let newStateNode: StateNode<State, Event> | null = null;
-
-            let stateToSave: StateLike<State> | null = null;
-
             const originalState: State = getState(
                 this.current,
                 this.graph.backend.nodes
             );
 
-            if (!onlySideEffects) {
-                const patches = compare(originalState as any, state as any);
+            const stateToSave: StateLike<State> = onlySideEffects
+                ? {
+                      type: 'checkpoint',
+                      val: state,
+                  }
+                : (() => {
+                      const patches = compare(originalState as any, state as any);
+                      const saveStrategy = determineSaveStrategy(state, patches);
 
-                const saveStrategy = determineSaveStrategy(state, patches);
+                      if (saveStrategy === 'checkpoint') {
+                          return {
+                              type: 'checkpoint',
+                              val: state,
+                          };
+                      }
 
-                if (saveStrategy === 'checkpoint') {
-                    stateToSave = {
-                        type: 'checkpoint',
-                        val: state,
-                    };
-                } else {
-                    const lastRef =
-                        this.current.state.type === 'checkpoint'
-                            ? this.current.id
-                            : this.current.state.checkpointRef;
+                      const lastRef =
+                          this.current.state.type === 'checkpoint'
+                              ? this.current.id
+                              : this.current.state.checkpointRef;
 
-                    stateToSave = {
-                        type: 'patch',
-                        val: patches,
-                        checkpointRef: lastRef,
-                    };
-                }
-            } else {
-                stateToSave = {
-                    type: 'checkpoint',
-                    val: state,
-                };
-            }
-            if (!stateToSave)
-                throw new Error(
-                    `Could not calculate new state. Previous state is: ${JSON.stringify(
-                        this.current.state,
-                        null,
-                        2
-                    )}`
-                );
+                      return {
+                          type: 'patch',
+                          val: patches,
+                          checkpointRef: lastRef,
+                      };
+                  })();
 
-            newStateNode = createStateNode({
+            const newStateNode = createStateNode({
                 label,
                 state: stateToSave,
                 parent: this.current,
                 sideEffects,
                 event,
             });
-
-            if (!newStateNode) throw new Error('State Node creation failed!');
 
             graph.update(graph.addNode(newStateNode));
         },

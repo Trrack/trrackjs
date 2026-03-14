@@ -46,7 +46,10 @@ export default defineConfig({
 
     test: {
         environment: 'node',
-        include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        include: [
+            'src/**/*.spec.{ts,tsx}',
+            'tests/**/*.spec.{ts,tsx}',
+        ],
         coverage: {
             all: true,
             provider: 'v8',
@@ -54,6 +57,6 @@ export default defineConfig({
             reportsDirectory: '../../coverage/core',
             include: ['src/**/*.{ts,tsx}'],
             exclude: ['src/**/*.d.ts'],
-        },
+        } as any,
     },
 });
