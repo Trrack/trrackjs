@@ -1,4 +1,4 @@
-import { createAction } from '@reduxjs/toolkit';
+import { createAction } from '@trrack/core';
 import { describe, expect, it } from 'vitest';
 
 import { Registry } from './reg';

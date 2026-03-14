@@ -1,6 +1,5 @@
-import { createAction } from '@reduxjs/toolkit';
 import { act, fireEvent, render, waitFor } from '@testing-library/react';
-import { initializeTrrack, Registry, Trrack } from '@trrack/core';
+import { createAction, initializeTrrack, Registry, Trrack } from '@trrack/core';
 import { useEffect, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 

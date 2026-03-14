@@ -1,4 +1,4 @@
-import { createAction } from '@reduxjs/toolkit';
+import { createAction } from '@trrack/core';
 import { describe, expect, it, vi } from 'vitest';
 
 import { initializeTrrack } from '../src/provenance/trrack';
