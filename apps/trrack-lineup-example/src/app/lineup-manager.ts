@@ -63,9 +63,6 @@ function dirtyRankingWaiter(ranking: Ranking) {
   });
 }
 
-// ? Look at filter events in setColumn
-// ? https://github.com/datavisyn/tdp_core/blob/93527f782845514b934e12b7b5f713b3cd5d930e/src/lineup/internal/cmds.ts#L442
-
 function trrackSortLike<T = any>(
   eventType: string,
   id: string,
@@ -82,7 +79,13 @@ function trrackSortLike<T = any>(
     ranking.on(suffixedEventType, null);
     executor(args);
     ranking.on(suffixedEventType, handler);
-    return dirtyRankingWaiter(ranking);
+
+    return {
+      undo: {
+        type: id,
+        payload: args,
+      },
+    };
   });
 }
 
@@ -189,6 +192,13 @@ function trrackLineUp(
     instance.on(suffixedSelectionEvent, null);
     instance.setSelection(selections);
     instance.on(suffixedSelectionEvent, selectionEventHandler);
+
+    return {
+      undo: {
+        type: instanceSelectionId,
+        payload: selections,
+      },
+    };
   });
 }
 
@@ -222,9 +232,6 @@ function setupBuffer(instance: LineUp) {
     clearBuffer();
   });
 
-  // ! https://github.com/datavisyn/tdp_core/blob/93527f782845514b934e12b7b5f713b3cd5d930e/src/lineup/internal/cmds.ts#L862
-  // ! Bug in clue wrapper
-  // ! Filed the issue. Stopping the buffer for now.
   instance.on(
     `${EngineRenderer.EVENT_DIALOG_CLOSED}.trrack`,
     (_, dialogAction: 'cancel' | 'confirm') => {

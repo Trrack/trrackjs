@@ -1,11 +1,17 @@
-import { Group, Stack, Text, Tooltip } from '@mantine/core';
 import { NodeId, ProvenanceNode, isStateNode } from '@trrack/core';
-import { useEffect, useState } from 'react';
-import { animated, easings, useSpring } from 'react-spring';
+import { useEffect, useMemo, useState } from 'react';
+import { animated, easings, useSpring } from '@react-spring/web';
 import { AnnotationButton } from './AnnotationButton';
 import { BookmarkButton } from './BookmarkButton';
 import { ProvVisConfig } from './ProvVis';
-import { useResizeObserver } from '@mantine/hooks';
+import { useElementHeight } from './useElementHeight';
+
+function getNodeTitle<T, S extends string>(
+    node: ProvenanceNode<T, S>,
+    annotation: string
+) {
+    return annotation.length > 0 ? `${node.label}\n${annotation}` : node.label;
+}
 
 export function NodeDescription<T, S extends string>({
     depth,
@@ -33,7 +39,9 @@ export function NodeDescription<T, S extends string>({
     extraHeight: number;
     setExtraHeight: (n: number) => void;
 }) {
-    const [ref, { height }] = useResizeObserver();
+    const [ref, height] = useElementHeight<HTMLDivElement>();
+    const annotation = config.getAnnotation(node.id);
+    const [isAnnotationOpen, setIsAnnotationOpen] = useState(false);
 
     const style = useSpring({
         config: {
@@ -57,20 +65,37 @@ export function NodeDescription<T, S extends string>({
     });
 
     useEffect(() => {
-        if (isCurrent) setExtraHeight(height);
+        if (isCurrent) {
+            setExtraHeight(height);
+        }
     }, [height, isCurrent, setExtraHeight]);
 
-    const [isAnnotationOpen, setIsAnnotationOpen] = useState<boolean>(false);
+    const actionWidth = useMemo(() => {
+        if (isHover || isAnnotationOpen) {
+            return config.bookmarkNode !== null ? 50 : 25;
+        }
+
+        if (config.bookmarkNode !== null && config.isBookmarked(node.id)) {
+            return 25;
+        }
+
+        return 0;
+    }, [config, isHover, isAnnotationOpen, node.id]);
+
+    const textColor = config.isDarkMode ? 'white' : 'black';
+    const subTextColor = config.isDarkMode ? '#cbd5e1' : '#6b7280';
+    const title = getNodeTitle(node, annotation);
 
     return (
         <animated.div
             style={{
                 ...style,
                 cursor: 'pointer',
-                position: 'absolute',
-                height: config.verticalSpace * 2,
+                display: 'flex',
                 flexWrap: 'wrap',
-                width: `100%`,
+                height: config.verticalSpace * 2,
+                position: 'absolute',
+                width: '100%',
             }}
             className="node-description"
             onClick={onClick}
@@ -78,116 +103,94 @@ export function NodeDescription<T, S extends string>({
             onMouseEnter={() => setHover(node.id)}
             onMouseLeave={() => setHover(null)}
         >
-            <Stack style={{ height: '100%' }} spacing={0}>
-                <Group
-                    spacing={2}
-                    noWrap
-                    style={{ height: config.verticalSpace }}
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div
+                    style={{
+                        alignItems: 'center',
+                        display: 'flex',
+                        gap: 2,
+                        height: config.verticalSpace,
+                        minWidth: 0,
+                    }}
                 >
-                    <Tooltip
-                        position="top-start"
-                        openDelay={200}
-                        withinPortal={true}
-                        withArrow
-                        color="gray"
-                        multiline
-                        sx={{ maxWidth: '200px' }}
-                        label={
-                            <Stack spacing={0}>
-                                <Text weight={600}>{node.label}</Text>
-                                {config.getAnnotation(node.id).length > 0 ? (
-                                    <Text size="xs">
-                                        {config.getAnnotation(node.id)}
-                                    </Text>
-                                ) : null}
-                            </Stack>
-                        }
+                    <div
+                        title={title}
+                        style={{
+                            color: textColor,
+                            display: 'flex',
+                            flexDirection: 'row',
+                            minWidth: 0,
+                            width: `calc(100% - ${config.marginRight}px - ${actionWidth}px)`,
+                        }}
                     >
                         <div
                             style={{
-                                width: `calc(100% - ${config.marginRight}px - ${
-                                    isHover || isAnnotationOpen
-                                        ? 50
-                                        : config.isBookmarked(node.id)
-                                        ? 25
-                                        : 0
-                                }px)`,
                                 display: 'flex',
-                                flexDirection: 'row',
-                                color: config.isDarkMode ? 'white' : 'black',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                marginRight: 'auto',
+                                minWidth: 0,
+                                width: '100%',
                             }}
                         >
-                            <div
+                            <p
                                 style={{
-                                    alignItems: 'start',
-                                    justifyContent: 'center',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    marginRight: 'auto',
-                                    width: '100%',
+                                    margin: 0,
+                                    maxWidth: '100%',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
                                 }}
                             >
+                                {node.label}
+                            </p>
+
+                            {isStateNode(node) ? (
                                 <p
                                     style={{
-                                        maxWidth: `100%`,
+                                        color: subTextColor,
+                                        fontSize: 10,
                                         margin: 0,
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
+                                        width: '100%',
                                     }}
                                 >
-                                    {node.label}
+                                    {annotation}
                                 </p>
-
-                                {isStateNode(node) ? (
-                                    <p
-                                        style={{
-                                            width: '100%',
-                                            margin: 0,
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                            color: 'gray',
-                                            fontSize: 10,
-                                        }}
-                                    >
-                                        {config.getAnnotation(node.id)}
-                                    </p>
-                                ) : null}
-                            </div>
+                            ) : null}
                         </div>
-                    </Tooltip>
+                    </div>
+
                     {config.bookmarkNode !== null &&
-                    (isHover ||
-                        isAnnotationOpen ||
-                        config.isBookmarked(node.id)) ? (
+                    (isHover || isAnnotationOpen || config.isBookmarked(node.id)) ? (
                         <BookmarkButton
                             color={colorMap[node.event]}
                             isBookmarked={config.isBookmarked(node.id)}
                             onClick={() => config.bookmarkNode?.(node.id)}
                         />
                     ) : null}
-                    {config.annotateNode !== null &&
-                    (isHover || isAnnotationOpen) ? (
+
+                    {config.annotateNode !== null && (isHover || isAnnotationOpen) ? (
                         <AnnotationButton
                             color="cornflowerblue"
                             annotationOpen={isAnnotationOpen}
-                            setAnnotationOpen={(b: boolean) =>
-                                setIsAnnotationOpen(b)
+                            setAnnotationOpen={setIsAnnotationOpen}
+                            setAnnotation={(value) =>
+                                config.annotateNode?.(node.id, value)
                             }
-                            setAnnotation={(s) =>
-                                config.annotateNode?.(node.id, s)
-                            }
-                            annotation={config.getAnnotation(node.id)}
+                            annotation={annotation}
                         />
                     ) : null}
-                </Group>
+                </div>
+
                 {isCurrent ? (
-                    <animated.div style={{ ...extraNodeOpacity }} ref={ref}>
+                    <animated.div style={extraNodeOpacity} ref={ref}>
                         {config.nodeExtra[node.event] || config.nodeExtra['*']}
                     </animated.div>
                 ) : null}
-            </Stack>
+            </div>
         </animated.div>
     );
 }

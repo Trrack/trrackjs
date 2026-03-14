@@ -36,8 +36,23 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Build packages
-        run: yarn build:packages
+      - name: Typecheck
+        run: yarn typecheck
 
-      - name: Test
-        run: yarn test:all
+      - name: Build packages
+        run: yarn build
+
+      - name: Test with coverage
+        run: yarn test:coverage
+
+      - name: Publish coverage summary
+        if: always()
+        run: node scripts/summarize-coverage.mjs >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: coverage
+          if-no-files-found: warn

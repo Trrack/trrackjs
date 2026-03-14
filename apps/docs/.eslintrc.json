@@ -1,23 +1,7 @@
 {
-  "extends": ["next", "next/core-web-vitals", "../../.eslintrc.json"],
-  "ignorePatterns": ["!**/*", ".next/**/*"],
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@next/next/no-html-link-for-pages": ["error", "apps/docs/pages"]
-      }
-    },
-    {
-      "files": ["*.ts", "*.tsx"],
-      "rules": {}
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "rules": {}
-    }
-  ],
+  "extends": ["../../.eslintrc.json", "next", "next/core-web-vitals"],
+  "ignorePatterns": [".next/**/*"],
   "rules": {
-    "@next/next/no-html-link-for-pages": "off"
+    "@next/next/no-html-link-for-pages": ["error", "apps/docs/pages"]
   }
 }

@@ -17,9 +17,10 @@ export type CurrentChangeHandlerConfig = {
 };
 export type UnsubscribeCurrentChangeListener = () => boolean;
 
-export type ProvenanceGraphStore = ReturnType<typeof f>;
-
-const f = () => initializeProvenanceGraph<any, any>({});
+export type ProvenanceGraphStore<
+    State = unknown,
+    Event extends string = string
+> = ReturnType<typeof initializeProvenanceGraph<State, Event>>;
 
 export function initializeProvenanceGraph<State, Event extends string>(
     initialState: State

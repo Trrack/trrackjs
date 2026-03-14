@@ -1,15 +1,14 @@
-import { NodeId, ProvenanceNode } from '@trrack/core';
-import * as d3 from 'd3';
+import { NodeId } from '@trrack/core';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { animated, easings, useSpring } from 'react-spring';
+import type { D3ZoomEvent } from 'd3-zoom';
+import { zoom, zoomIdentity } from 'd3-zoom';
+import { select } from 'd3-selection';
+import { animated, easings, useSpring } from '@react-spring/web';
 import { AnimatedIcon } from './AnimatedIcon';
 import { AnimatedLine } from './AnimatedLine';
 import { NodeDescription } from './NodeDescription';
 import { ProvVisConfig } from './ProvVis';
-import { StratifiedMap } from './useComputeNodePosition';
-
-// TODOs:
-// Annotations doing something
+import { StratifiedLink, StratifiedMap } from './useComputeNodePosition';
 
 export function Tree<T, S extends string>({
     nodes,
@@ -18,7 +17,7 @@ export function Tree<T, S extends string>({
     config,
 }: {
     nodes: StratifiedMap<T, S>;
-    links: d3.HierarchyLink<ProvenanceNode<T, S>>[];
+    links: StratifiedLink<T, S>[];
     config: ProvVisConfig<T, S>;
     currentNode: NodeId;
 }) {
@@ -159,18 +158,8 @@ export function Tree<T, S extends string>({
     // render edges for every node
     const edges = useMemo(() => {
         return links.map((link) => {
-            // TODO:: idk how to fix this typing
-            const sourceWidth = (
-                link.source as d3.HierarchyNode<ProvenanceNode<T, S>> & {
-                    width: number;
-                }
-            ).width;
-
-            const targetWidth = (
-                link.target as d3.HierarchyNode<ProvenanceNode<T, S>> & {
-                    width: number;
-                }
-            ).width;
+            const sourceWidth = link.source.width || 0;
+            const targetWidth = link.target.width || 0;
 
             return (
                 <AnimatedLine
@@ -257,8 +246,7 @@ export function Tree<T, S extends string>({
             return;
         }
 
-        const zoom = d3
-            .zoom()
+        const zoomBehavior = zoom<SVGSVGElement, unknown>()
             .scaleExtent([1, 1])
             .translateExtent([
                 [(config.nodeWidthShown - maxWidth) * config.gutter, 0],
@@ -273,18 +261,14 @@ export function Tree<T, S extends string>({
                 ],
             ]);
 
-        zoom.on('zoom', (event: d3.D3ZoomEvent<any, any>) => {
+        zoomBehavior.on('zoom', (event: D3ZoomEvent<SVGSVGElement, unknown>) => {
             const { transform } = event;
             setXPan(transform.x);
         });
 
-        const svg = d3.select<SVGSVGElement, unknown>(panLayer);
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        zoom.transform(svg, d3.zoomIdentity);
-
-        d3.select<SVGSVGElement, unknown>(panLayer).call(zoom as any);
+        const svg = select<SVGSVGElement, unknown>(panLayer);
+        svg.call(zoomBehavior);
+        zoomBehavior.transform(svg, zoomIdentity);
 
         return () => {
             svg.on('.zoom', null);
@@ -372,8 +356,6 @@ export function Tree<T, S extends string>({
             >
                 {descriptions}
             </animated.div>
-
-            {/* <IconLegend colorMap={colorMap} nodes={nodes} config={config} /> */}
         </div>
     );
 }

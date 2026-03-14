@@ -1,15 +1,28 @@
 import { NodeId, Nodes, ProvenanceNode, isStateNode } from '@trrack/core';
-import { HierarchyNode, stratify } from 'd3';
+import { stratify } from 'd3-hierarchy';
 import { useMemo } from 'react';
 import { treeLayout } from '../utils/TreeLayout';
 
-export type StratifiedList<T, S extends string> = HierarchyNode<
-    ProvenanceNode<T, S>
->[];
+export interface LayoutNode<T, S extends string> {
+    id: string;
+    data: ProvenanceNode<T, S>;
+    depth: number;
+    height: number;
+    parent?: string;
+    children: string[];
+    width?: number;
+}
+
+export type StratifiedList<T, S extends string> = LayoutNode<T, S>[];
 
 export type StratifiedMap<T, S extends string> = {
-    [key: string]: HierarchyNode<ProvenanceNode<T, S>> & { width?: number };
+    [key: string]: LayoutNode<T, S>;
 };
+
+export interface StratifiedLink<T, S extends string> {
+    source: LayoutNode<T, S>;
+    target: LayoutNode<T, S>;
+}
 
 export function useComputeNodePosition<T, S extends string>(
     nodeMap: Nodes<T, S>,
@@ -32,16 +45,32 @@ export function useComputeNodePosition<T, S extends string>(
 
         const stratifiedTree = strat(nodeList);
 
-        const stratifiedList: StratifiedList<T, S> =
-            stratifiedTree.descendants();
+        const stratifiedList: StratifiedList<T, S> = stratifiedTree
+            .descendants()
+            .map((node) => ({
+                id: node.id!,
+                data: node.data,
+                depth: node.depth,
+                height: node.height,
+                parent: node.parent?.id,
+                children: node.children?.map((child) => child.id!) || [],
+            }));
         const innerMap: StratifiedMap<T, S> = {};
 
         stratifiedList.forEach((c) => {
-            innerMap[c.id!] = c;
+            innerMap[c.id] = c;
         });
 
         treeLayout(innerMap, current, root);
-        return { stratifiedMap: innerMap, links: stratifiedTree.links() };
+
+        const links: StratifiedLink<T, S>[] = stratifiedTree.links().map(
+            (link) => ({
+                source: innerMap[link.source.id!],
+                target: innerMap[link.target.id!],
+            })
+        );
+
+        return { stratifiedMap: innerMap, links };
     }, [current, root, nodeMap]);
 
     return { stratifiedMap, links };
