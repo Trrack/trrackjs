@@ -1,0 +1,60 @@
+# Provenance Visualization
+
+`@trrack/vis-react` is the companion React package for rendering a Trrack provenance graph.
+
+## Installation
+
+Install the core state engine and the visualization package together:
+
+```bash
+yarn add @trrack/core @trrack/vis-react
+```
+
+## Basic usage
+
+```tsx
+import { initializeTrrack, Registry } from '@trrack/core';
+import { ProvVis } from '@trrack/vis-react';
+
+type Task = { id: string; complete: boolean };
+
+const registry = Registry.create<'add-task'>();
+const addTask = registry.register('add-task', (state, task: Task) => {
+  state.tasks.push(task);
+});
+
+const trrack = initializeTrrack({
+  registry,
+  initialState: { tasks: [] as Task[] },
+});
+
+trrack.apply('Add task', addTask({ id: '1', complete: false }));
+
+export function ProvenancePanel() {
+  return (
+    <ProvVis
+      root={trrack.root.id}
+      currentNode={trrack.current.id}
+      nodeMap={trrack.graph.backend.nodes}
+      config={{
+        changeCurrent: (id) => trrack.to(id),
+        annotateNode: (id, annotation) => trrack.annotations.add(annotation, id),
+        getAnnotation: (id) => trrack.annotations.latest(id) || '',
+        bookmarkNode: (id) => trrack.bookmarks.toggle(id),
+        isBookmarked: (id) => trrack.bookmarks.is(id),
+      }}
+    />
+  );
+}
+```
+
+## What it provides
+
+- `ProvVis` renders the graph inside your React tree.
+- `ProvVisCreator` mounts the visualization into an existing DOM node.
+- `ProvVisConfig` lets you wire navigation, annotations, bookmarks, custom icons, and per-event extra content.
+
+## Notes
+
+- `@trrack/vis-react` expects a live Trrack instance from `@trrack/core`.
+- The package ships as a library component, not a standalone Storybook app.

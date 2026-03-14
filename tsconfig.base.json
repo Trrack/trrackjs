@@ -16,7 +16,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@trrack/core": ["./packages/core/src/index.ts"]
+      "@trrack/core": ["./packages/core/src/index.ts"],
+      "@trrack/vis-react": ["./packages/vis-react/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

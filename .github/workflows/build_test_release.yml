@@ -87,20 +87,30 @@ jobs:
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "dist_tag=${DIST_TAG}" >> "${GITHUB_OUTPUT}"
 
-      - name: Prepare @trrack/core package
+      - name: Prepare packages for publishing
         env:
           RELEASE_VERSION: ${{ steps.release_meta.outputs.version }}
         run: |
           set -euo pipefail
 
-          cp packages/core/package.json packages/core/dist/package.json
-          cp packages/core/README.md packages/core/dist/README.md
-          cp packages/core/CHANGELOG.md packages/core/dist/CHANGELOG.md
-          cp LICENSE packages/core/dist/LICENSE
+          for package_dir in packages/core packages/vis-react; do
+            dist_dir="${package_dir}/dist"
 
-          npm pkg set version="${RELEASE_VERSION}" --prefix packages/core/dist
-          npm pkg delete scripts --prefix packages/core/dist
+            cp "${package_dir}/package.json" "${dist_dir}/package.json"
+            cp "${package_dir}/README.md" "${dist_dir}/README.md"
+            cp "${package_dir}/CHANGELOG.md" "${dist_dir}/CHANGELOG.md"
+            cp LICENSE "${dist_dir}/LICENSE"
 
-      - name: Publish @trrack/core
-        run: npm publish --access public --tag "${{ steps.release_meta.outputs.dist_tag }}"
-        working-directory: packages/core/dist
+            npm pkg set version="${RELEASE_VERSION}" --prefix "${dist_dir}"
+            npm pkg delete scripts --prefix "${dist_dir}"
+          done
+
+      - name: Publish packages
+        env:
+          DIST_TAG: ${{ steps.release_meta.outputs.dist_tag }}
+        run: |
+          set -euo pipefail
+
+          for package_dir in packages/core packages/vis-react; do
+            npm publish --access public --tag "${DIST_TAG}" "${package_dir}/dist"
+          done
