@@ -81,6 +81,14 @@ Run package tests:
 yarn test
 ```
 
+Generate package coverage reports:
+
+```bash
+yarn test:coverage
+```
+
+Coverage reports are written to `coverage/core` and `coverage/vis-react`.
+
 Run package linting:
 
 ```bash

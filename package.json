@@ -13,6 +13,7 @@
     "typecheck": "yarn workspace @trrack/core typecheck && yarn workspace @trrack/vis-react typecheck && yarn workspace dummy-testing-library typecheck && yarn workspace react-trrack-example typecheck && yarn workspace trrack-vis-example typecheck && yarn workspace trrack-lineup-example typecheck && yarn workspace docs typecheck",
     "test": "vitest",
     "test:ci": "vitest run",
+    "test:coverage": "yarn workspace @trrack/core test:coverage && yarn workspace @trrack/vis-react test:coverage",
     "lint": "yarn workspace @trrack/core lint && yarn workspace @trrack/vis-react lint",
     "docs:api": "yarn workspace @trrack/core docs && node scripts/generate-api-meta.mjs",
     "prepare": "husky install"
@@ -26,6 +27,7 @@
     "@typescript-eslint/eslint-plugin": "8.57.0",
     "@typescript-eslint/parser": "8.57.0",
     "@vitejs/plugin-react": "5.1.4",
+    "@vitest/coverage-v8": "4.0.18",
     "eslint": "8.57.0",
     "eslint-config-next": "13.1.1",
     "eslint-plugin-import": "2.26.0",

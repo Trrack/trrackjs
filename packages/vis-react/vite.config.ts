@@ -43,5 +43,13 @@ export default defineConfig({
         environment: 'jsdom',
         include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         setupFiles: ['../../test/setup-dom.ts'],
+        coverage: {
+            all: true,
+            provider: 'v8',
+            reporter: ['text', 'html', 'json-summary'],
+            reportsDirectory: '../../coverage/vis-react',
+            include: ['src/**/*.{ts,tsx}'],
+            exclude: ['src/**/*.d.ts'],
+        },
     },
 });
