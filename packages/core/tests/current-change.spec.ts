@@ -54,11 +54,10 @@ describe('Current change listeners', () => {
         expect(listener).toHaveBeenCalledOnce();
         expect(listener).toHaveBeenCalledWith('traversal');
 
-        expect(unsubscribe()).toBe(true);
+        unsubscribe();
 
         await trrack.redo();
         expect(listener).toHaveBeenCalledOnce();
-        expect(unsubscribe()).toBe(false);
     });
 
     it('returns a new backend reference for each graph update', async () => {

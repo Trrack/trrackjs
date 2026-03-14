@@ -64,25 +64,16 @@ export class Registry<Event extends string> {
             label?: Label | LabelGenerator<DoActionPayload>;
         }
     ): PayloadActionCreator<DoActionPayload, DoActionType>;
-    register<
-        DoActionType extends string,
-        UndoActionType extends string,
-        DoActionPayload = any,
-        UndoActionPayload = any,
-        State = any
-    >(
-        type: DoActionType,
-        actionFunction: TrrackActionFunction<
-            DoActionType,
-            UndoActionType,
-            UndoActionPayload,
-            DoActionPayload
-        > | StateChangeFunction<State, DoActionPayload>,
+    register(
+        type: string,
+        actionFunction:
+            | TrrackActionFunction<any, any, any, any>
+            | StateChangeFunction<any, any>,
         config?: {
             eventType?: Event;
-            label?: Label | LabelGenerator<DoActionPayload>;
+            label?: Label | LabelGenerator<any>;
         }
-    ) {
+    ): PayloadActionCreator<any, string> {
         const isState = actionFunction.length === 2;
 
         if (actionFunction.length > 2)
@@ -104,7 +95,7 @@ export class Registry<Event extends string> {
             },
         });
 
-        return createAction<DoActionPayload>(type);
+        return createAction(type) as PayloadActionCreator<any, string>;
     }
 
     get(type: string) {

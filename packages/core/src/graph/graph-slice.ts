@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { deepClone } from 'fast-json-patch';
 import { PayloadActionCreator, createAction } from '../action';
 import { ID } from '../utils';
 import { createRootNode, NodeId, Nodes, StateNode } from './components';
@@ -55,7 +54,7 @@ export type ProvenanceGraphAction<S, E extends string> =
 export function cloneGraph<State, Event extends string>(
     graph: ProvenanceGraph<State, Event>
 ): ProvenanceGraph<State, Event> {
-    return deepClone(graph) as ProvenanceGraph<State, Event>;
+    return structuredClone(graph);
 }
 
 export function graphSliceCreator<State, Event extends string>(

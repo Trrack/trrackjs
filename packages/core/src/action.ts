@@ -1,6 +1,25 @@
-export type PayloadAction<Payload = void, Type extends string = string> = {
+type IsAny<T> = 0 extends 1 & T ? true : false;
+
+export type PayloadAction<Payload = void, Type extends string = string> =
+    {
+        type: Type;
+    } & (IsAny<Payload> extends true
+        ? {
+              payload: Payload;
+          }
+        : [Payload] extends [void]
+        ? {
+              payload?: undefined;
+          }
+        : {
+              payload: Payload;
+          });
+
+export type ActionCreatorWithoutPayload<Type extends string = string> = {
+    (): PayloadAction<void, Type>;
     type: Type;
-    payload: Payload;
+    match(action: { type: string }): action is PayloadAction<void, Type>;
+    toString(): Type;
 };
 
 export type ActionCreatorWithPayload<
@@ -14,22 +33,34 @@ export type ActionCreatorWithPayload<
 };
 
 export type PayloadActionCreator<
-    Payload,
+    Payload = void,
     Type extends string = string
-> = ActionCreatorWithPayload<Payload, Type>;
+> = [Payload] extends [void]
+    ? ActionCreatorWithoutPayload<Type>
+    : ActionCreatorWithPayload<Payload, Type>;
 
+export function createAction<Type extends string>(
+    type: Type
+): ActionCreatorWithoutPayload<Type>;
 export function createAction<Payload, Type extends string = string>(
     type: Type
-): PayloadActionCreator<Payload, Type> {
-    const creator = ((payload: Payload) => ({
-        type,
-        payload,
-    })) as PayloadActionCreator<Payload, Type>;
+): ActionCreatorWithPayload<Payload, Type>;
+export function createAction(type: string) {
+    const creator = function (payload?: unknown) {
+        if (arguments.length === 0) {
+            return {
+                type,
+            };
+        }
+
+        return {
+            type,
+            payload,
+        };
+    };
 
     creator.type = type;
-    creator.match = (
-        action: { type: string }
-    ): action is PayloadAction<Payload, Type> => action.type === type;
+    creator.match = (action: { type: string }) => action.type === type;
     creator.toString = () => type;
 
     return creator;

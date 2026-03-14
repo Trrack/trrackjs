@@ -3,7 +3,7 @@ import produce from 'immer';
 import { ID } from '../utils';
 
 import { RootNode } from './components';
-import { graphSliceCreator, ProvenanceGraphAction } from './graph-slice';
+import { cloneGraph, graphSliceCreator, ProvenanceGraphAction } from './graph-slice';
 
 export type Trigger = 'traversal' | 'new';
 
@@ -11,7 +11,7 @@ export type CurrentChangeHandler = (trigger?: Trigger) => void;
 export type CurrentChangeHandlerConfig = {
     skipOnNew: boolean;
 };
-export type UnsubscribeCurrentChangeListener = () => boolean;
+export type UnsubscribeCurrentChangeListener = () => void;
 
 export type ProvenanceGraphStore = ReturnType<typeof f>;
 
@@ -56,12 +56,14 @@ export function initializeProvenanceGraph<State, Event extends string>(
     }
 
     function update(action: ProvenanceGraphAction<State, Event>) {
-        backend = produce(backend, (draft) => {
-            const result = reduce(draft as typeof backend, action);
+        if (actions.load.match(action)) {
+            backend = cloneGraph(action.payload);
+            notifyCurrentChange(action);
+            return action;
+        }
 
-            if (result !== draft) {
-                return result;
-            }
+        backend = produce(backend, (draft) => {
+            reduce(draft as typeof backend, action);
         });
         notifyCurrentChange(action);
         return action;
@@ -89,7 +91,9 @@ export function initializeProvenanceGraph<State, Event extends string>(
             };
             listeners.set(listener.id, listener);
 
-            return () => listeners.delete(listener.id);
+            return () => {
+                listeners.delete(listener.id);
+            };
         },
         update,
         ...actions,
