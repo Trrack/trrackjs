@@ -29,4 +29,34 @@ allowing it to be used in reducer logic that is looking for that action type.
 
 #### Defined in
 
-[action.ts](../../../../../packages/core/src/action.ts#L96)
+[action.ts](../../../../../packages/core/src/action.ts#L155)
+
+▸ **createAction**\<`PA`, `T`\>(`type`, `prepareAction`): `PayloadActionCreator`\<`ReturnType`\<`PA`\>[``"payload"``], `T`, `PA`\>
+
+A utility function to create an action creator for the given action type
+string. The action creator accepts a single argument, which will be included
+in the action object as a field called payload. The action creator function
+will also have its toString() overridden so that it returns the action type,
+allowing it to be used in reducer logic that is looking for that action type.
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `PA` | extends `PrepareAction`\<`any`\> |
+| `T` | extends `string` = `string` |
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `type` | `T` | The action type to use for created actions. |
+| `prepareAction` | `PA` | - |
+
+#### Returns
+
+`PayloadActionCreator`\<`ReturnType`\<`PA`\>[``"payload"``], `T`, `PA`\>
+
+#### Defined in
+
+[action.ts](../../../../../packages/core/src/action.ts#L158)

@@ -1,11 +1,24 @@
-export type PayloadAction<Payload = void, Type extends string = string> = {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export type PayloadAction<
+    Payload = void,
+    Type extends string = string,
+    Meta = never,
+    Error = never
+> = {
     payload: Payload;
     type: Type;
-};
+} & ([Meta] extends [never] ? unknown : { meta: Meta })
+    & ([Error] extends [never] ? unknown : { error: Error });
 
 type ActionLike = {
     type: string;
 };
+
+export type PrepareAction<Payload> =
+    | ((...args: any[]) => { payload: Payload })
+    | ((...args: any[]) => { payload: Payload; meta: any })
+    | ((...args: any[]) => { payload: Payload; error: any })
+    | ((...args: any[]) => { payload: Payload; meta: any; error: any });
 
 type IsAny<T, True, False = never> = true | false extends (
     T extends never ? true : false
@@ -40,10 +53,15 @@ type IsUnknownOrNonInferrable<T, True, False> = AtLeastTs35<
     IsEmptyObject<T, True, IsUnknown<T, True, False>>
 >;
 
-type BaseActionCreator<Payload, Type extends string> = {
+type BaseActionCreator<
+    Payload,
+    Type extends string,
+    Meta = never,
+    Error = never
+> = {
     type: Type;
     toString(): Type;
-    match(action: ActionLike): action is PayloadAction<Payload, Type>;
+    match(action: unknown): action is PayloadAction<Payload, Type, Meta, Error>;
 };
 
 export type ActionCreatorWithPayload<
@@ -72,24 +90,63 @@ export type ActionCreatorWithNonInferrablePayload<
     <Payload>(payload: Payload): PayloadAction<Payload, Type>;
 };
 
+export type ActionCreatorWithPreparedPayload<
+    Args extends unknown[],
+    Payload,
+    Type extends string = string,
+    Error = never,
+    Meta = never
+> = BaseActionCreator<Payload, Type, Meta, Error> & {
+    (...args: Args): PayloadAction<Payload, Type, Meta, Error>;
+};
+
+type PreparedPayloadActionCreator<
+    Prepare extends PrepareAction<any>,
+    Type extends string
+> = ActionCreatorWithPreparedPayload<
+    Parameters<Prepare>,
+    ReturnType<Prepare>['payload'],
+    Type,
+    ReturnType<Prepare> extends { error: infer Error } ? Error : never,
+    ReturnType<Prepare> extends { meta: infer Meta } ? Meta : never
+>;
+
+type _ActionCreatorWithPreparedPayload<
+    Prepare extends PrepareAction<any> | void,
+    Type extends string = string
+> = Prepare extends PrepareAction<any>
+    ? PreparedPayloadActionCreator<Prepare, Type>
+    : void;
+
+type IfPrepareActionMethodProvided<Prepare, True, False> = Prepare extends (
+    ...args: any[]
+) => any
+    ? True
+    : False;
+
 export type PayloadActionCreator<
     Payload = void,
-    Type extends string = string
-> = IsAny<
-    Payload,
-    // `any` must stay explicit here to preserve RTK-compatible payload behavior.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ActionCreatorWithPayload<any, Type>,
-    IsUnknownOrNonInferrable<
+    Type extends string = string,
+    Prepare extends PrepareAction<Payload> | void = void
+> = IfPrepareActionMethodProvided<
+    Prepare,
+    _ActionCreatorWithPreparedPayload<Prepare, Type>,
+    IsAny<
         Payload,
-        ActionCreatorWithNonInferrablePayload<Type>,
-        IfVoid<
+        // `any` must stay explicit here to preserve RTK-compatible payload behavior.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ActionCreatorWithPayload<any, Type>,
+        IsUnknownOrNonInferrable<
             Payload,
-            ActionCreatorWithoutPayload<Type>,
-            IfMaybeUndefined<
+            ActionCreatorWithNonInferrablePayload<Type>,
+            IfVoid<
                 Payload,
-                ActionCreatorWithOptionalPayload<Payload, Type>,
-                ActionCreatorWithPayload<Payload, Type>
+                ActionCreatorWithoutPayload<Type>,
+                IfMaybeUndefined<
+                    Payload,
+                    ActionCreatorWithOptionalPayload<Payload, Type>,
+                    ActionCreatorWithPayload<Payload, Type>
+                >
             >
         >
     >
@@ -98,17 +155,37 @@ export type PayloadActionCreator<
 export function createAction<Payload = void, Type extends string = string>(
     type: Type
 ): PayloadActionCreator<Payload, Type>;
-export function createAction(type: string) {
-    const actionCreator = ((payload?: unknown) => ({
-        payload,
-        type,
-    })) as PayloadActionCreator<unknown, string>;
+export function createAction<
+    Prepare extends PrepareAction<any>,
+    Type extends string = string
+>(
+    type: Type,
+    prepareAction: Prepare
+): PayloadActionCreator<ReturnType<Prepare>['payload'], Type, Prepare>;
+export function createAction(type: string, prepareAction?: PrepareAction<any>) {
+    const actionCreator = ((...args: unknown[]) => {
+        if (prepareAction) {
+            return {
+                ...prepareAction(...args),
+                type,
+            };
+        }
+
+        return {
+            payload: args[0],
+            type,
+        };
+    }) as PayloadActionCreator<unknown, string>;
 
     actionCreator.type = type;
     actionCreator.toString = () => type;
     actionCreator.match = (
-        action: ActionLike
-    ): action is PayloadAction<unknown, string> => action.type === type;
+        action: unknown
+    ): action is PayloadAction<unknown, string> =>
+        typeof action === 'object'
+        && action !== null
+        && 'type' in action
+        && (action as ActionLike).type === type;
 
     return actionCreator;
 }
