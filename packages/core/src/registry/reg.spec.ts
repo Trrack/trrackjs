@@ -20,7 +20,6 @@ describe('Registry', () => {
             'add',
             (state: { count: number }, amount: number) => {
                 state.count += amount;
-                return state;
             }
         );
 
