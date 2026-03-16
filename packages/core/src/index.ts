@@ -1,4 +1,4 @@
-export { createAction } from '@reduxjs/toolkit';
+export { createAction } from './action';
 export * from './event';
 export * from './graph';
 export * from './provenance';

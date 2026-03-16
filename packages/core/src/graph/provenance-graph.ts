@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    configureStore,
-    createListenerMiddleware,
-    isAnyOf,
-} from '@reduxjs/toolkit';
 import { ID } from '../utils';
 
 import { RootNode } from './components';
-import { graphSliceCreator } from './graph-slice';
+import {
+    graphSliceCreator,
+    ProvenanceGraphAction,
+} from './graph-slice';
 
 export type Trigger = 'traversal' | 'new';
 
@@ -34,46 +32,43 @@ export function initializeProvenanceGraph<State, Event extends string>(
         }
     > = new Map();
 
-    const { reducer, actions, getInitialState } = graphSliceCreator<
+    const { reduce, actions, getInitialState } = graphSliceCreator<
         State,
         Event
     >(initialState);
+    let state = getInitialState();
 
-    const listenerMiddleware = createListenerMiddleware();
+    function update(action: ProvenanceGraphAction<State, Event>) {
+        state = reduce(state, action);
 
-    listenerMiddleware.startListening({
-        matcher: isAnyOf(actions.changeCurrent, actions.addNode),
-        effect: (action, listenerApi) => {
-            listenerApi.cancelActiveListeners();
-            listeners.forEach((listener) => {
-                const isNew = isAnyOf(actions.addNode)(action);
-                const { skipOnNew } = listener.config;
+        const isTrackedAction =
+            action.type === actions.changeCurrent.type
+            || action.type === actions.addNode.type;
 
-                if (skipOnNew && isNew) return;
+        if (!isTrackedAction) return action;
 
-                listener.func(isNew ? 'new' : 'traversal');
-            });
-        },
-    });
+        listeners.forEach((listener) => {
+            const isNew = action.type === actions.addNode.type;
+            const { skipOnNew } = listener.config;
 
-    const store = configureStore({
-        reducer: reducer,
-        middleware: (getDefaultMiddleware) =>
-            getDefaultMiddleware().prepend(listenerMiddleware.middleware),
-    });
+            if (skipOnNew && isNew) return;
+
+            listener.func(isNew ? 'new' : 'traversal');
+        });
+
+        return action;
+    }
 
     return {
         initialState: getInitialState(),
         get backend() {
-            return store.getState();
+            return state;
         },
         get current() {
-            return store.getState().nodes[store.getState().current];
+            return state.nodes[state.current];
         },
         get root() {
-            return store.getState().nodes[
-                store.getState().root
-            ] as RootNode<State>;
+            return state.nodes[state.root] as RootNode<State>;
         },
         currentChange(
             func: CurrentChangeHandler,
@@ -88,7 +83,7 @@ export function initializeProvenanceGraph<State, Event extends string>(
 
             return () => listeners.delete(listener.id);
         },
-        update: store.dispatch,
+        update,
         ...actions,
     };
 }

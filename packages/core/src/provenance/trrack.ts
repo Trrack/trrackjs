@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PayloadAction } from '@reduxjs/toolkit';
 import { applyPatch, compare, deepClone, Operation } from 'fast-json-patch';
 import { RecordActionArgs, Trrack } from './types';
+import { PayloadAction } from '../action';
 
 import { initEventManager } from '../event';
 import {

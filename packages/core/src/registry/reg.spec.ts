@@ -1,9 +1,47 @@
 import { createAction } from '@trrack/core';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { Registry } from './reg';
 
 describe('Registry', () => {
+    it('preserves createAction generic payload typing', () => {
+        const action = createAction<string>('typed-action')('payload');
+
+        expectTypeOf(action.payload).toEqualTypeOf<string>();
+        expect(action).toEqual({
+            payload: 'payload',
+            type: 'typed-action',
+        });
+    });
+
+    it('infers state-action register payload and type', () => {
+        const registry = Registry.create<'math'>();
+        const add = registry.register(
+            'add',
+            (state: { count: number }, amount: number) => {
+                state.count += amount;
+                return state;
+            }
+        );
+
+        expectTypeOf(add(2).payload).toEqualTypeOf<number>();
+        expectTypeOf(add(2).type).toEqualTypeOf<'add'>();
+    });
+
+    it('preserves explicit five-generic register typing', () => {
+        const registry = Registry.create<'math'>();
+        const add = registry.register<'add', 'undo-add', number, never, { count: number }>(
+            'add',
+            (state: { count: number }, amount: number) => {
+                state.count += amount;
+                return state;
+            }
+        );
+
+        expectTypeOf(add(2).payload).toEqualTypeOf<number>();
+        expectTypeOf(add(2).type).toEqualTypeOf<'add'>();
+    });
+
     it('registers state actions with generated labels and event types', () => {
         const registry = Registry.create<'math'>();
 

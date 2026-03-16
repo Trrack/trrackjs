@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction } from '../action';
 
 export type TrrackActionFunction<
     DoActionType extends string,

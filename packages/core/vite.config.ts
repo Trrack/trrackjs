@@ -40,7 +40,7 @@ export default defineConfig({
             formats: ['es', 'cjs'],
         },
         rollupOptions: {
-            external: ['@reduxjs/toolkit', 'fast-json-patch', 'uuid'],
+            external: ['fast-json-patch', 'immer', 'uuid'],
         },
     },
 
