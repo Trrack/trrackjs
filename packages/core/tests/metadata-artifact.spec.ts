@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { initializeTrrack } from '../src/provenance/trrack';
 import { Registry } from '../src/registry';
 function setup() {
@@ -151,6 +153,41 @@ describe('Metadata', () => {
         );
         expect(trrack.metadata.latestOfType(METADATA_TYPE_2)?.val).toContain(
             metadata1[METADATA_TYPE_2]
+        );
+    });
+
+    it('returns latest metadata, all metadata, and metadata types for a node', () => {
+        const { trrack, add } = setup();
+
+        trrack.apply('add', add(3));
+
+        trrack.metadata.add({
+            [METADATA_TYPE_1]: 'first',
+            [METADATA_TYPE_2]: 'second',
+        });
+        trrack.metadata.add({
+            [METADATA_TYPE_1]: 'latest',
+        });
+
+        expect(trrack.metadata.latest()).toEqual({
+            [METADATA_TYPE_1]: expect.objectContaining({
+                type: METADATA_TYPE_1,
+                val: 'latest',
+            }),
+            [METADATA_TYPE_2]: expect.objectContaining({
+                type: METADATA_TYPE_2,
+                val: 'second',
+            }),
+        });
+        expect(trrack.metadata.all()?.[METADATA_TYPE_1]).toHaveLength(2);
+        expect(trrack.metadata.all()?.[METADATA_TYPE_2]).toHaveLength(1);
+        expect(trrack.metadata.types()).toEqual(
+            expect.arrayContaining([
+                'annotation',
+                'bookmark',
+                METADATA_TYPE_1,
+                METADATA_TYPE_2,
+            ])
         );
     });
 });

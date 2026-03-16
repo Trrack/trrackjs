@@ -1,5 +1,4 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
@@ -9,8 +8,8 @@ export default defineConfig({
         }),
     ],
     test: {
-        globals: true,
         environment: 'jsdom',
         include: ['src/**/*.{test,spec}.ts'],
+        setupFiles: ['../../test/setup-dom.ts'],
     },
 });

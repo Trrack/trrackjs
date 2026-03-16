@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createSlice, PayloadAction, Slice } from '@reduxjs/toolkit';
+import {
+    ActionCreatorWithPayload,
+    createSlice,
+    PayloadAction,
+    Slice,
+} from '@reduxjs/toolkit';
 
 import { castDraft } from 'immer';
 import { ID } from '../utils';
@@ -23,10 +28,20 @@ export type ProvenanceGraph<State, Event extends string> = {
 
 type GraphSlice<S, E extends string> = Slice<ProvenanceGraph<S, E>>;
 
-export type ProvenanceGraphActions<S, E extends string> = GraphSlice<
-    S,
-    E
->['actions'];
+export type ProvenanceGraphActions<S, E extends string> = {
+    addMetadata: ActionCreatorWithPayload<AddMetadataPayload, string>;
+    addArtifact: ActionCreatorWithPayload<AddArtifactPayload, string>;
+    changeCurrent: ActionCreatorWithPayload<NodeId, string>;
+    addNode: ActionCreatorWithPayload<StateNode<S, E>, string>;
+    load: ActionCreatorWithPayload<ProvenanceGraph<S, E>, string>;
+};
+
+type PublicGraphSlice<S, E extends string> = Pick<
+    GraphSlice<S, E>,
+    'reducer' | 'getInitialState'
+> & {
+    actions: ProvenanceGraphActions<S, E>;
+};
 
 // Maybe swithc to reduxtoolkit createEntityAdapter
 
@@ -37,7 +52,7 @@ export function graphSliceCreator<State, Event extends string>(
         metadata?: Record<string, unknown>;
         rootLabel?: string;
     } = {}
-) {
+): PublicGraphSlice<State, Event> {
     const {
         artifact = undefined,
         metadata = undefined,

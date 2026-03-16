@@ -3,6 +3,7 @@
   "compilerOptions": {
     "jsx": "preserve",
     "baseUrl": ".",
+    "moduleResolution": "node",
     "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -20,5 +21,5 @@
     "src/**/*.jsx",
     "next-env.d.ts"
   ],
-  "exclude": ["node_modules", "jest.config.ts"]
+  "exclude": ["node_modules"]
 }

@@ -1,8 +1,6 @@
-import { ProvenanceNode } from '@trrack/core';
-import { HierarchyNode } from 'd3';
-import { animated, easings, useTransition } from 'react-spring';
+import { animated, easings, useTransition } from '@react-spring/web';
 import { ProvVisConfig } from './ProvVis';
-import { StratifiedMap } from './useComputeNodePosition';
+import { LayoutNode, StratifiedMap } from './useComputeNodePosition';
 
 export function AnimatedLine<T, S extends string>({
     x1Width,
@@ -27,7 +25,7 @@ export function AnimatedLine<T, S extends string>({
     xOffset: number;
     uniqueKey: string;
     nodes: StratifiedMap<T, S>;
-    parentNode: HierarchyNode<ProvenanceNode<T, S>>;
+    parentNode: LayoutNode<T, S>;
 }) {
     const transitions = useTransition([uniqueKey], {
         config: {

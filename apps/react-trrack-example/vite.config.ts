@@ -1,6 +1,5 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vitest/config';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
@@ -14,8 +13,8 @@ export default defineConfig({
         port: 3000,
     },
     test: {
-        globals: true,
         environment: 'jsdom',
         include: ['src/**/*.{test,spec}.{ts,tsx}'],
+        setupFiles: ['../../test/setup-dom.ts'],
     },
 });

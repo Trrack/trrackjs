@@ -26,14 +26,14 @@ export interface Trrack<State, Event extends string> {
     registry: Registry<Event>;
     isTraversing: boolean;
     getState(node?: ProvenanceNode<State, Event>): State;
-    graph: ProvenanceGraphStore;
+    graph: ProvenanceGraphStore<State, Event>;
     current: ProvenanceNode<State, Event>;
     root: RootNode<State>;
     record(args: RecordActionArgs<State, Event>): void;
-    apply<T extends string, Payload = any>(
+    apply<T extends string, Payload = unknown>(
         label: string,
         act: PayloadAction<Payload, T>
-    ): any;
+    ): Promise<void>;
     to(node: NodeId): Promise<void>;
     metadata: {
         add(metadata: Record<string, unknown>, node?: NodeId): void;
@@ -72,8 +72,8 @@ export interface Trrack<State, Event extends string> {
         skipOnNew?: boolean
     ): UnsubscribeCurrentChangeListener;
     done(): void;
-    tree(): any;
-    on(event: TrrackEvents, listener: (args?: any) => void): void;
+    tree(): unknown;
+    on(event: TrrackEvents, listener: (args?: unknown) => void): void;
     export(): string;
     exportObject(): ProvenanceGraph<State, Event>;
     import(graphString: string): void;

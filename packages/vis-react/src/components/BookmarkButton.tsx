@@ -1,6 +1,5 @@
-import { faBookmark } from '@fortawesome/free-solid-svg-icons/faBookmark';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
+import { BookmarkIcon } from './icons';
 
 export function BookmarkButton({
     onClick,
@@ -13,10 +12,17 @@ export function BookmarkButton({
 }) {
     const [isHover, setHover] = useState<boolean>(false);
     return (
-        <div
+        <button
+            type="button"
             style={{
-                marginRight: '5px',
+                alignItems: 'center',
+                background: 'transparent',
+                border: 0,
                 color: isBookmarked || isHover ? color : 'lightgray',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                marginRight: '5px',
+                padding: 0,
             }}
             onClick={(e) => {
                 e.stopPropagation();
@@ -24,8 +30,9 @@ export function BookmarkButton({
             }}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
+            aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
         >
-            <FontAwesomeIcon icon={faBookmark} />
-        </div>
+            <BookmarkIcon />
+        </button>
     );
 }

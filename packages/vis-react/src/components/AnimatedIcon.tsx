@@ -1,10 +1,18 @@
-import { Stack, Text, Tooltip } from '@mantine/core';
 import { NodeId, ProvenanceNode } from '@trrack/core';
 import { useMemo } from 'react';
-import { animated, easings, useTransition } from 'react-spring';
+import { animated, easings, useTransition } from '@react-spring/web';
 import { defaultDarkmodeIcon, defaultIcon } from '../utils/IconConfig';
 import { ProvVisConfig } from './ProvVis';
 import { StratifiedMap } from './useComputeNodePosition';
+
+function getNodeTooltip<T, S extends string>(
+    node: ProvenanceNode<T, S>,
+    annotation: string
+) {
+    return annotation.length > 0
+        ? `Node: ${node.label}\n${annotation}`
+        : `Node: ${node.label}`;
+}
 
 export function AnimatedIcon<T, S extends string>({
     width,
@@ -35,6 +43,9 @@ export function AnimatedIcon<T, S extends string>({
     xOffset: number;
     extraHeight: number;
 }) {
+    const parentId = nodes[node.id].parent;
+    const parentNode = parentId ? nodes[parentId] : undefined;
+
     const transitions = useTransition([node], {
         config: {
             duration: config.animationDuration,
@@ -50,9 +61,7 @@ export function AnimatedIcon<T, S extends string>({
         },
         enter: {
             delay:
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                nodes[node.id].parent?.children.length > 1
+                parentNode && parentNode.children.length > 1
                     ? config.animationDuration / 3
                     : 0,
             opacity: 1,
@@ -122,28 +131,12 @@ export function AnimatedIcon<T, S extends string>({
                     }
                 }}
                 onMouseOut={() => setHover(null)}
+                aria-label={node.label}
             >
-                <Tooltip
-                    position="top-start"
-                    openDelay={200}
-                    withinPortal={true}
-                    withArrow
-                    color="gray"
-                    multiline
-                    sx={{ maxWidth: '200px' }}
-                    label={
-                        <Stack spacing={0}>
-                            <Text weight={600}>{node.label}</Text>
-                            {config.getAnnotation(node.id).length > 0 ? (
-                                <Text size="xs">
-                                    {config.getAnnotation(node.id)}
-                                </Text>
-                            ) : null}
-                        </Stack>
-                    }
-                >
-                    {icon}
-                </Tooltip>
+                <title>
+                    {getNodeTooltip(node, config.getAnnotation(node.id))}
+                </title>
+                {icon}
             </animated.g>
         );
     });

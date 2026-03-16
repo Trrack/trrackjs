@@ -1,34 +1,22 @@
-import { ProvenanceNode } from '@trrack/core';
-import { HierarchyNode } from 'd3';
 import { StratifiedMap } from '../components/useComputeNodePosition';
-
-export type TreeNode = HierarchyNode<unknown>;
-
-export interface ExtendedHierarchyNode<T, S extends string>
-    extends HierarchyNode<ProvenanceNode<T, S>> {
-    column: number;
-}
-
-export type ExtendedStratifiedMap<T, S extends string> = {
-    [key: string]: ExtendedHierarchyNode<T, S>;
-};
 
 function DFS<T, S extends string>(
     nodes: StratifiedMap<T, S>,
     node: string,
-    depthMap: any,
+    depthMap: Record<string, number>,
     currentPath: string[]
 ) {
-    const explored = new Set();
-
-    const toExplore = [];
+    const explored = new Set<string>();
+    const toExplore = [nodes[node]];
 
     let currDepth = 0;
 
-    toExplore.push(nodes[node]);
-
     while (toExplore.length > 0) {
-        const temp: any = toExplore.pop();
+        const temp = toExplore.pop();
+
+        if (!temp) {
+            continue;
+        }
 
         if (!explored.has(temp.id)) {
             temp.width = currDepth;
@@ -38,13 +26,13 @@ function DFS<T, S extends string>(
             temp.width = depthMap[temp.id];
         }
 
-        if (temp.children) {
+        if (temp.children.length > 0) {
             toExplore.push(
-                ...temp.children.sort((a: any, b: any) => {
-                    const aIncludes = currentPath.includes(a.id) ? 1 : 0;
-                    const bIncludes = currentPath.includes(b.id) ? 1 : 0;
+                ...temp.children.sort((a: string, b: string) => {
+                    const aIncludes = currentPath.includes(a) ? 1 : 0;
+                    const bIncludes = currentPath.includes(b) ? 1 : 0;
                     return aIncludes - bIncludes;
-                })
+                }).map((childId) => nodes[childId])
             );
         } else {
             currDepth += 1;
@@ -67,10 +55,9 @@ function search<T, S extends string>(
 
     const children = nodes[node].children || [];
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const child of children) {
-        if (search(nodes, child.id!, final, path)) {
-            path.push(child.id!);
+        if (search(nodes, child, final, path)) {
+            path.push(node);
             return true;
         }
     }
@@ -85,9 +72,9 @@ export function getPathTo<T, S extends string>(
 ): string[] {
     const path: string[] = [];
 
-    search(nodes, from, to, path);
+    const found = search(nodes, from, to, path);
 
-    return [from, ...path.reverse()];
+    return found ? path.reverse() : [from];
 }
 
 export function treeLayout<T, S extends string>(
@@ -95,7 +82,7 @@ export function treeLayout<T, S extends string>(
     current: string,
     root: string
 ) {
-    const depthMap: { [key: string]: any } = {};
+    const depthMap: Record<string, number> = {};
 
     const currentPath = getPathTo(nodes, root, current);
 

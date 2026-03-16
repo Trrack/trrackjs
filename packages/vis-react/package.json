@@ -2,44 +2,42 @@
     "name": "@trrack/vis-react",
     "version": "1.5.0",
     "license": "BSD-3-Clause",
+    "sideEffects": false,
+    "files": ["**/*"],
     "main": "./index.js",
+    "module": "./index.mjs",
     "types": "./index.d.ts",
     "scripts": {
         "build": "vite build",
-        "test": "vitest run",
-        "test:watch": "vitest",
+        "typecheck": "tsc --noEmit -p tsconfig.lib.json && tsc --noEmit -p tsconfig.spec.json",
+        "test": "vitest",
+        "test:ci": "vitest run",
+        "test:coverage": "vitest run --coverage",
         "lint": "eslint src tests --ext .ts,.tsx"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/Trrack/trrackjs.git"
     },
-    "dependencies": {
-        "@fortawesome/fontawesome-svg-core": "^6.2.1",
-        "@fortawesome/free-solid-svg-icons": "^6.2.1",
-        "@fortawesome/react-fontawesome": "^0.2.0",
-        "@mantine/core": "^5.10.5",
-        "@mantine/hooks": "^5.10.5",
-        "@trrack/core": "^1.0.0",
-        "d3": "^7.8.0",
-        "react": "16.8 - 18",
-        "react-dom": "16.14 - 18",
-        "react-spring": "^9.6.1"
-    },
     "peerDependencies": {
-        "@fortawesome/fontawesome-svg-core": "^6.2.1",
-        "@fortawesome/free-solid-svg-icons": "^6.2.1",
-        "@fortawesome/react-fontawesome": "^0.2.0",
-        "@mantine/core": "^5.10.5",
-        "@mantine/hooks": "^5.10.5",
-        "@trrack/core": "^1.0.0",
-        "d3": "^7.8.0",
-        "react": "16.8 - 18",
-        "react-dom": "16.14 - 18",
-        "react-spring": "^9.6.1"
+        "@trrack/core": "^1.4.0",
+        "react": ">=18 <20",
+        "react-dom": ">=18 <20"
+    },
+    "devDependencies": {
+        "@react-spring/web": "^9.7.5",
+        "@types/d3": "^7.4.0",
+        "@trrack/core": "*",
+        "d3-color": "^3.1.0",
+        "d3-hierarchy": "^3.1.2",
+        "d3-selection": "^3.0.0",
+        "d3-zoom": "^3.0.0",
+        "react": "18.2.0",
+        "react-dom": "18.2.0"
     },
     "exports": {
         ".": {
+            "types": "./index.d.ts",
             "import": "./index.mjs",
             "require": "./index.js"
         }

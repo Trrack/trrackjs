@@ -1,26 +1,21 @@
-import {
-    initializeTrrack,
-    NodeId,
-    UnsubscribeCurrentChangeListener,
-} from '@trrack/core';
-import ReactDOM from 'react-dom';
+import { NodeId, Trrack } from '@trrack/core';
 import { createRoot, Root } from 'react-dom/client';
 import { ProvVis, ProvVisConfig } from './ProvVis';
 
-type TrrackLike = ReturnType<typeof initializeTrrack>;
-export type ProvVisCleanup = UnsubscribeCurrentChangeListener;
+export type ProvVisCleanup = () => boolean;
 
-export async function ProvVisCreator<TrrackInstance extends TrrackLike>(
+export async function ProvVisCreator<T, S extends string>(
     node: Element,
-    trrackInstance: TrrackInstance,
-    config: Partial<ProvVisConfig<unknown, string>> = {},
-    REACT_16 = false
+    trrackInstance: Trrack<T, S>,
+    config: Partial<ProvVisConfig<T, S>> = {}
 ): Promise<ProvVisCleanup> {
     let root: Root | null = null;
     let cleanedUp = false;
 
     function renderTrrack() {
-        if (cleanedUp) return;
+        if (cleanedUp) {
+            return;
+        }
 
         const vis = (
             <ProvVis
@@ -34,15 +29,11 @@ export async function ProvVisCreator<TrrackInstance extends TrrackLike>(
             />
         );
 
-        if (REACT_16) {
-            ReactDOM.render(vis, node);
-        } else {
-            if (!root) {
-                root = createRoot(node);
-            }
-
-            root.render(vis);
+        if (!root) {
+            root = createRoot(node);
         }
+
+        root.render(vis);
     }
 
     const unsubscribe = trrackInstance.currentChange(() => {
@@ -59,12 +50,8 @@ export async function ProvVisCreator<TrrackInstance extends TrrackLike>(
         cleanedUp = true;
         const unsubscribed = unsubscribe();
 
-        if (REACT_16) {
-            ReactDOM.unmountComponentAtNode(node);
-        } else {
-            root?.unmount();
-            root = null;
-        }
+        root?.unmount();
+        root = null;
 
         return unsubscribed;
     };

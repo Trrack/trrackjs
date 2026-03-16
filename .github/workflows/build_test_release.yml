@@ -33,11 +33,14 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Typecheck
+        run: yarn typecheck
+
       - name: Build packages
-        run: yarn build:packages
+        run: yarn build
 
       - name: Test
-        run: yarn test:all
+        run: yarn test:ci
 
       - name: Resolve release metadata
         id: release_meta
@@ -103,7 +106,15 @@ jobs:
 
             npm pkg set version="${RELEASE_VERSION}" --prefix "${dist_dir}"
             npm pkg delete scripts --prefix "${dist_dir}"
+            npm pkg delete devDependencies --prefix "${dist_dir}"
           done
+
+      - name: Verify package contents
+        run: |
+          set -euo pipefail
+
+          npm pack --dry-run packages/core/dist
+          npm pack --dry-run packages/vis-react/dist
 
       - name: Publish packages
         env:
