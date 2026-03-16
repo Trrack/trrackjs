@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import produce from 'immer';
+import produce, { freeze } from 'immer';
 import {
     ActionCreatorWithPayload,
     createAction,
@@ -121,9 +121,11 @@ export function graphSliceCreator<State, Event extends string>(
         ),
     };
 
+    const frozenGraph = freeze(graph, true);
+
     return {
         actions,
-        getInitialState: () => graph,
+        getInitialState: () => frozenGraph,
         reduce(g, action) {
             switch (action.type) {
                 case actions.addMetadata.type:
@@ -171,7 +173,7 @@ export function graphSliceCreator<State, Event extends string>(
                         draft.current = payload.id;
                     });
                 case actions.load.type:
-                    return action.payload;
+                    return freeze(action.payload, true);
                 default:
                     return g;
             }

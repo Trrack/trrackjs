@@ -67,4 +67,32 @@ describe('initializeProvenanceGraph', () => {
         graph.update(graph.changeCurrent(graph.root.id));
         expect(listener).toHaveBeenCalledTimes(1);
     });
+
+    it('freezes the initial state so external mutation does not change the root snapshot', () => {
+        const initialState = {
+            count: 0,
+            nested: {
+                value: 1,
+            },
+        };
+        const graph = initializeProvenanceGraph<typeof initialState, 'increment'>(
+            initialState
+        );
+
+        expect(Object.isFrozen(initialState)).toBe(true);
+        expect(Object.isFrozen(initialState.nested)).toBe(true);
+
+        expect(() => {
+            initialState.nested.value = 2;
+        }).toThrow(TypeError);
+
+        expect(
+            (
+                graph.root.state as {
+                    type: 'checkpoint';
+                    val: typeof initialState;
+                }
+            ).val.nested.value
+        ).toBe(1);
+    });
 });
