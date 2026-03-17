@@ -1,4 +1,4 @@
-import { PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction } from '../action';
 import { NodeId } from '@trrack/core';
 import {
     Artifact,

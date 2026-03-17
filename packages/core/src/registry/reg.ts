@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createAction } from '@reduxjs/toolkit';
 import produce, { enablePatches } from 'immer';
+import { createAction, PayloadActionCreator } from '../action';
 
 import {
     Label,
@@ -40,6 +40,36 @@ export class Registry<Event extends string> {
 
     register<
         DoActionType extends string,
+        State = any,
+        DoActionPayload = any
+    >(
+        type: DoActionType,
+        actionFunction: StateChangeFunction<State, DoActionPayload>,
+        config?: {
+            eventType: Event;
+            label: Label | LabelGenerator<DoActionPayload>
+        }
+    ): PayloadActionCreator<DoActionPayload, DoActionType>;
+    register<
+        DoActionType extends string,
+        UndoActionType extends string,
+        DoActionPayload = any,
+        UndoActionPayload = any
+    >(
+        type: DoActionType,
+        actionFunction: TrrackActionFunction<
+            DoActionType,
+            UndoActionType,
+            UndoActionPayload,
+            DoActionPayload
+        >,
+        config?: {
+            eventType: Event;
+            label: Label | LabelGenerator<DoActionPayload>
+        }
+    ): PayloadActionCreator<DoActionPayload, DoActionType>;
+    register<
+        DoActionType extends string,
         UndoActionType extends string,
         DoActionPayload = any,
         UndoActionPayload = any,
@@ -56,7 +86,26 @@ export class Registry<Event extends string> {
             eventType: Event;
             label: Label | LabelGenerator<DoActionPayload>
         }
-    ) {
+    ): PayloadActionCreator<DoActionPayload, DoActionType>;
+    register<
+        DoActionType extends string,
+        UndoActionType extends string,
+        DoActionPayload = any,
+        UndoActionPayload = any,
+        State = any
+    >(
+        type: DoActionType,
+        actionFunction: TrrackActionFunction<
+            DoActionType,
+            UndoActionType,
+            UndoActionPayload,
+            DoActionPayload
+        > | StateChangeFunction<State, DoActionPayload>,
+        config?: {
+            eventType: Event;
+            label: Label | LabelGenerator<DoActionPayload>
+        }
+    ): PayloadActionCreator<DoActionPayload, DoActionType> {
         const isState = actionFunction.length === 2;
 
         if (actionFunction.length > 2)
@@ -78,7 +127,9 @@ export class Registry<Event extends string> {
             },
         });
 
-        return createAction<DoActionPayload>(type);
+        return createAction<DoActionPayload, DoActionType>(
+            type
+        ) as PayloadActionCreator<DoActionPayload, DoActionType>;
     }
 
     get(type: string) {

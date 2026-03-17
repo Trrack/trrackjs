@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction } from '../action';
 
 export type TrrackActionFunction<
     DoActionType extends string,
@@ -11,13 +11,12 @@ export type TrrackActionFunction<
     undo: PayloadAction<UndoActionPayload, UndoActionType>;
 };
 
-export type ProduceWrappedStateChangeFunction<T> = (state: T, args: any) => T
+export type ProduceWrappedStateChangeFunction<T> = (state: T, args: any) => T;
 
 export type StateChangeFunction<State, Payload> = (
     state: State,
     payload: Payload
-) => ReturnType<ProduceWrappedStateChangeFunction<State>>;
-
+) => void | ReturnType<ProduceWrappedStateChangeFunction<State>>;
 
 export type Label = string;
 export type LabelGenerator<Args> = (args: Args) => Label;

@@ -101,4 +101,33 @@ describe('Export', () => {
         expect(imported.current.id).toBe(exportObject.root);
         await expect(imported.to(orphan.id)).rejects.toThrow();
     });
+
+    it('freezes imported graph objects so later external mutation cannot rewrite the store', async () => {
+        const { trrack, add } = setup();
+
+        await trrack.apply('Add', add(2));
+
+        const exportObject = trrack.exportObject();
+        const rootNode = exportObject.nodes[exportObject.root] as {
+            state: {
+                type: 'checkpoint';
+                val: {
+                    counter: number;
+                };
+            };
+        };
+        const { trrack: imported } = setup();
+        imported.importObject(exportObject);
+
+        expect(Object.isFrozen(exportObject)).toBe(true);
+        expect(Object.isFrozen(exportObject.nodes)).toBe(true);
+        expect(Object.isFrozen(rootNode.state.val)).toBe(true);
+        expect(imported.getState().counter).toBe(2);
+
+        expect(() => {
+            rootNode.state.val.counter = 99;
+        }).toThrow(TypeError);
+
+        expect(imported.getState().counter).toBe(2);
+    });
 });

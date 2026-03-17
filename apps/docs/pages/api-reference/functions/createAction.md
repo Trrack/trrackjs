@@ -29,14 +29,16 @@ allowing it to be used in reducer logic that is looking for that action type.
 
 #### Defined in
 
-node_modules/@reduxjs/toolkit/dist/createAction.d.ts:163
+[action.ts](../../../../../packages/core/src/action.ts#L155)
 
 ▸ **createAction**\<`PA`, `T`\>(`type`, `prepareAction`): `PayloadActionCreator`\<`ReturnType`\<`PA`\>[``"payload"``], `T`, `PA`\>
 
 A utility function to create an action creator for the given action type
-string. The action creator accepts a single argument, which will be included
-in the action object as a field called payload. The action creator function
-will also have its toString() overridden so that it returns the action type,
+string. The action creator's parameters mirror the `prepareAction`
+function signature, and any arguments passed to the action creator are
+forwarded to `prepareAction`. The resulting payload is included in the
+action object as a field called `payload`. The action creator function will
+also have its toString() overridden so that it returns the action type,
 allowing it to be used in reducer logic that is looking for that action type.
 
 #### Type parameters
@@ -59,4 +61,4 @@ allowing it to be used in reducer logic that is looking for that action type.
 
 #### Defined in
 
-node_modules/@reduxjs/toolkit/dist/createAction.d.ts:177
+[action.ts](../../../../../packages/core/src/action.ts#L158)
