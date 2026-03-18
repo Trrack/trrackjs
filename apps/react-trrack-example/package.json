@@ -1,0 +1,24 @@
+{
+    "name": "react-trrack-example",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "@emotion/react": "11.10.5",
+        "@emotion/styled": "11.10.5",
+        "@mui/icons-material": "^5.8.0",
+        "@mui/material": "^5.8.1",
+        "@trrack/core": "*",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-hyper-tree": "^0.3.12"
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "test": "vitest",
+        "test:ci": "vitest run",
+        "lint": "eslint src --ext .ts,.tsx"
+    }
+}

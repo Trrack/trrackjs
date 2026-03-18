@@ -1,0 +1,10 @@
+{
+  "createAction": "createAction",
+  "createRootNode": "createRootNode",
+  "createStateNode": "createStateNode",
+  "initEventManager": "initEventManager",
+  "initializeProvenanceGraph": "initializeProvenanceGraph",
+  "initializeTrrack": "initializeTrrack",
+  "isRootNode": "isRootNode",
+  "isStateNode": "isStateNode"
+}

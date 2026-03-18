@@ -1,133 +1,121 @@
 import { Button } from '@mantine/core';
 import { useElementSize } from '@mantine/hooks';
-import { PayloadAction } from '@reduxjs/toolkit';
-import { IProvenanceGraph, ProvenanceGraph, Trrack } from '@trrack/core';
-import test from 'node:test';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { initializeTrrack, Registry } from '@trrack/core';
+import { useEffect, useMemo, useState } from 'react';
 
 import styles from './App.module.css';
-import { GraphRenderer } from './components/graphRender';
+import { GraphRenderer, type GraphData } from './components/graphRender';
 import translate from './utils/translate';
 
-function useGraph<T>(state: T) {
-  const { reducer, actions } = Trrack.createState({
-    initialState: 'Hello, World!',
-    name: 'Test',
-    reducers: {
-      change(test, action: PayloadAction<string>) {
-        return action.payload;
+type GraphState = {
+  helloTo: string;
+};
+
+type GraphEvent = 'change-greeting';
+
+const initialState: GraphState = {
+  helloTo: 'World',
+};
+
+function randomGreeting() {
+  const start = Math.floor(Math.random() * 10);
+  const end = start + Math.max(2, Math.floor(Math.random() * 10));
+  return 'Lorem ipsum dolor sit amet consectetur adipisicing elit.'
+    .replace(' ', 'asde')
+    .slice(start, end);
+}
+
+function useGraph() {
+    const { registry, actions } = useMemo(() => {
+      const reg = Registry.create<GraphEvent>();
+      const changeGreeting = reg.register<
+        'change-greeting',
+        never,
+        string,
+        never,
+        GraphState
+      >(
+        'change-greeting',
+        (state: GraphState, helloTo: string) => {
+          state.helloTo = helloTo;
+          return state;
+        },
+        { eventType: 'change-greeting', label: 'Change Greeting' }
+      );
+
+    return {
+      registry: reg,
+      actions: {
+        changeGreeting,
       },
-    },
-  });
+    };
+  }, []);
 
-  const t = Trrack.init({
-    reducer: {
-      test: reducer,
-    },
-  });
-  t.apply('A', actions.change('Bye'));
-  t.apply('2', actions.change('Bye eqr'));
-  t.apply('3', actions.change('Bye asd'));
-  t.apply('4', actions.change('Bye 1'));
-
-  const [provenance, setProvenance] = useState<IProvenanceGraph<T> | null>(
-    null
+  const trrack = useMemo(
+    () =>
+      initializeTrrack<GraphState, GraphEvent>({
+        initialState,
+        registry,
+      }),
+    [registry]
   );
+  const [renderVersion, setRenderVersion] = useState(0);
 
   useEffect(() => {
-    if (provenance) return;
-
-    const prov = ProvenanceGraph.create<T>(state);
-
-    prov.addAction('Hello', {
-      do: {
-        name: 'test',
-        args: [1, 2],
-      },
-      undo: {
-        name: 'test',
-        args: [1, 2],
-      },
+    const unsubscribe = trrack.currentChange(() => {
+      setRenderVersion((version) => version + 1);
     });
 
-    setProvenance(prov);
-  }, [provenance, state]);
+    return () => {
+      unsubscribe();
+    };
+  }, [trrack]);
 
-  const backend = useMemo(() => {
-    return provenance?.backend;
-  }, [provenance?.backend]);
+  const backend = trrack.graph.backend as GraphData;
 
-  return { graph: provenance, backend };
+  return {
+    actions,
+    backend,
+    currentNodeId: trrack.current.id,
+    state: trrack.getState(),
+    trrack,
+    renderVersion,
+  };
 }
 
 export function App() {
   const { ref, width, height } = useElementSize();
-  const { graph, backend } = useGraph({ helloTo: 'World' });
-  const [a, setA] = useState(Math.random());
-
-  const key = useCallback(() => {
-    if (!a) return '';
-    return graph?.current.id || 'None';
-  }, [graph, a]);
+  const { actions, backend, currentNodeId, state, trrack, renderVersion } =
+    useGraph();
 
   return (
     <div ref={ref} className={styles['container']}>
       <div>
         <Button
           onClick={() => {
-            setA(Math.random());
-            graph?.addAction(`Random ${Math.floor(Math.random() * 100)}`, {
-              do: {
-                name: 'test',
-                args: [1, 2],
-              },
-              undo: {
-                name: 'test',
-                args: [1, 2],
-              },
-            });
+            const nextGreeting = `Random ${Math.floor(Math.random() * 100)}`;
+            trrack.apply(nextGreeting, actions.changeGreeting(nextGreeting));
           }}
         >
-          Add Random Action
+          Change Greeting
         </Button>
 
         <Button
           onClick={() => {
-            let [a, b] = [
-              Math.floor(Math.random() * 10),
-              Math.floor(Math.random() * 10),
-            ];
-
-            if (b < a) {
-              const temp = a;
-              a = b;
-              b = temp;
-            }
-            if (a === b) {
-              b += 2;
-            }
-
-            const t =
-              'Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo cum voluptatibus numquam inventore, rerum quo eaque iure aspernatur reiciendis. Minus repellat deserunt provident vel fugiat cum aliquid, aut optio commodi!'
-                .replace(' ', 'asde')
-                .slice(a, b);
-
-            setA(Math.random());
-            graph?.addState(`Hello ${t}`, {
-              type: 'state',
-              val: {
-                helloTo: t,
-              },
-            });
+            const nextGreeting = randomGreeting();
+            trrack.apply(`Hello ${nextGreeting}`, actions.changeGreeting(nextGreeting));
           }}
         >
           Add Random State
         </Button>
       </div>
+      <p>
+        Current greeting: <strong>{state.helloTo}</strong> ({renderVersion})
+      </p>
       {backend && (
-        <svg key={key()} height={height} width={width}>
+        <svg key={currentNodeId} height={height} width={width}>
           <g transform={translate(100, height / 2)}>
-            <GraphRenderer graph={backend} />
+            <GraphRenderer currentNodeId={currentNodeId} graph={backend} />
           </g>
         </svg>
       )}

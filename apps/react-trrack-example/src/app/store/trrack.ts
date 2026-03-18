@@ -9,7 +9,6 @@ const initialState = {
 
 type State = typeof initialState;
 
-// ! Add example for async action (e.g. data loading)
 export function useTrrackTaskManager() {
   const [counter, setCounter] = useState(0);
   const [state, setState] = useState(initialState);
@@ -46,11 +45,13 @@ export function useTrrackTaskManager() {
       (add: number) => {
         setCounter((c) => c + add);
         return {
+          undo: {
           type: 'decrement-counter',
           payload: add,
           meta: {
             hasSideEffects: true,
           },
+        }
         };
       }
     );
@@ -60,11 +61,13 @@ export function useTrrackTaskManager() {
       (sub: number) => {
         setCounter((c) => c - sub);
         return {
+          undo: {
           type: 'increment-counter',
           payload: sub,
           meta: {
             hasSideEffects: true,
           },
+        }
         };
       }
     );

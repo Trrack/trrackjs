@@ -1,4 +1,14 @@
-export { createAction } from '@reduxjs/toolkit';
+export { createAction } from './action';
+export type {
+    ActionCreatorWithNonInferrablePayload,
+    ActionCreatorWithOptionalPayload,
+    ActionCreatorWithPayload,
+    ActionCreatorWithPreparedPayload,
+    ActionCreatorWithoutPayload,
+    PayloadAction,
+    PayloadActionCreator,
+    PrepareAction,
+} from './action';
 export * from './event';
 export * from './graph';
 export * from './provenance';

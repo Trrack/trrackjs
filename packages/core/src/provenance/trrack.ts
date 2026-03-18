@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PayloadAction } from '@reduxjs/toolkit';
 import { applyPatch, compare, deepClone, Operation } from 'fast-json-patch';
 import { RecordActionArgs, Trrack } from './types';
+import { PayloadAction } from '../action';
 
 import { initEventManager } from '../event';
 import {
@@ -14,7 +14,6 @@ import {
     Nodes,
     ProvenanceNode,
     StateLike,
-    StateNode,
     UnsubscribeCurrentChangeListener,
 } from '../graph';
 import { ProvenanceGraph } from '../graph/graph-slice';
@@ -61,7 +60,7 @@ function determineSaveStrategy<T>(
 
     const uniquePatchesLength = new Set(
         patches.map((patch) => {
-            return patch.path.split('/')[0];
+            return patch.path.split('/')[1] ?? '';
         })
     ).size;
 
@@ -206,61 +205,46 @@ export function initializeTrrack<State = any, Event extends string = string>({
             eventType: event,
             onlySideEffects = false,
         }: RecordActionArgs<State, Event>) {
-            let newStateNode: StateNode<State, Event> | null = null;
-
-            let stateToSave: StateLike<State> | null = null;
-
-            const originalState = getState(
+            const originalState: State = getState(
                 this.current,
                 this.graph.backend.nodes
             );
 
-            if (!onlySideEffects) {
-                const patches = compare(originalState as any, state as any);
+            const stateToSave: StateLike<State> = onlySideEffects
+                ? {
+                      type: 'checkpoint',
+                      val: state,
+                  }
+                : (() => {
+                      const patches = compare(originalState as any, state as any);
+                      const saveStrategy = determineSaveStrategy(state, patches);
 
-                const saveStrategy = determineSaveStrategy(state, patches);
+                      if (saveStrategy === 'checkpoint') {
+                          return {
+                              type: 'checkpoint',
+                              val: state,
+                          };
+                      }
 
-                if (saveStrategy === 'checkpoint') {
-                    stateToSave = {
-                        type: 'checkpoint',
-                        val: state,
-                    };
-                } else {
-                    const lastRef =
-                        this.current.state.type === 'checkpoint'
-                            ? this.current.id
-                            : this.current.state.checkpointRef;
+                      const lastRef =
+                          this.current.state.type === 'checkpoint'
+                              ? this.current.id
+                              : this.current.state.checkpointRef;
 
-                    stateToSave = {
-                        type: 'patch',
-                        val: patches,
-                        checkpointRef: lastRef,
-                    };
-                }
-            } else {
-                stateToSave = {
-                    type: 'checkpoint',
-                    val: state,
-                };
-            }
-            if (!stateToSave)
-                throw new Error(
-                    `Could not calculate new state. Previous state is: ${JSON.stringify(
-                        this.current.state,
-                        null,
-                        2
-                    )}`
-                );
+                      return {
+                          type: 'patch',
+                          val: patches,
+                          checkpointRef: lastRef,
+                      };
+                  })();
 
-            newStateNode = createStateNode({
+            const newStateNode = createStateNode({
                 label,
                 state: stateToSave,
                 parent: this.current,
                 sideEffects,
                 event,
             });
-
-            if (!newStateNode) throw new Error('State Node creation failed!');
 
             graph.update(graph.addNode(newStateNode));
         },
@@ -275,20 +259,26 @@ export function initializeTrrack<State = any, Event extends string = string>({
             );
 
             if (action.config.hasSideEffects) {
-                const { do: doAct = act, undo } = (
-                    action.func as TrrackActionFunction<any, any, any, any>
-                )(act.payload);
+                const actionRecord = (action.func as TrrackActionFunction<
+                    any,
+                    any,
+                    any,
+                    any
+                >)(act.payload);
 
                 this.record({
                     label,
                     state: originalState,
-                    sideEffects: { do: [doAct], undo: [undo] },
+                    sideEffects: {
+                        do: [actionRecord.do ?? act],
+                        undo: [actionRecord.undo],
+                    },
                     eventType: action.config.eventType as Event,
                 });
             } else {
                 const newState = (
                     action.func as ProduceWrappedStateChangeFunction<State>
-                )(originalState, act.payload);
+                )(originalState as State, act.payload);
 
                 this.record({
                     label,
@@ -378,9 +368,20 @@ export function initializeTrrack<State = any, Event extends string = string>({
         export() {
             return JSON.stringify(graph.backend);
         },
+        exportObject() {
+            return JSON.parse(
+                JSON.stringify(graph.backend)
+            ) as typeof graph.backend;
+        },
         import(graphString: string) {
             const g: ProvenanceGraph<State, Event> = JSON.parse(graphString);
 
+            const current = g.current;
+            g.current = g.root;
+            graph.update(graph.load(g));
+            this.to(current);
+        },
+        importObject(g: typeof graph.backend) {
             const current = g.current;
             g.current = g.root;
             graph.update(graph.load(g));

@@ -1,11 +1,9 @@
 # core
 
-This library was generated with [Nx](https://nx.dev).
-
 ## Building
 
-Run `nx build core` to build the library.
+Run `yarn workspace @trrack/core build` to build the library.
 
 ## Running unit tests
 
-Run `nx test core` to execute the unit tests via [Jest](https://jestjs.io).
+Run `yarn workspace @trrack/core test` to execute the unit tests via [Vitest](https://vitest.dev).

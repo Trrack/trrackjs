@@ -1,42 +1,110 @@
 # Trrack
 
-Trrack stands for **r**eproducible **track**ing. Originally Trrack is a web-based provenance tracking library that can track application state in directed provenance graph.
+Trrack stands for **r**eproducible **track**ing. Originally Trrack is a web-based provenance tracking library that can track application state in directed provenance graph. The core library is framework-agnostic and can be used in any JavaScript/TypeScript application. The React visualization package provides components for rendering the provenance graph in a React application.
 
-This branch implements action based provenance tracking.
-
-[![license](https://img.shields.io/github/license/trrack/trrackjs?style=plastic)](https://github.com/Trrack/trrackjs/blob/main/LICENSE)
+[![license](https://img.shields.io/github/license/trrack/trrackjs?style=plastic)](https://github.com/trrack/trrackjs/blob/main/LICENSE)
 [![npm latest version](https://img.shields.io/npm/v/@trrack/core?style=plastic)](https://www.npmjs.com/package/@trrack/core)
 [![npm downloads](https://img.shields.io/npm/dt/@trrack/core?style=plastic)](https://www.npmjs.com/package/@trrack/core)
-[![Github Action](https://img.shields.io/github/actions/workflow/status/trrack/trrackjs/release.yml?branch=main)](https://github.com/Trrack/trrackjs/actions/workflows/release.yml?query=branch%3Amain)
+[![GitHub Action](https://img.shields.io/github/actions/workflow/status/trrack/trrackjs/build_test_release.yml)](https://github.com/trrack/trrackjs/actions/workflows/build_test_release.yml)
 
+## Table of Contents
 
-## Development
+- [Packages](#packages)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Developer Docs](#developer-docs)
+    - [Development](#development)
+    - [Testing and Linting](#testing-and-linting)
+    - [Releasing](#releasing)
 
-Clone the repository and switch to `trrack-action` branch.
-This project was generated using [Nx](https://nx.dev). Please refer to [Nx](https://nx.dev) for more any questions about monorepo setup.
+## Packages
 
-To get started with development run:
+- `@trrack/core`
+  Core action-based provenance tracking library.
+- `@trrack/vis-react`
+  React components for rendering a Trrack provenance graph.
+
+## Installation
+
+Install the core package:
 
 ```bash
-yarn install # Trrack can also work with npm, but it uses workspaces feature which we have only tested with yarn.
-
-yarn dev:all # Will run all examples
-
-yarn test:all:watch # Will run tests for all trrack pacakges in watch mode
+yarn add @trrack/core
 ```
 
-The repository is structured as follows:
+Install the React visualization package with our peer dependencies:
 
 ```bash
-trrack-monorepo
-|
-|--- pacakges # trrack library is located in this folder
-    |--- core # Core action-based tracking library
-    |--- redux # Redux toolkit wrapper for core
-|
-|--- apps # Trrack examples are located in this folder
-    |--- react-trrack-example
-    |--- rtk-trrack-example
+yarn add react react-dom @trrack/core @trrack/vis-react
 ```
 
-Following the standards for Nx monorepos please install any dependency for the applications directly to root workspace. This ensures all the applications use same versions of any dependency. For the packages, install the dependency to appropriate package.
+## Quick Start
+
+For core usage, start with our [documentation](https://apps.vdl.sci.utah.edu/trrackjs/docs/tutorial/getting-started).
+
+## Developer Docs
+
+### Development
+
+Install dependencies:
+
+```bash
+yarn install
+```
+
+Run the example apps:
+
+```bash
+yarn dev:react
+yarn dev:dummy
+yarn dev:lineup
+yarn dev:docs
+```
+
+Run all dev targets at once:
+
+```bash
+yarn dev
+```
+
+### Testing and Linting
+
+Build the published packages:
+
+```bash
+yarn build
+```
+
+Run package tests:
+
+```bash
+yarn test
+```
+
+Generate package coverage reports:
+
+```bash
+yarn test:coverage
+```
+
+Coverage reports are written to `coverage/core` and `coverage/vis-react`.
+
+Run package linting:
+
+```bash
+yarn lint
+```
+
+### Releasing
+
+Packages are published from a GitHub Release via `.github/workflows/build_test_release.yml`.
+
+Release flow:
+
+1. Create a GitHub Release from the commit you want to publish.
+2. Tag it as `v<version>` or `v<version>-<prerelease>`.
+3. Mark prerelease releases as prereleases in GitHub.
+4. Automatically generate release notes with the "Generate release notes" button in GitHub, or write your own release notes.
+5. Publish the release.
+
+The release workflow installs dependencies, builds and tests the packages, verifies package contents with `npm pack --dry-run`, and publishes both `@trrack/core` and `@trrack/vis-react` at the same version number.

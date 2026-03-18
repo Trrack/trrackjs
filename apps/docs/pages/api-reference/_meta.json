@@ -1,0 +1,11 @@
+{
+  "index": {
+    "title": "Overview",
+    "display": "hidden"
+  },
+  "classes": "Classes",
+  "enums": "Enumerations",
+  "functions": "Functions",
+  "interfaces": "Interfaces",
+  "types": "Type Aliases"
+}

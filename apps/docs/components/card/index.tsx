@@ -1,8 +1,23 @@
 import cn from 'clsx';
 import Link from 'next/link';
-import React from 'react';
+import type {
+  CSSProperties,
+  HTMLAttributes,
+  PropsWithChildren,
+  ReactNode,
+} from 'react';
 
 import styles from './style.module.css';
+
+type CardProps = PropsWithChildren<
+  HTMLAttributes<HTMLAnchorElement> & {
+    title: ReactNode;
+    icon?: ReactNode;
+    image?: boolean;
+    arrow?: boolean;
+    href: string;
+  }
+>;
 
 export function Card({
   children,
@@ -10,10 +25,9 @@ export function Card({
   icon,
   image,
   arrow,
-  demo,
   href,
   ...props
-}) {
+}: CardProps) {
   const animatedArrow = arrow ? (
     <span
       className={cn(
@@ -81,16 +95,26 @@ export function Card({
   );
 }
 
-export function Cards({ children, num, ...props }) {
+type CardsProps = PropsWithChildren<
+  HTMLAttributes<HTMLDivElement> & {
+    num?: number;
+  }
+>;
+
+type CardsStyle = CSSProperties & {
+  '--rows': number;
+};
+
+export function Cards({ children, num, ...props }: CardsProps) {
   return (
     <div
       className={cn(styles.cards, 'mt-4 gap-4')}
       {...props}
       style={
         {
-          '--rows': num || 3,
+          '--rows': num ?? 3,
           ...props.style,
-        } as any
+        } as CardsStyle
       }
     >
       {children}

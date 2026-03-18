@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PayloadAction } from '@reduxjs/toolkit';
 import { Operation } from 'fast-json-patch';
+import { PayloadAction } from '../../action';
 
 import { FlavoredId, ID } from '../../utils';
 
@@ -118,7 +118,7 @@ export function createRootNode<State>(args: {
     const meta = Object.keys(initialMetadata || {}).reduce<NodeMetadata>(
         (acc: NodeMetadata, key) => {
             acc[key] = [];
-            if (initialMetadata && initialMetadata[key]) {
+            if (initialMetadata && initialMetadata[key] !== undefined) {
                 acc[key].push({
                     type: key,
                     id: ID.get(),
@@ -131,7 +131,7 @@ export function createRootNode<State>(args: {
         commonMetadata
     );
 
-    const artifacts = initialArtifact
+    const artifacts = initialArtifact !== undefined
         ? [
               {
                   id: ID.get(),
@@ -185,7 +185,7 @@ export function createStateNode<State, Event extends string>({
     const meta = Object.keys(initialMetadata || {}).reduce<NodeMetadata>(
         (acc: NodeMetadata, key) => {
             acc[key] = [];
-            if (initialMetadata && initialMetadata[key]) {
+            if (initialMetadata && initialMetadata[key] !== undefined) {
                 acc[key].push({
                     type: key,
                     id: ID.get(),
@@ -198,7 +198,7 @@ export function createStateNode<State, Event extends string>({
         commonMetadata
     );
 
-    const artifacts = initialArtifact
+    const artifacts = initialArtifact !== undefined
         ? [
               {
                   id: ID.get(),

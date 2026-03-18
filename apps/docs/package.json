@@ -1,0 +1,27 @@
+{
+  "name": "docs",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@trrack/core": "*",
+    "@trrack/vis-react": "*",
+    "clsx": "^1.2.1",
+    "next": "13.1.1",
+    "nextra": "^2.0.1",
+    "nextra-theme-docs": "^2.0.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.17"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "export": "next build && next export",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "start": "next start"
+  }
+}

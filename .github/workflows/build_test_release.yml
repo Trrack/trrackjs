@@ -1,83 +1,127 @@
 name: Build -> Test -> Release
 
 on:
-  push:
-    branches:
-      - main
-      - next
-      - alpha
-      - beta
-      - '*.x*'
+  release:
+    types:
+      - published
 
 env:
   HUSKY: 0
-  GIT_AUTHOR_NAME: kirangadhave
-  GIT_AUTHOR_EMAIL: kirangadhave2@gmail.com
-  GIT_COMMITTER_NAME: kirangadhave
-  GIT_COMMITTER_EMAIL: kirangadhave2@gmail.com
 
 jobs:
   release:
     name: Build -> Test -> Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.TRRACK_GITHUB_TOKEN }}
-
-      - name: Track main
-        run: git branch --track main origin/main || echo "Already done"
-
-      - name: 'Derive appropriate SHAs for base and head for `nx affected` commands'
-        uses: nrwl/nx-set-shas@v3
-
-      - run: |
-          echo "BASE: ${{ env.NX_BASE }}"
-          echo "HEAD: ${{ env.NX_HEAD }}"
+          ref: ${{ github.event.release.tag_name }}
 
       - name: Setup LTS Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
           cache: 'yarn'
-
-      - name: Install yarn
-        run: npm install -g yarn
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - name: Cache yarn dependencies
-        uses: actions/cache@v3
-        id: yarn-cache
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            **\node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install
 
-      - name: Build
-        run: |
-          RUN=CI yarn run build-affected-libs
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Build packages
+        run: yarn build
 
       - name: Test
-        run: |
-          RUN=CI yarn run test-affected-libs
+        run: yarn test:ci
 
-      - name: Release
-        if: ${{ success() && (github.event_name != 'pull_request' || github.event.action == 'closed' && github.event.pull_request.merged == true) }}
+      - name: Resolve release metadata
+        id: release_meta
         env:
-          GITHUB_TOKEN: ${{ secrets.TRRACK_GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          RELEASE_PRERELEASE: ${{ github.event.release.prerelease }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          RUN=CI yarn run release
+          set -euo pipefail
+
+          if [[ ! "${RELEASE_TAG}" =~ ^v([0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?)$ ]]; then
+            echo "Release tag must match v<semver> or v<semver>-<prerelease>: ${RELEASE_TAG}" >&2
+            exit 1
+          fi
+
+          VERSION="${BASH_REMATCH[1]}"
+
+          if [[ "${VERSION}" == *-* ]]; then
+            if [[ "${RELEASE_PRERELEASE}" != "true" ]]; then
+              echo "Prerelease tag ${RELEASE_TAG} requires the GitHub Release to be marked as a prerelease." >&2
+              exit 1
+            fi
+
+            CHANNEL="${VERSION#*-}"
+            CHANNEL="${CHANNEL%%.*}"
+            CHANNEL="$(printf '%s' "${CHANNEL}" | tr '[:upper:]' '[:lower:]')"
+
+            case "${CHANNEL}" in
+              alpha)
+                DIST_TAG="alpha"
+                ;;
+              beta)
+                DIST_TAG="beta"
+                ;;
+              *)
+                DIST_TAG="next"
+                ;;
+            esac
+          else
+            if [[ "${RELEASE_PRERELEASE}" == "true" ]]; then
+              echo "Stable tag ${RELEASE_TAG} cannot be published from a prerelease GitHub Release." >&2
+              exit 1
+            fi
+
+            DIST_TAG="latest"
+          fi
+
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "dist_tag=${DIST_TAG}" >> "${GITHUB_OUTPUT}"
+
+      - name: Prepare packages for publishing
+        env:
+          RELEASE_VERSION: ${{ steps.release_meta.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          for package_dir in packages/core packages/vis-react; do
+            dist_dir="${package_dir}/dist"
+
+            cp "${package_dir}/package.json" "${dist_dir}/package.json"
+            cp "${package_dir}/README.md" "${dist_dir}/README.md"
+            cp "${package_dir}/CHANGELOG.md" "${dist_dir}/CHANGELOG.md"
+            cp LICENSE "${dist_dir}/LICENSE"
+
+            npm pkg set version="${RELEASE_VERSION}" --prefix "${dist_dir}"
+            npm pkg delete scripts --prefix "${dist_dir}"
+            npm pkg delete devDependencies --prefix "${dist_dir}"
+          done
+
+      - name: Verify package contents
+        run: |
+          set -euo pipefail
+
+          npm pack --dry-run packages/core/dist
+          npm pack --dry-run packages/vis-react/dist
+
+      - name: Publish packages
+        env:
+          DIST_TAG: ${{ steps.release_meta.outputs.dist_tag }}
+        run: |
+          set -euo pipefail
+
+          for package_dir in packages/core packages/vis-react; do
+            npm publish --access public --tag "${DIST_TAG}" "${package_dir}/dist"
+          done
