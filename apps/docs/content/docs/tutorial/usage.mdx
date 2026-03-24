@@ -1,0 +1,226 @@
+import { Callout } from 'nextra/components';
+
+# Usage
+
+This page walks through the complete setup needed to add provenance tracking to your application using `@trrack/core`.
+
+## 1. Define your state
+
+Start by describing your application state as a plain object. Flat structures work best — Trrack stores diffs between states, so fewer nested keys means smaller patches.
+
+```typescript
+type State = {
+  count: number;
+};
+
+const initialState: State = {
+  count: 0,
+};
+```
+
+## 2. Create the action registry
+
+The registry is how Trrack learns about the actions your application can perform. Create one with `Registry.create()`:
+
+```typescript
+import { Registry } from '@trrack/core';
+
+const registry = Registry.create<'increment' | 'decrement'>();
+```
+
+The type parameter is a union of all event names your app will emit. Trrack uses these to tag nodes in the provenance graph.
+
+## 3. Register actions
+
+Register each action by giving it a name and a handler. The handler receives the **current state** and a **payload**, and should mutate the state directly (powered by [Immer](https://immerjs.github.io/immer/) under the hood):
+
+```typescript
+const increment = registry.register(
+  'increment',               // unique action name
+  (state: State, by: number) => {
+    state.count += by;       // mutate directly — Immer handles immutability
+  },
+  { eventType: 'increment', label: 'Increment' }
+);
+
+const decrement = registry.register(
+  'decrement',
+  (state: State, by: number) => {
+    state.count -= by;
+  },
+  { eventType: 'decrement', label: 'Decrement' }
+);
+```
+
+`registry.register` returns an **action creator** — a function that produces typed action objects you pass to `trrack.apply`.
+
+## 4. Initialize Trrack
+
+With your state and registry ready, create the Trrack instance:
+
+```typescript
+import { initializeTrrack } from '@trrack/core';
+
+const trrack = initializeTrrack({
+  initialState,
+  registry,
+});
+```
+
+## 5. Apply actions
+
+Trigger a state change by calling `trrack.apply`. The first argument is a human-readable label shown in the provenance graph; the second is a call to the action creator returned by `registry.register`:
+
+```typescript
+trrack.apply('Increment by 1', increment(1));
+trrack.apply('Increment by 5', increment(5));
+trrack.apply('Decrement by 2', decrement(2));
+```
+
+Each `apply` call records a new node in the provenance graph.
+
+## 6. Undo and redo
+
+Move backwards and forwards through the recorded history:
+
+```typescript
+trrack.undo(); // step back one node
+trrack.redo(); // step forward one node
+```
+
+You can also jump directly to any node by its ID:
+
+```typescript
+await trrack.to(someNodeId);
+```
+
+## 7. Read the current state
+
+Retrieve the state at the current position in the graph:
+
+```typescript
+const state = trrack.getState();
+console.log(state.count);
+```
+
+## 8. React to state changes
+
+Register a listener that fires whenever the current node changes — whether from a new action, an undo, or a redo:
+
+```typescript
+trrack.currentChange(() => {
+  const state = trrack.getState();
+  // update your UI here
+});
+```
+
+You can register multiple listeners; they are all called in registration order.
+
+<Callout type="info">
+  **Tip:** In React, call `trrack.currentChange` inside a `useEffect` and use a
+  state setter to trigger re-renders. The unsubscribe function it returns is the
+  perfect cleanup callback.
+</Callout>
+
+## 9. Inspect the full graph
+
+`trrack.graph.backend` exposes the raw provenance graph — useful for serialisation, debugging, or building a custom visualisation:
+
+```typescript
+const graph = trrack.graph.backend;
+
+// graph.nodes  — every node keyed by its NodeId
+// graph.root   — NodeId of the root node
+// graph.current — NodeId of the currently active node
+
+console.log(graph.nodes);   // { [nodeId]: ProvenanceNode, ... }
+console.log(graph.root);    // e.g. "a1b2c3..."
+console.log(graph.current); // e.g. "d4e5f6..."
+```
+
+Each node in `graph.nodes` has the shape:
+
+```typescript
+{
+  id: NodeId;        // unique string identifier
+  label: string;     // human-readable label passed to trrack.apply
+  event: string;     // event type (matches the registry event type)
+  children: NodeId[];// IDs of child nodes
+  createdOn: number; // Unix timestamp
+  // ...plus state, meta, artifacts
+}
+```
+
+The entire graph can be serialised to JSON and restored via `trrack.import` / `trrack.export`.
+
+## 10. Working with node IDs
+
+Every node has a stable `NodeId` (a plain string) that you can save and use later to jump directly to that point in history.
+
+The two most useful IDs are available directly on the trrack instance:
+
+```typescript
+const rootId    = trrack.root.id;    // the very first node
+const currentId = trrack.current.id; // wherever you are right now
+```
+
+Save a snapshot ID at any point, then jump back to it later:
+
+```typescript
+trrack.apply('Increment by 1', increment(1));
+trrack.apply('Increment by 5', increment(5));
+
+const checkpoint = trrack.current.id; // save this node
+
+trrack.apply('Decrement by 2', decrement(2));
+trrack.apply('Decrement by 2', decrement(2));
+
+trrack.to(checkpoint); // jump back to count: 6
+trrack.to(trrack.root.id); // jump all the way back to the initial state
+```
+
+You can also iterate all nodes and find IDs by label or event type:
+
+```typescript
+const { nodes } = trrack.graph.backend;
+
+const targetId = Object.values(nodes).find(
+  (node) => node.label === 'Increment by 5'
+)?.id;
+
+if (targetId) trrack.to(targetId);
+```
+
+## Putting it all together
+
+```typescript
+import { initializeTrrack, Registry } from '@trrack/core';
+
+type State = { count: number };
+
+const initialState: State = { count: 0 };
+const registry = Registry.create<'increment' | 'decrement'>();
+
+const increment = registry.register(
+  'increment',
+  (state: State, by: number) => { state.count += by; },
+  { eventType: 'increment', label: 'Increment' }
+);
+
+const decrement = registry.register(
+  'decrement',
+  (state: State, by: number) => { state.count -= by; },
+  { eventType: 'decrement', label: 'Decrement' }
+);
+
+const trrack = initializeTrrack({ initialState, registry });
+
+trrack.currentChange(() => {
+  console.log('count is now:', trrack.getState().count);
+});
+
+trrack.apply('Increment by 1', increment(1)); // count: 1
+trrack.apply('Increment by 5', increment(5)); // count: 6
+trrack.undo();                                // count: 1
+trrack.redo();                                // count: 6
+```

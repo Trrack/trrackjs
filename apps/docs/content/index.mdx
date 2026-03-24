@@ -1,0 +1,59 @@
+import styles from './index.module.css';
+import Link from 'next/link';
+
+<div className={styles.contentContainer}>
+  <div >
+    <h1 className={styles.headline}>
+      Enable interaction provenance <br className="sm:block hidden" />
+    </h1>
+    <h1 className={styles.headline}>
+      with Trrack v2.
+    </h1>
+    <p className={styles.subtitle} style={{
+      marginTop: "1.5em"
+    }}>
+      <Link className={styles.cta} href="/docs/tutorial/getting-started">
+        Get started →
+      </Link>
+    </p>
+
+  </div>
+
+<div>
+
+## The Provenance Tracking Library
+
+Trrack is a library to create and track provenance (history) in web-based apps. Trrack allows you to create and maintain a non-linear provenance graph representing the history of the state of your visualization. Through this graph, you can easily implement complete action recovery, as well as store custom metadata and annotations.
+
+![Overview of applications implementing the trrack library, and the trrack provenance visualization](/assets/trrack_overview.png)
+
+## Features
+
+- Power you application to track user interactions or changes
+- Enable undo/redo functionality
+  {/* - Easy state sharing through a URL */}
+- Track changes in non-linear manner with branches
+- Add custom metadata and annotations to each node in the graph
+  {/* - Built in Firebase support for storing large graphs */}
+- Simple API
+- Full Typescript support
+
+## Companion Library
+
+Trrack does back-end history management only. If you want to render the history/provenance graph in React, use [`@trrack/vis-react`](/docs/visualization), the visualization package that now ships from this monorepo.
+
+## Usage
+
+To use Trrack, your application has to be explicit about state: any action that you want to track has to be captured as part of a state that you pass to the Trrack library.
+
+![Overview of how Trrack integrates with client software.](/assets/trrack_architecture.png)
+
+Trrack v2 also supports action-based provenance tracking.
+
+## Funding
+
+We gratefully acknowledge funding by the National Science Foundation (IIS 1751238).
+
+</div>
+
+</div>

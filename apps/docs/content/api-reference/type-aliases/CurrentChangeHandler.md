@@ -1,0 +1,21 @@
+[**@trrack/core**](../README)
+
+***
+
+[@trrack/core](../README) / CurrentChangeHandler
+
+# Type Alias: CurrentChangeHandler()
+
+> **CurrentChangeHandler** = (`trigger?`) => `void`
+
+Defined in: [graph/provenance-graph.ts:12](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/graph/provenance-graph.ts#L12)
+
+## Parameters
+
+### trigger?
+
+[`Trigger`](Trigger)
+
+## Returns
+
+`void`

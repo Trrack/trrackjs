@@ -1,0 +1,31 @@
+[**@trrack/core**](../README)
+
+***
+
+[@trrack/core](../README) / isRootNode
+
+# Function: isRootNode()
+
+> **isRootNode**\<`State`, `Event`\>(`node`): `node is RootNode<State>`
+
+Defined in: [graph/components/node.ts:99](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/graph/components/node.ts#L99)
+
+## Type Parameters
+
+### State
+
+`State`
+
+### Event
+
+`Event` *extends* `string`
+
+## Parameters
+
+### node
+
+[`ProvenanceNode`](../type-aliases/ProvenanceNode)\<`State`, `Event`\>
+
+## Returns
+
+`node is RootNode<State>`

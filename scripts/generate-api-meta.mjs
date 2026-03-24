@@ -14,7 +14,7 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const apiDir = join(__dirname, '../apps/docs/pages/api-reference');
+const apiDir = join(__dirname, '../apps/docs/content/api-reference');
 
 /** Friendly display name for top-level section directories */
 const SECTION_TITLES = {
@@ -23,6 +23,8 @@ const SECTION_TITLES = {
   functions: 'Functions',
   types: 'Type Aliases',
   enums: 'Enumerations',
+  'type-aliases': 'Type Aliases',
+  enumerations: 'Enumerations',
 };
 
 function writeMeta(dir, meta) {
@@ -73,7 +75,14 @@ function processApiDir(dir) {
 
   // Index page hidden from sidebar (the section nav acts as the overview)
   if (entries.includes('index.md')) {
-    meta['index'] = {
+    meta.index = {
+      title: 'Overview',
+      display: 'hidden',
+    };
+  }
+
+  if (entries.includes('README.md')) {
+    meta.README = {
       title: 'Overview',
       display: 'hidden',
     };
@@ -96,13 +105,24 @@ function processApiDir(dir) {
 processMarkdownFiles(apiDir);
 processApiDir(apiDir);
 
-// Clean the index.md: remove the redundant plain-text module name on line 1
-const indexPath = join(apiDir, 'index.md');
-const indexContent = readFileSync(indexPath, 'utf-8');
-// TypeDoc puts "@trrack/core\n\n# @trrack/core\n..." — strip the first paragraph if it
-// duplicates the H1 title that follows.
-const cleaned = indexContent.replace(/^[^\n]+\n\n(#+ )/, '$1');
-if (cleaned !== indexContent) {
-  writeFileSync(indexPath, cleaned);
+// Clean the overview file: remove the redundant plain-text module name on line 1
+for (const overviewFile of ['index.md', 'README.md']) {
+  const overviewPath = join(apiDir, overviewFile);
+
+  try {
+    const overviewContent = readFileSync(overviewPath, 'utf-8');
+    // TypeDoc can put "@trrack/core\n\n# @trrack/core\n..." — strip the first paragraph if it
+    // duplicates the H1 title that follows.
+    const cleaned = overviewContent.replace(/^[^\n]+\n\n(#+ )/, '$1');
+    if (cleaned !== overviewContent) {
+      writeFileSync(overviewPath, cleaned);
+    }
+  } catch (error) {
+    if (error && typeof error === 'object' && error.code === 'ENOENT') {
+      continue;
+    }
+
+    throw error;
+  }
 }
-console.log('Generated Nextra _meta.json files and fixed links in apps/docs/pages/api-reference/');
+console.log('Generated Nextra _meta.json files and fixed links in apps/docs/content/api-reference/');

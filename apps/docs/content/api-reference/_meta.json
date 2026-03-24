@@ -1,0 +1,11 @@
+{
+  "README": {
+    "title": "Overview",
+    "display": "hidden"
+  },
+  "classes": "Classes",
+  "enumerations": "Enumerations",
+  "functions": "Functions",
+  "interfaces": "Interfaces",
+  "type-aliases": "Type Aliases"
+}

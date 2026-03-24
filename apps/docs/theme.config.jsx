@@ -1,63 +1,65 @@
-import { useRouter } from 'next/router';
+import { Banner, Head } from 'nextra/components';
+import { Footer, Navbar } from 'nextra-theme-docs';
 
-import styles from './pages/index.module.css';
+import styles from './content/index.module.css';
 
-const theme = {
-  logo: (
-    <h1>
-      <span>trrack</span> - A library for{' '}
-      <span className={styles['highlight-logo']}>r</span>
-      eproducible <span className={styles['highlight-logo']}>track</span>ing
-    </h1>
-  ),
-  project: {
-    link: 'https://github.com/Trrack/trrackjs',
+export const siteMetadata = {
+  title: {
+    default: 'Trrack',
+    template: '%s - Trrack',
   },
-  docsRepositoryBase: 'https://github.com/Trrack/trrackjs/tree/main/apps/docs',
-  head: (
-    <>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta
-        property="og:description"
-        content="The provenance tracking library for web."
-      />
-    </>
-  ),
-  useNextSeoProps() {
-    const { route } = useRouter();
-    if (route !== '/' && route !== '/docs')
-      return {
-        titleTemplate: '%s - Trrack',
-      };
-  },
-  chat: {
-    link: 'https://github.com/kirangadhave/',
-    icon: 'Get in touch',
-  },
-  banner: {
-    key: '2.0-release',
-    text: (
-      <a
-        href="http://vdl.sci.utah.edu/trrack/"
-        target="_blank"
-        rel="noreferrer"
-      >
-        🎉 This is documentation for <strong>Trrack 2.0</strong>.{' '}
-        <strong>Click here</strong> for legacy Trrack documentation →
-      </a>
-    ),
-  },
-  footer: {
-    text: (
-      <span>
-        BSD 3 {new Date().getFullYear()} ©{' '}
-        <a href="https://github.com/Trrack" target="_blank" rel="noreferrer">
-          The Trrack Team
-        </a>
-        .
-      </span>
-    ),
-  },
+  description: 'The provenance tracking library for web.',
 };
 
-export default theme;
+export const head = (
+  <Head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      property="og:description"
+      content="The provenance tracking library for web."
+    />
+  </Head>
+);
+
+export const navbar = (
+  <Navbar
+    logo={
+      <h1>
+        <span>trrack</span> - A library for{' '}
+        <span className={styles['highlight-logo']}>r</span>
+        eproducible <span className={styles['highlight-logo']}>track</span>ing
+      </h1>
+    }
+    projectLink="https://github.com/Trrack/trrackjs"
+    chatLink="https://github.com/kirangadhave/"
+    chatIcon={<span>Get in touch</span>}
+  />
+);
+
+export const docsRepositoryBase =
+  'https://github.com/Trrack/trrackjs/tree/main/apps/docs';
+
+export const banner = (
+  <Banner storageKey="2.0-release">
+    <a
+      href="http://vdl.sci.utah.edu/trrack/"
+      target="_blank"
+      rel="noreferrer"
+    >
+      This is documentation for <strong>Trrack 2.0</strong>.{' '}
+      <strong>Click here</strong> for legacy Trrack documentation →
+    </a>
+  </Banner>
+);
+
+export const footer = (
+  <Footer>
+    <span>
+      BSD 3 {new Date().getFullYear()} ©{' '}
+      <a href="https://github.com/Trrack" target="_blank" rel="noreferrer">
+        The Trrack Team
+      </a>
+      .
+    </span>
+  </Footer>
+);

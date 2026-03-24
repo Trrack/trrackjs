@@ -3,7 +3,8 @@
   "compilerOptions": {
     "jsx": "preserve",
     "baseUrl": ".",
-    "moduleResolution": "node",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -15,10 +16,20 @@
     "incremental": true
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.js",
-    "src/**/*.jsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "content/**/*.ts",
+    "content/**/*.tsx",
+    "content/**/*.md",
+    "content/**/*.mdx",
+    "content/**/*.js",
+    "content/**/*.jsx",
+    "*.ts",
+    "*.tsx",
+    "*.js",
+    "*.jsx",
     "next-env.d.ts"
   ],
   "exclude": ["node_modules"]
