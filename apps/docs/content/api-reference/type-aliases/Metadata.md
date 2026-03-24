@@ -8,7 +8,7 @@
 
 > **Metadata**\<`T`\> = `object`
 
-Defined in: [graph/components/node.ts:44](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/graph/components/node.ts#L44)
+Defined in: [graph/components/node.ts:44](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/graph/components/node.ts#L44)
 
 ## Type Parameters
 
@@ -22,7 +22,7 @@ Defined in: [graph/components/node.ts:44](https://github.com/Trrack/trrackjs/blo
 
 > **createdOn**: `number`
 
-Defined in: [graph/components/node.ts:47](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/graph/components/node.ts#L47)
+Defined in: [graph/components/node.ts:47](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/graph/components/node.ts#L47)
 
 ***
 
@@ -30,7 +30,7 @@ Defined in: [graph/components/node.ts:47](https://github.com/Trrack/trrackjs/blo
 
 > **id**: [`MetadataId`](MetadataId)
 
-Defined in: [graph/components/node.ts:45](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/graph/components/node.ts#L45)
+Defined in: [graph/components/node.ts:45](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/graph/components/node.ts#L45)
 
 ***
 
@@ -38,7 +38,7 @@ Defined in: [graph/components/node.ts:45](https://github.com/Trrack/trrackjs/blo
 
 > **type**: `string`
 
-Defined in: [graph/components/node.ts:46](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/graph/components/node.ts#L46)
+Defined in: [graph/components/node.ts:46](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/graph/components/node.ts#L46)
 
 ***
 
@@ -46,4 +46,4 @@ Defined in: [graph/components/node.ts:46](https://github.com/Trrack/trrackjs/blo
 
 > **val**: `T`
 
-Defined in: [graph/components/node.ts:48](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/graph/components/node.ts#L48)
+Defined in: [graph/components/node.ts:48](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/graph/components/node.ts#L48)

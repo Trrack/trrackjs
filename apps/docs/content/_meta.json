@@ -4,7 +4,8 @@
     "type": "page",
     "display": "hidden",
     "theme": {
-      "layout": "full"
+      "layout": "full",
+      "toc": false
     }
   },
   "docs": {
@@ -16,7 +17,8 @@
     "type": "page",
     "theme": {
       "typesetting": "article",
-      "layout": "full"
+      "layout": "full",
+      "toc": false
     }
   },
   "api-reference": {
@@ -27,7 +29,8 @@
     "title": "About",
     "type": "page",
     "theme": {
-      "typesetting": "article"
+      "typesetting": "article",
+      "toc": false
     }
   }
 }

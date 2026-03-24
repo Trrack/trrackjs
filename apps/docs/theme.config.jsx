@@ -1,6 +1,7 @@
-import { Banner, Head } from 'nextra/components';
+import { Banner, Head, Search } from 'nextra/components';
 import { Footer, Navbar } from 'nextra-theme-docs';
 
+import { HeaderNav } from './components/HeaderNav';
 import styles from './content/index.module.css';
 
 export const siteMetadata = {
@@ -31,9 +32,14 @@ export const navbar = (
       </h1>
     }
     projectLink="https://github.com/Trrack/trrackjs"
-    chatLink="https://github.com/kirangadhave/"
-    chatIcon={<span>Get in touch</span>}
   />
+);
+
+export const search = (
+  <div className="x:flex x:items-center x:gap-4 x:max-md:hidden">
+    <HeaderNav />
+    <Search />
+  </div>
 );
 
 export const docsRepositoryBase =

@@ -8,7 +8,7 @@
 
 > **TrrackActionConfig**\<`Args`, `Event`\> = `object`
 
-Defined in: [registry/action.ts:24](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/action.ts#L24)
+Defined in: [registry/action.ts:24](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/action.ts#L24)
 
 ## Type Parameters
 
@@ -26,7 +26,7 @@ Defined in: [registry/action.ts:24](https://github.com/Trrack/trrackjs/blob/3e98
 
 > **eventType**: `Event`
 
-Defined in: [registry/action.ts:26](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/action.ts#L26)
+Defined in: [registry/action.ts:26](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/action.ts#L26)
 
 ***
 
@@ -34,7 +34,7 @@ Defined in: [registry/action.ts:26](https://github.com/Trrack/trrackjs/blob/3e98
 
 > **hasSideEffects**: `boolean`
 
-Defined in: [registry/action.ts:25](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/action.ts#L25)
+Defined in: [registry/action.ts:25](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/action.ts#L25)
 
 ***
 
@@ -42,4 +42,4 @@ Defined in: [registry/action.ts:25](https://github.com/Trrack/trrackjs/blob/3e98
 
 > **label**: [`LabelGenerator`](LabelGenerator)\<`Args`\>
 
-Defined in: [registry/action.ts:27](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/action.ts#L27)
+Defined in: [registry/action.ts:27](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/action.ts#L27)

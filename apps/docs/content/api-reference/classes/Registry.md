@@ -6,7 +6,7 @@
 
 # Class: Registry\<Event\>
 
-Defined in: [registry/reg.ts:26](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/reg.ts#L26)
+Defined in: [registry/reg.ts:26](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/reg.ts#L26)
 
 ## Type Parameters
 
@@ -20,7 +20,7 @@ Defined in: [registry/reg.ts:26](https://github.com/Trrack/trrackjs/blob/3e98696
 
 > **get**(`type`): `TrrackActionRegisteredObject`
 
-Defined in: [registry/reg.ts:135](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/reg.ts#L135)
+Defined in: [registry/reg.ts:135](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/reg.ts#L135)
 
 #### Parameters
 
@@ -38,7 +38,7 @@ Defined in: [registry/reg.ts:135](https://github.com/Trrack/trrackjs/blob/3e9869
 
 > **has**(`name`): `boolean`
 
-Defined in: [registry/reg.ts:37](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/reg.ts#L37)
+Defined in: [registry/reg.ts:37](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/reg.ts#L37)
 
 #### Parameters
 
@@ -58,7 +58,7 @@ Defined in: [registry/reg.ts:37](https://github.com/Trrack/trrackjs/blob/3e98696
 
 > **register**\<`DoActionType`, `State`, `DoActionPayload`\>(`type`, `actionFunction`, `config?`): `IsAny`\<`DoActionPayload`, [`ActionCreatorWithPayload`](../type-aliases/ActionCreatorWithPayload)\<`any`, `DoActionType`\>\>
 
-Defined in: [registry/reg.ts:41](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/reg.ts#L41)
+Defined in: [registry/reg.ts:41](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/reg.ts#L41)
 
 ##### Type Parameters
 
@@ -102,7 +102,7 @@ Defined in: [registry/reg.ts:41](https://github.com/Trrack/trrackjs/blob/3e98696
 
 > **register**\<`DoActionType`, `UndoActionType`, `DoActionPayload`, `UndoActionPayload`\>(`type`, `actionFunction`, `config?`): `IsAny`\<`DoActionPayload`, [`ActionCreatorWithPayload`](../type-aliases/ActionCreatorWithPayload)\<`any`, `DoActionType`\>\>
 
-Defined in: [registry/reg.ts:53](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/reg.ts#L53)
+Defined in: [registry/reg.ts:53](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/reg.ts#L53)
 
 ##### Type Parameters
 
@@ -150,7 +150,7 @@ Defined in: [registry/reg.ts:53](https://github.com/Trrack/trrackjs/blob/3e98696
 
 > **register**\<`DoActionType`, `UndoActionType`, `DoActionPayload`, `UndoActionPayload`, `State`\>(`type`, `actionFunction`, `config?`): `IsAny`\<`DoActionPayload`, [`ActionCreatorWithPayload`](../type-aliases/ActionCreatorWithPayload)\<`any`, `DoActionType`\>\>
 
-Defined in: [registry/reg.ts:71](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/reg.ts#L71)
+Defined in: [registry/reg.ts:71](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/reg.ts#L71)
 
 ##### Type Parameters
 
@@ -204,7 +204,7 @@ Defined in: [registry/reg.ts:71](https://github.com/Trrack/trrackjs/blob/3e98696
 
 > `static` **create**\<`Event`\>(): `Registry`\<`Event`\>
 
-Defined in: [registry/reg.ts:27](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/reg.ts#L27)
+Defined in: [registry/reg.ts:27](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/reg.ts#L27)
 
 #### Type Parameters
 

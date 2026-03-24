@@ -6,7 +6,14 @@
  * Run after `typedoc` via `yarn docs:api`.
  */
 
-import { readdirSync, writeFileSync, readFileSync, statSync } from 'fs';
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  statSync,
+  writeFileSync,
+} from 'fs';
 import { join, extname, basename } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -100,6 +107,17 @@ function processApiDir(dir) {
 
   writeMeta(dir, meta);
 }
+
+function normalizeOverviewFile(dir) {
+  const readmePath = join(dir, 'README.md');
+  const indexPath = join(dir, 'index.md');
+
+  if (existsSync(readmePath) && !existsSync(indexPath)) {
+    renameSync(readmePath, indexPath);
+  }
+}
+
+normalizeOverviewFile(apiDir);
 
 // Fix .md links first, then generate navigation metadata
 processMarkdownFiles(apiDir);

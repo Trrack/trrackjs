@@ -1,4 +1,7 @@
 {
-  "tutorial": "Tutorial",
+  "tutorial": {
+    "title": "Tutorial",
+    "display": "children"
+  },
   "visualization": "Visualization"
 }

@@ -6,7 +6,7 @@
 
 # Interface: Trrack\<State, Event\>
 
-Defined in: [provenance/types.ts:25](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L25)
+Defined in: [provenance/types.ts:25](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L25)
 
 ## Type Parameters
 
@@ -24,7 +24,7 @@ Defined in: [provenance/types.ts:25](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **annotations**: `object`
 
-Defined in: [provenance/types.ts:57](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L57)
+Defined in: [provenance/types.ts:57](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L57)
 
 #### add()
 
@@ -78,7 +78,7 @@ Defined in: [provenance/types.ts:57](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **artifact**: `object`
 
-Defined in: [provenance/types.ts:52](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L52)
+Defined in: [provenance/types.ts:52](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L52)
 
 #### add()
 
@@ -138,7 +138,7 @@ Defined in: [provenance/types.ts:52](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **bookmarks**: `object`
 
-Defined in: [provenance/types.ts:62](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L62)
+Defined in: [provenance/types.ts:62](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L62)
 
 #### add()
 
@@ -202,7 +202,7 @@ Defined in: [provenance/types.ts:62](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **current**: [`ProvenanceNode`](../type-aliases/ProvenanceNode)\<`State`, `Event`\>
 
-Defined in: [provenance/types.ts:30](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L30)
+Defined in: [provenance/types.ts:30](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L30)
 
 ***
 
@@ -210,7 +210,7 @@ Defined in: [provenance/types.ts:30](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **graph**: [`ProvenanceGraphStore`](../type-aliases/ProvenanceGraphStore)\<`State`, `Event`\>
 
-Defined in: [provenance/types.ts:29](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L29)
+Defined in: [provenance/types.ts:29](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L29)
 
 ***
 
@@ -218,7 +218,7 @@ Defined in: [provenance/types.ts:29](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **isTraversing**: `boolean`
 
-Defined in: [provenance/types.ts:27](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L27)
+Defined in: [provenance/types.ts:27](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L27)
 
 ***
 
@@ -226,7 +226,7 @@ Defined in: [provenance/types.ts:27](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **metadata**: `object`
 
-Defined in: [provenance/types.ts:38](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L38)
+Defined in: [provenance/types.ts:38](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L38)
 
 #### add()
 
@@ -342,7 +342,7 @@ Defined in: [provenance/types.ts:38](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **registry**: [`Registry`](../classes/Registry)\<`Event`\>
 
-Defined in: [provenance/types.ts:26](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L26)
+Defined in: [provenance/types.ts:26](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L26)
 
 ***
 
@@ -350,7 +350,7 @@ Defined in: [provenance/types.ts:26](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **root**: [`RootNode`](../type-aliases/RootNode)\<`State`\>
 
-Defined in: [provenance/types.ts:31](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L31)
+Defined in: [provenance/types.ts:31](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L31)
 
 ## Methods
 
@@ -358,7 +358,7 @@ Defined in: [provenance/types.ts:31](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **apply**\<`T`, `Payload`\>(`label`, `act`): `Promise`\<`void`\>
 
-Defined in: [provenance/types.ts:33](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L33)
+Defined in: [provenance/types.ts:33](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L33)
 
 #### Type Parameters
 
@@ -396,7 +396,7 @@ Defined in: [provenance/types.ts:33](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **currentChange**(`listener`, `skipOnNew?`): [`UnsubscribeCurrentChangeListener`](../type-aliases/UnsubscribeCurrentChangeListener)
 
-Defined in: [provenance/types.ts:70](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L70)
+Defined in: [provenance/types.ts:70](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L70)
 
 #### Parameters
 
@@ -418,7 +418,7 @@ Defined in: [provenance/types.ts:70](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **done**(): `void`
 
-Defined in: [provenance/types.ts:74](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L74)
+Defined in: [provenance/types.ts:74](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L74)
 
 #### Returns
 
@@ -430,7 +430,7 @@ Defined in: [provenance/types.ts:74](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **export**(): `string`
 
-Defined in: [provenance/types.ts:77](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L77)
+Defined in: [provenance/types.ts:77](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L77)
 
 #### Returns
 
@@ -442,7 +442,7 @@ Defined in: [provenance/types.ts:77](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **exportObject**(): `ProvenanceGraph`\<`State`, `Event`\>
 
-Defined in: [provenance/types.ts:78](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L78)
+Defined in: [provenance/types.ts:78](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L78)
 
 #### Returns
 
@@ -454,7 +454,7 @@ Defined in: [provenance/types.ts:78](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **getState**(`node?`): `State`
 
-Defined in: [provenance/types.ts:28](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L28)
+Defined in: [provenance/types.ts:28](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L28)
 
 #### Parameters
 
@@ -472,7 +472,7 @@ Defined in: [provenance/types.ts:28](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **import**(`graphString`): `void`
 
-Defined in: [provenance/types.ts:79](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L79)
+Defined in: [provenance/types.ts:79](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L79)
 
 #### Parameters
 
@@ -490,7 +490,7 @@ Defined in: [provenance/types.ts:79](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **importObject**(`graph`): `void`
 
-Defined in: [provenance/types.ts:80](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L80)
+Defined in: [provenance/types.ts:80](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L80)
 
 #### Parameters
 
@@ -508,7 +508,7 @@ Defined in: [provenance/types.ts:80](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **on**(`event`, `listener`): `void`
 
-Defined in: [provenance/types.ts:76](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L76)
+Defined in: [provenance/types.ts:76](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L76)
 
 #### Parameters
 
@@ -530,7 +530,7 @@ Defined in: [provenance/types.ts:76](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **record**(`args`): `void`
 
-Defined in: [provenance/types.ts:32](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L32)
+Defined in: [provenance/types.ts:32](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L32)
 
 #### Parameters
 
@@ -548,7 +548,7 @@ Defined in: [provenance/types.ts:32](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **redo**(`to?`): `Promise`\<`void`\>
 
-Defined in: [provenance/types.ts:69](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L69)
+Defined in: [provenance/types.ts:69](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L69)
 
 #### Parameters
 
@@ -566,7 +566,7 @@ Defined in: [provenance/types.ts:69](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **to**(`node`): `Promise`\<`void`\>
 
-Defined in: [provenance/types.ts:37](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L37)
+Defined in: [provenance/types.ts:37](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L37)
 
 #### Parameters
 
@@ -584,7 +584,7 @@ Defined in: [provenance/types.ts:37](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **tree**(): `unknown`
 
-Defined in: [provenance/types.ts:75](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L75)
+Defined in: [provenance/types.ts:75](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L75)
 
 #### Returns
 
@@ -596,7 +596,7 @@ Defined in: [provenance/types.ts:75](https://github.com/Trrack/trrackjs/blob/3e9
 
 > **undo**(): `Promise`\<`void`\>
 
-Defined in: [provenance/types.ts:68](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/provenance/types.ts#L68)
+Defined in: [provenance/types.ts:68](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/provenance/types.ts#L68)
 
 #### Returns
 

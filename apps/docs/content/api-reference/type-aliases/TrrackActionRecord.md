@@ -8,7 +8,7 @@
 
 > **TrrackActionRecord**\<`DoActionType`, `DoActionPayload`, `UndoActionType`, `UndoActionPayload`\> = `object`
 
-Defined in: [registry/action.ts:30](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/action.ts#L30)
+Defined in: [registry/action.ts:30](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/action.ts#L30)
 
 ## Type Parameters
 
@@ -34,7 +34,7 @@ Defined in: [registry/action.ts:30](https://github.com/Trrack/trrackjs/blob/3e98
 
 > **do**: [`PayloadAction`](PayloadAction)\<`DoActionPayload`, `DoActionType`\>
 
-Defined in: [registry/action.ts:36](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/action.ts#L36)
+Defined in: [registry/action.ts:36](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/action.ts#L36)
 
 ***
 
@@ -42,4 +42,4 @@ Defined in: [registry/action.ts:36](https://github.com/Trrack/trrackjs/blob/3e98
 
 > **undo**: [`PayloadAction`](PayloadAction)\<`UndoActionPayload`, `UndoActionType`\>
 
-Defined in: [registry/action.ts:37](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/registry/action.ts#L37)
+Defined in: [registry/action.ts:37](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/registry/action.ts#L37)

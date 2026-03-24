@@ -8,7 +8,7 @@
 
 > **ActionCreatorWithPreparedPayload**\<`Args`, `Payload`, `Type`, `Error`, `Meta`\> = `BaseActionCreator`\<`Payload`, `Type`, `Meta`, `Error`\> & (...`args`) => [`PayloadAction`](PayloadAction)\<`Payload`, `Type`, `Meta`, `Error`\>
 
-Defined in: [action.ts:93](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/action.ts#L93)
+Defined in: [action.ts:93](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/action.ts#L93)
 
 ## Type Parameters
 

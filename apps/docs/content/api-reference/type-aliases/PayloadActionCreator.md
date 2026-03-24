@@ -8,7 +8,7 @@
 
 > **PayloadActionCreator**\<`Payload`, `Type`, `Prepare`\> = `IfPrepareActionMethodProvided`\<`Prepare`, `_ActionCreatorWithPreparedPayload`\<`Prepare`, `Type`\>, `IsAny`\<`Payload`, [`ActionCreatorWithPayload`](ActionCreatorWithPayload)\<`any`, `Type`\>, `IsUnknownOrNonInferrable`\<`Payload`, [`ActionCreatorWithNonInferrablePayload`](ActionCreatorWithNonInferrablePayload)\<`Type`\>, `IfVoid`\<`Payload`, [`ActionCreatorWithoutPayload`](ActionCreatorWithoutPayload)\<`Type`\>, `IfMaybeUndefined`\<`Payload`, [`ActionCreatorWithOptionalPayload`](ActionCreatorWithOptionalPayload)\<`Payload`, `Type`\>, [`ActionCreatorWithPayload`](ActionCreatorWithPayload)\<`Payload`, `Type`\>\>\>\>\>\>
 
-Defined in: [action.ts:127](https://github.com/Trrack/trrackjs/blob/3e986969bcd5ec383c070c117e840536bee9796d/packages/core/src/action.ts#L127)
+Defined in: [action.ts:127](https://github.com/Trrack/trrackjs/blob/521cb97ee128c8f659a2faa17b70af00ddd3b9f3/packages/core/src/action.ts#L127)
 
 ## Type Parameters
 
