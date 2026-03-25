@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { applyPatch, compare, deepClone, Operation } from 'fast-json-patch';
+import jsonPatch from 'fast-json-patch';
+import type { Operation } from 'fast-json-patch';
 import { RecordActionArgs, Trrack, TrrackTreeNode } from './types';
 import { PayloadAction } from '../action';
 
@@ -23,6 +24,8 @@ import {
 } from '../registry';
 import { ConfigureTrrackOptions } from './trrack-config-opts';
 import { TrrackEvents } from './trrack-events';
+
+const { applyPatch, compare, deepClone } = jsonPatch;
 
 function getState<State, Event extends string>(
     node: ProvenanceNode<State, Event>,
