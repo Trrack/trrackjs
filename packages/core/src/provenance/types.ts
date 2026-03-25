@@ -22,6 +22,14 @@ export type RecordActionArgs<State, Event extends string> = {
     onlySideEffects?: boolean;
 };
 
+export type TrrackTreeNode<State, Event extends string> = Omit<
+    ProvenanceNode<State, Event>,
+    'children'
+> & {
+    name: string;
+    children: TrrackTreeNode<State, Event>[];
+};
+
 export interface Trrack<State, Event extends string> {
     registry: Registry<Event>;
     isTraversing: boolean;
@@ -72,7 +80,7 @@ export interface Trrack<State, Event extends string> {
         skipOnNew?: boolean
     ): UnsubscribeCurrentChangeListener;
     done(): void;
-    tree(): unknown;
+    tree(): TrrackTreeNode<State, Event>;
     on(event: TrrackEvents, listener: (args?: unknown) => void): void;
     export(): string;
     exportObject(): ProvenanceGraph<State, Event>;

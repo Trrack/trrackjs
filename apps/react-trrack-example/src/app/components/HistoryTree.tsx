@@ -1,10 +1,7 @@
+import { type TrrackTreeNode } from '@trrack/core';
 import { List, ListItemButton, ListItemText } from '@mui/material';
 
-export type HistoryNode = {
-  id: string;
-  label: string;
-  children: HistoryNode[];
-};
+export type HistoryNode = TrrackTreeNode<unknown, string>;
 
 function HistoryTreeBranch({
   currentNodeId,

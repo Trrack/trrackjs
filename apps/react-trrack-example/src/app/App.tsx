@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { HistoryTree, type HistoryNode } from './components/HistoryTree';
+import { HistoryTree } from './components/HistoryTree';
 import { Navbar } from './components/Navbar';
 import { useTrrackTaskManager } from './store/trrack';
 
@@ -67,7 +67,7 @@ function App() {
         </List>
         <HistoryTree
           currentNodeId={trrack.current.id}
-          root={trrack.tree() as HistoryNode}
+          root={trrack.tree()}
           onSelect={(id) => trrackManager.trrack.to(id)}
         />
       </Box>
