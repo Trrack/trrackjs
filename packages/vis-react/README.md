@@ -8,7 +8,8 @@ React components for rendering a Trrack provenance graph.
 yarn add @trrack/core @trrack/vis-react
 ```
 
-`@trrack/vis-react` targets React 18 and newer.
+`@trrack/vis-react` supports React 18 and React 19, with peer dependencies declared as `react` / `react-dom` `>=18 <20`.
+The package is tested in CI against both React 18 and React 19.
 
 ## Usage
 

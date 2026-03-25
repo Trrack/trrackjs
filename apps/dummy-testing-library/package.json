@@ -3,14 +3,10 @@
     "version": "0.0.0",
     "private": true,
     "dependencies": {
-        "@emotion/react": "11.10.5",
-        "@emotion/styled": "11.10.5",
-        "@mantine/core": "^5.10.5",
-        "@mantine/hooks": "^5.10.5",
         "@reduxjs/toolkit": "^1.9.1",
         "@trrack/core": "*",
-        "react": "18.2.0",
-        "react-dom": "18.2.0"
+        "react": "19.2.4",
+        "react-dom": "19.2.4"
     },
     "scripts": {
         "dev": "vite",
