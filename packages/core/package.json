@@ -4,9 +4,9 @@
     "license": "BSD-3-Clause",
     "sideEffects": false,
     "files": ["**/*"],
-    "main": "./index.js",
-    "module": "./index.mjs",
-    "types": "./index.d.ts",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
     "scripts": {
         "build": "vite build",
         "typecheck": "tsc --noEmit -p tsconfig.lib.json && tsc --noEmit -p tsconfig.spec.json",
@@ -30,9 +30,9 @@
     },
     "exports": {
         ".": {
-            "types": "./index.d.ts",
-            "import": "./index.mjs",
-            "require": "./index.js"
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
         }
     }
 }
