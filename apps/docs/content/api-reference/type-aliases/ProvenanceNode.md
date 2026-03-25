@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / ProvenanceNode
+[@trrack/core](../index) / ProvenanceNode
 
 # Type Alias: ProvenanceNode\<State, Event\>
 

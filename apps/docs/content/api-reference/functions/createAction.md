@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / createAction
+[@trrack/core](../index) / createAction
 
 # Function: createAction()
 

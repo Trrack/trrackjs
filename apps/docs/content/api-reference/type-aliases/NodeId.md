@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / NodeId
+[@trrack/core](../index) / NodeId
 
 # Type Alias: NodeId
 

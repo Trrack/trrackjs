@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / TrrackActionFunction
+[@trrack/core](../index) / TrrackActionFunction
 
 # Type Alias: TrrackActionFunction()\<DoActionType, UndoActionType, UndoActionPayload, DoActionPayload\>
 

@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / MetadataId
+[@trrack/core](../index) / MetadataId
 
 # Type Alias: MetadataId
 

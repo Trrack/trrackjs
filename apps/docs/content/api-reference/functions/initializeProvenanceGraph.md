@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / initializeProvenanceGraph
+[@trrack/core](../index) / initializeProvenanceGraph
 
 # Function: initializeProvenanceGraph()
 

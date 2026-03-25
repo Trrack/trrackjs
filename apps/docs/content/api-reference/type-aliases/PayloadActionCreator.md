@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / PayloadActionCreator
+[@trrack/core](../index) / PayloadActionCreator
 
 # Type Alias: PayloadActionCreator\<Payload, Type, Prepare\>
 

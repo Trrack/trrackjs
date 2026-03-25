@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / TrrackActionRecord
+[@trrack/core](../index) / TrrackActionRecord
 
 # Type Alias: TrrackActionRecord\<DoActionType, DoActionPayload, UndoActionType, UndoActionPayload\>
 

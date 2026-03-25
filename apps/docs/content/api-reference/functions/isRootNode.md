@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / isRootNode
+[@trrack/core](../index) / isRootNode
 
 # Function: isRootNode()
 

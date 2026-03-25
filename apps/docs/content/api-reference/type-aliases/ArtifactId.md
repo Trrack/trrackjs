@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / ArtifactId
+[@trrack/core](../index) / ArtifactId
 
 # Type Alias: ArtifactId
 

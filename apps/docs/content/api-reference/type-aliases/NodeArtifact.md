@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / NodeArtifact
+[@trrack/core](../index) / NodeArtifact
 
 # Type Alias: NodeArtifact
 

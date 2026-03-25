@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / ProvenanceGraphStore
+[@trrack/core](../index) / ProvenanceGraphStore
 
 # Type Alias: ProvenanceGraphStore\<State, Event\>
 

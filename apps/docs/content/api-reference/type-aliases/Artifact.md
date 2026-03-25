@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / Artifact
+[@trrack/core](../index) / Artifact
 
 # Type Alias: Artifact
 

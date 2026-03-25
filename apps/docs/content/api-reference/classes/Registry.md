@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / Registry
+[@trrack/core](../index) / Registry
 
 # Class: Registry\<Event\>
 

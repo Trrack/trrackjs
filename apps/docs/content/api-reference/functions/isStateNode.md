@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / isStateNode
+[@trrack/core](../index) / isStateNode
 
 # Function: isStateNode()
 

@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / CurrentChangeHandler
+[@trrack/core](../index) / CurrentChangeHandler
 
 # Type Alias: CurrentChangeHandler()
 

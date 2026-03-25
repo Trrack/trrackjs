@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / initEventManager
+[@trrack/core](../index) / initEventManager
 
 # Function: initEventManager()
 

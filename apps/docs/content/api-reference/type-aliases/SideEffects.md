@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / SideEffects
+[@trrack/core](../index) / SideEffects
 
 # Type Alias: SideEffects
 

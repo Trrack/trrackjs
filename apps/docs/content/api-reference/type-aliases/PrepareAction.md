@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / PrepareAction
+[@trrack/core](../index) / PrepareAction
 
 # Type Alias: PrepareAction\<Payload\>
 

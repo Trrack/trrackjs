@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / RootNode
+[@trrack/core](../index) / RootNode
 
 # Type Alias: RootNode\<State\>
 

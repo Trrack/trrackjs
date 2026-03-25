@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / LabelGenerator
+[@trrack/core](../index) / LabelGenerator
 
 # Type Alias: LabelGenerator()\<Args\>
 

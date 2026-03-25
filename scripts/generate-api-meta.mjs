@@ -38,11 +38,22 @@ function writeMeta(dir, meta) {
   writeFileSync(join(dir, '_meta.json'), JSON.stringify(meta, null, 2) + '\n');
 }
 
+function normalizeMarkdownLinkTarget(target) {
+  const withoutExtension = target.replace(/\.md$/, '');
+
+  if (withoutExtension === 'README') {
+    return 'index';
+  }
+
+  return withoutExtension.replace(/\/README$/, '/index');
+}
+
 /** Strip .md extension from markdown link targets so Next.js routing works. */
 function fixLinks(content) {
-  // Matches markdown links: [text](path.md) or [text](path.md#anchor)
-  return content.replace(/(\]\([^)]+?)\.md(#[^)]+?)?\)/g, (match, path, anchor) => {
-    return `${path}${anchor ?? ''})`;
+  // Matches markdown links: [text](path), [text](path.md), or either with #anchor.
+  return content.replace(/\]\(([^)#]+?)(\.md)?(#[^)]+?)?\)/g, (match, path, _extension, anchor) => {
+    const normalizedPath = normalizeMarkdownLinkTarget(path);
+    return `](${normalizedPath}${anchor ?? ''})`;
   });
 }
 

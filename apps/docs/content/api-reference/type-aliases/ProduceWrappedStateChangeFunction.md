@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / ProduceWrappedStateChangeFunction
+[@trrack/core](../index) / ProduceWrappedStateChangeFunction
 
 # Type Alias: ProduceWrappedStateChangeFunction()\<T\>
 

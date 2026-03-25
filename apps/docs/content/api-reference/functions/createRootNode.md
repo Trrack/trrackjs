@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / createRootNode
+[@trrack/core](../index) / createRootNode
 
 # Function: createRootNode()
 

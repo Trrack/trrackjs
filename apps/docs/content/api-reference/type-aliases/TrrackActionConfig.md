@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / TrrackActionConfig
+[@trrack/core](../index) / TrrackActionConfig
 
 # Type Alias: TrrackActionConfig\<Args, Event\>
 

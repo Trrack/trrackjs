@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / StateLike
+[@trrack/core](../index) / StateLike
 
 # Type Alias: StateLike\<State\>
 

@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / Trrack
+[@trrack/core](../index) / Trrack
 
 # Interface: Trrack\<State, Event\>
 

@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / RecordActionArgs
+[@trrack/core](../index) / RecordActionArgs
 
 # Type Alias: RecordActionArgs\<State, Event\>
 

@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / Label
+[@trrack/core](../index) / Label
 
 # Type Alias: Label
 

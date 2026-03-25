@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / initializeTrrack
+[@trrack/core](../index) / initializeTrrack
 
 # Function: initializeTrrack()
 

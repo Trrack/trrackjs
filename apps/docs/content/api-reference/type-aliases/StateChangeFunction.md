@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / StateChangeFunction
+[@trrack/core](../index) / StateChangeFunction
 
 # Type Alias: StateChangeFunction()\<State, Payload\>
 

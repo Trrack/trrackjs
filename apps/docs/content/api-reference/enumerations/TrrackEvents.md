@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / TrrackEvents
+[@trrack/core](../index) / TrrackEvents
 
 # Enumeration: TrrackEvents
 

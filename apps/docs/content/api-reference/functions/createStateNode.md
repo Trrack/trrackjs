@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / createStateNode
+[@trrack/core](../index) / createStateNode
 
 # Function: createStateNode()
 

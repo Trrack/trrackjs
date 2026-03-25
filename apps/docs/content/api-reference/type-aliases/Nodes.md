@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / Nodes
+[@trrack/core](../index) / Nodes
 
 # Type Alias: Nodes\<State, Event\>
 

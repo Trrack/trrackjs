@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / ID
+[@trrack/core](../index) / ID
 
 # Class: ID
 

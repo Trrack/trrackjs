@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / UnsubscribeCurrentChangeListener
+[@trrack/core](../index) / UnsubscribeCurrentChangeListener
 
 # Type Alias: UnsubscribeCurrentChangeListener()
 

@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / PayloadAction
+[@trrack/core](../index) / PayloadAction
 
 # Type Alias: PayloadAction\<Payload, Type, Meta, Error\>
 

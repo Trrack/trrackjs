@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / ActionCreatorWithPreparedPayload
+[@trrack/core](../index) / ActionCreatorWithPreparedPayload
 
 # Type Alias: ActionCreatorWithPreparedPayload\<Args, Payload, Type, Error, Meta\>
 

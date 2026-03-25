@@ -1,8 +1,8 @@
-[**@trrack/core**](../README)
+[**@trrack/core**](../index)
 
 ***
 
-[@trrack/core](../README) / FlavoredId
+[@trrack/core](../index) / FlavoredId
 
 # Type Alias: FlavoredId\<TBaseId, TFlavor\>
 
