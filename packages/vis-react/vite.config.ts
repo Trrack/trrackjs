@@ -12,6 +12,11 @@ const externalPackages = [
     'react-dom',
     'react-dom/client',
     '@trrack/core',
+    '@react-spring/web',
+    'd3-color',
+    'd3-hierarchy',
+    'd3-selection',
+    'd3-zoom',
 ];
 
 export default defineConfig({
