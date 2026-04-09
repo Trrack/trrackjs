@@ -1,3 +1,3 @@
 :HL["/trrackjs/_next/static/css/7d14fc3f877d17ba.css","style"]
 :HL["/trrackjs/_next/static/css/2c67708ef20da4c5.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"mdxPath","param":{"type":"oc","key":"docs/tutorial/basic/state","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"6cefD8zYRhN7hL1XzpKoi"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"mdxPath","param":{"type":"oc","key":"docs/tutorial/basic/state","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"8Ld5sKmpG62cYM81nhbFa"}
