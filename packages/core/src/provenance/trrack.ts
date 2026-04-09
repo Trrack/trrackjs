@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { applyPatch, compare, deepClone, Operation } from 'fast-json-patch';
-import { RecordActionArgs, Trrack } from './types';
+import jsonPatch from 'fast-json-patch';
+import type { Operation } from 'fast-json-patch';
+import { RecordActionArgs, Trrack, TrrackTreeNode } from './types';
 import { PayloadAction } from '../action';
 
 import { initEventManager } from '../event';
@@ -23,6 +24,8 @@ import {
 } from '../registry';
 import { ConfigureTrrackOptions } from './trrack-config-opts';
 import { TrrackEvents } from './trrack-events';
+
+const { applyPatch, compare, deepClone } = jsonPatch;
 
 function getState<State, Event extends string>(
     node: ProvenanceNode<State, Event>,
@@ -464,15 +467,10 @@ function isNextNodeUp(
     );
 }
 
-type TreeNode = Omit<ProvenanceNode<any, any>, 'children' | 'name'> & {
-    name: string;
-    children: TreeNode[];
-};
-
 function getTreeFromNode(
     node: ProvenanceNode<any, any>,
     nodes: Nodes<any, any>
-): TreeNode {
+): TrrackTreeNode<any, any> {
     return {
         ...node,
         children: node.children.map((n) => getTreeFromNode(nodes[n], nodes)),

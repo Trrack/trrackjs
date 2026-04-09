@@ -1,18 +1,135 @@
-/* Your styles goes here. */
 .container {
-  margin: 1em;
+  margin: 1rem;
+  padding: 1.5rem;
   flex: 1;
-  background-color: hsl(57, 1%, 98%);
+  background:
+    radial-gradient(circle at top left, rgba(78, 205, 196, 0.18), transparent 28%),
+    linear-gradient(180deg, hsl(210, 40%, 98%), hsl(190, 25%, 95%));
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  gap: 1rem;
+  overflow: hidden;
+  border: 1px solid hsla(210, 20%, 50%, 0.16);
+  border-radius: 1.5rem;
+  box-shadow: 0 18px 48px hsla(210, 30%, 20%, 0.08);
 }
 
-.container > svg {
-  border: 1px solid hsla(360, 0%, 50%, 0.2);
+.controls,
+.statusCard,
+.graphFrame {
+  border: 1px solid hsla(210, 20%, 50%, 0.12);
+  background: hsla(0, 0%, 100%, 0.78);
+  backdrop-filter: blur(14px);
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+}
+
+.controlCopy h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
+  line-height: 0.95;
+  color: hsl(213, 32%, 18%);
+}
+
+.controlCopy p {
+  margin: 0.4rem 0 0;
+  max-width: 38rem;
+  color: hsl(213, 18%, 38%);
+}
+
+.eyebrow {
+  margin: 0 0 0.45rem;
+  color: hsl(188, 70%, 35%);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.primaryButton,
+.secondaryButton {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.85rem 1.15rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.primaryButton {
+  color: white;
+  background: linear-gradient(135deg, hsl(188, 78%, 39%), hsl(217, 84%, 57%));
+  box-shadow: 0 14px 28px hsla(217, 84%, 57%, 0.24);
+}
+
+.secondaryButton {
+  color: hsl(213, 32%, 18%);
+  background: hsl(0, 0%, 100%);
+  box-shadow: inset 0 0 0 1px hsla(210, 20%, 50%, 0.16);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: translateY(-1px);
+}
+
+.statusRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.statusCard {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  color: hsl(213, 18%, 38%);
+}
+
+.statusCard strong {
+  color: hsl(213, 32%, 18%);
+}
+
+.graphFrame {
+  flex: 1;
+  min-height: 22rem;
+  overflow: auto;
+  border-radius: 1.25rem;
+}
+
+.graphFrame > svg {
+  display: block;
 }
 
 svg circle {
   stroke: white;
   stroke-width: 2px;
+}
+
+@media (max-width: 900px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .statusRow {
+    grid-template-columns: 1fr;
+  }
 }

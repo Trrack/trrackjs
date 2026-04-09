@@ -324,24 +324,22 @@ describe('@trrack/core react integration', () => {
             );
 
             await act(async () => {
-                await vi.advanceTimersByTimeAsync(40);
+                await vi.runAllTimersAsync();
                 await traversal;
             });
 
-            await waitFor(() => {
-                expect(view.getByTestId('left-current').textContent).toBe(
-                    branchANode
-                );
-                expect(view.getByTestId('right-current').textContent).toBe(
-                    branchANode
-                );
-                expect(view.getByTestId('left-position').textContent).toBe(
-                    'branch'
-                );
-                expect(view.getByTestId('right-position').textContent).toBe(
-                    'branch'
-                );
-            });
+            expect(view.getByTestId('left-current').textContent).toBe(
+                branchANode
+            );
+            expect(view.getByTestId('right-current').textContent).toBe(
+                branchANode
+            );
+            expect(view.getByTestId('left-position').textContent).toBe(
+                'branch'
+            );
+            expect(view.getByTestId('right-position').textContent).toBe(
+                'branch'
+            );
             expect(log).toEqual(['undo:B', 'do:A']);
         } finally {
             vi.useRealTimers();

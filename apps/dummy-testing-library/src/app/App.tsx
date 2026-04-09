@@ -1,10 +1,9 @@
-import { Button } from '@mantine/core';
-import { useElementSize } from '@mantine/hooks';
 import { initializeTrrack, Registry } from '@trrack/core';
 import { useEffect, useMemo, useState } from 'react';
 
 import styles from './App.module.css';
 import { GraphRenderer, type GraphData } from './components/graphRender';
+import { useElementSize } from './hooks/useElementSize';
 import translate from './utils/translate';
 
 type GraphState = {
@@ -84,41 +83,62 @@ function useGraph() {
 }
 
 export function App() {
-  const { ref, width, height } = useElementSize();
+  const { ref, width, height } = useElementSize<HTMLDivElement>();
   const { actions, backend, currentNodeId, state, trrack, renderVersion } =
     useGraph();
 
   return (
     <div ref={ref} className={styles['container']}>
-      <div>
-        <Button
-          onClick={() => {
-            const nextGreeting = `Random ${Math.floor(Math.random() * 100)}`;
-            trrack.apply(nextGreeting, actions.changeGreeting(nextGreeting));
-          }}
-        >
-          Change Greeting
-        </Button>
+      <section className={styles['controls']}>
+        <div className={styles['controlCopy']}>
+          <p className={styles['eyebrow']}>Graph playground</p>
+          <h1>Greeting history</h1>
+          <p>
+            Trigger a few transitions and watch the provenance graph redraw as the
+            current state changes.
+          </p>
+        </div>
+        <div className={styles['buttonRow']}>
+          <button
+            type="button"
+            className={styles['primaryButton']}
+            onClick={() => {
+              const nextGreeting = `Random ${Math.floor(Math.random() * 100)}`;
+              trrack.apply(nextGreeting, actions.changeGreeting(nextGreeting));
+            }}
+          >
+            Change Greeting
+          </button>
 
-        <Button
-          onClick={() => {
-            const nextGreeting = randomGreeting();
-            trrack.apply(`Hello ${nextGreeting}`, actions.changeGreeting(nextGreeting));
-          }}
-        >
-          Add Random State
-        </Button>
+          <button
+            type="button"
+            className={styles['secondaryButton']}
+            onClick={() => {
+              const nextGreeting = randomGreeting();
+              trrack.apply(`Hello ${nextGreeting}`, actions.changeGreeting(nextGreeting));
+            }}
+          >
+            Add Random State
+          </button>
+        </div>
+      </section>
+      <div className={styles['statusRow']}>
+        <p className={styles['statusCard']}>
+          Current greeting: <strong>{state.helloTo}</strong>
+        </p>
+        <p className={styles['statusCard']}>
+          Render version: <strong>{renderVersion}</strong>
+        </p>
       </div>
-      <p>
-        Current greeting: <strong>{state.helloTo}</strong> ({renderVersion})
-      </p>
-      {backend && (
-        <svg key={currentNodeId} height={height} width={width}>
-          <g transform={translate(100, height / 2)}>
-            <GraphRenderer currentNodeId={currentNodeId} graph={backend} />
-          </g>
-        </svg>
-      )}
+      <div className={styles['graphFrame']}>
+        {backend && width > 0 && height > 0 ? (
+          <svg key={currentNodeId} height={height} width={width}>
+            <g transform={translate(100, height / 2)}>
+              <GraphRenderer currentNodeId={currentNodeId} graph={backend} />
+            </g>
+          </svg>
+        ) : null}
+      </div>
     </div>
   );
 }

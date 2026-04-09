@@ -2,7 +2,7 @@
     "entryPoints": ["src/index.ts"],
     "tsconfig": "tsconfig.typedoc.json",
     "plugin": ["typedoc-plugin-markdown"],
-    "out": "../../apps/docs/pages/api-reference",
+    "out": "../../apps/docs/content/api-reference",
     "readme": "none",
     "excludePrivate": true,
     "excludeInternal": true,

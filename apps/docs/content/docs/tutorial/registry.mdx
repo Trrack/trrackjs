@@ -1,0 +1,78 @@
+import { Callout } from 'nextra/components';
+
+# Action Registry
+
+The first step in adding `Trrack` to your application is to create an action
+registry using the `Registry` class.
+
+```javascript
+const registry = Registry.create();
+```
+
+Now actions can be registered in the registry. Actions are the only way
+`Trrack` knows that something has happened and it has to update the provenance
+graph.
+
+## Action Types
+
+There are two types of actions that can be registered.
+
+### State Action
+
+State actions get the current `state` of the application as an argument and can
+modify it based on the `payload`, which is the second argument. This is similar
+to [Redux reducers](https://redux.js.org/tutorials/fundamentals/part-2-concepts-data-flow#reducers).
+
+```typescript
+// Action which updates the `count` key in the state by desired value.
+const incrementAction = registry.register(
+  'increment-action',
+  (currentState: State, payload: number) => {
+    currentState.count += payload;
+  }
+);
+```
+
+When state actions are executed, the changes to the state are stored in a new
+provenance node.
+
+### Trrack Action
+
+The other supported type is a `Trrack action`. These actions do not modify the
+application state, but execute arbitrary side effects.
+
+When a `Trrack action` is executed, `Trrack` keeps a record of the execution
+and the payload of the action. You need to provide an `undo` counterpart to
+each action to allow `Trrack` to reverse the action during traversal.
+
+A `Trrack action` can be set as the undo for itself.
+
+```typescript
+const arr = [1, 2, 3, 4];
+
+registry.register('sort', (sortBy: 'asc' | 'dsc') => {
+  if (sortBy === 'asc') arr.sort();
+  if (sortBy === 'dsc') arr.sort().reverse();
+
+  return {
+    undo: {
+      type: 'sort',
+      payload: sortBy === 'asc' ? 'dsc' : 'asc',
+      meta: {
+        hasSideEffects: true,
+      },
+    },
+  };
+});
+```
+
+<Callout type="warning">
+  Trrack provides no guarantees that a `Trrack action` is properly undone by
+  the `undo` action. Correct side-effect reversal is still the developer's
+  responsibility.
+</Callout>
+
+<Callout type="info">
+  Prefer `state actions` when you can. They allow for faster traversal through
+  the provenance graph.
+</Callout>

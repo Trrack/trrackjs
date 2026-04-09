@@ -1,0 +1,36 @@
+{
+  "index": {
+    "title": "Trrack",
+    "type": "page",
+    "display": "hidden",
+    "theme": {
+      "layout": "full",
+      "toc": false
+    }
+  },
+  "docs": {
+    "title": "Documentation",
+    "type": "page"
+  },
+  "showcase": {
+    "title": "Showcase",
+    "type": "page",
+    "theme": {
+      "typesetting": "article",
+      "layout": "full",
+      "toc": false
+    }
+  },
+  "api-reference": {
+    "title": "API Reference",
+    "type": "page"
+  },
+  "about": {
+    "title": "About",
+    "type": "page",
+    "theme": {
+      "typesetting": "article",
+      "toc": false
+    }
+  }
+}

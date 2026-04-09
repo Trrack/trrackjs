@@ -1,7 +1,14 @@
-import { Box, Checkbox, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import Tree, { useTreeState } from 'react-hyper-tree';
-import { TreeNode } from 'react-hyper-tree/dist/helpers/node';
+import {
+  Box,
+  Checkbox,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from '@mui/material';
 
+import { HistoryTree } from './components/HistoryTree';
 import { Navbar } from './components/Navbar';
 import { useTrrackTaskManager } from './store/trrack';
 
@@ -9,14 +16,6 @@ function App() {
   const trrackManager = useTrrackTaskManager();
   const { trrack } = trrackManager;
   const { actions } = trrackManager;
-
-  const { required, handlers } = useTreeState({
-    data: trrackManager.trrack.tree(),
-    id: 'test',
-    defaultOpened: true,
-  });
-
-  open(required.data, trrackManager.trrack.current.id);
 
   return (
     <Box sx={{ height: '100vh', width: '100vw' }}>
@@ -66,11 +65,10 @@ function App() {
             </ListItem>
           ))}
         </List>
-        <Tree
-          {...required}
-          {...handlers}
-          gapMode="margin"
-          setSelected={(node) => trrackManager.trrack.to(node.id)}
+        <HistoryTree
+          currentNodeId={trrack.current.id}
+          root={trrack.tree()}
+          onSelect={(id) => trrackManager.trrack.to(id)}
         />
       </Box>
     </Box>
@@ -78,12 +76,3 @@ function App() {
 }
 
 export default App;
-
-export function open(nodes: TreeNode[], current: string) {
-  nodes.forEach((node) => {
-    node.setSelected(current === node.id);
-    node.setOpened(true);
-
-    if (node.children) open(node.children, current);
-  });
-}

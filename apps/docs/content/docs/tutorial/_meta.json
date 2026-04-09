@@ -1,0 +1,28 @@
+{
+  "index": {
+    "title": "Tutorials",
+    "display": "hidden"
+  },
+  "getting-started": "Getting Started",
+  "usage": "Usage",
+  "basic": {
+    "title": "Examples",
+    "theme": {
+      "collapsed": true
+    }
+  },
+  "advanced": {
+    "title": "Advanced",
+    "theme": {
+      "collapsed": true
+    }
+  },
+  "registry": {
+    "title": "Action Registry",
+    "display": "hidden"
+  },
+  "trrack": {
+    "title": "Trrack",
+    "display": "hidden"
+  }
+}

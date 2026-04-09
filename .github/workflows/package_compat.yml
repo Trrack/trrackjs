@@ -1,0 +1,68 @@
+name: Package Compatibility
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - next
+      - alpha
+      - beta
+      - '*.x*'
+  pull_request:
+    branches:
+      - main
+      - next
+      - alpha
+      - beta
+      - '*.x*'
+
+jobs:
+  package-compat:
+    name: Packages -> React ${{ matrix.react_label }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - react_label: 18
+            react: 18.3.1
+            react_dom: 18.3.1
+            types_react: 18.3.12
+            types_react_dom: 18.3.1
+          - react_label: 19
+            react: 19.2.4
+            react_dom: 19.2.4
+            types_react: 19.2.14
+            types_react_dom: 19.2.3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup LTS Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: 'yarn'
+
+      - name: Pin React toolchain
+        run: >
+          node scripts/set-react-toolchain.mjs
+          ${{ matrix.react }}
+          ${{ matrix.react_dom }}
+          ${{ matrix.types_react }}
+          ${{ matrix.types_react_dom }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Typecheck published packages
+        run: yarn typecheck:packages
+
+      - name: Build published packages
+        run: yarn build
+
+      - name: Test published packages
+        run: yarn test:packages
