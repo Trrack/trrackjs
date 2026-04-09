@@ -28,8 +28,8 @@ jobs:
       - name: Build @trrack/core
         run: yarn workspace @trrack/core build
 
-      - name: Export docs
-        run: yarn workspace docs export
+      - name: Build docs
+        run: yarn workspace docs build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
