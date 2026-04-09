@@ -105,6 +105,12 @@ jobs:
             cp LICENSE "${dist_dir}/LICENSE"
 
             npm pkg set version="${RELEASE_VERSION}" --prefix "${dist_dir}"
+            npm pkg set main="./index.js" --prefix "${dist_dir}"
+            npm pkg set module="./index.mjs" --prefix "${dist_dir}"
+            npm pkg set types="./index.d.ts" --prefix "${dist_dir}"
+            npm pkg set exports[.].types="./index.d.ts" --prefix "${dist_dir}"
+            npm pkg set exports[.].import="./index.mjs" --prefix "${dist_dir}"
+            npm pkg set exports[.].require="./index.js" --prefix "${dist_dir}"
             npm pkg delete scripts --prefix "${dist_dir}"
             npm pkg delete devDependencies --prefix "${dist_dir}"
           done
